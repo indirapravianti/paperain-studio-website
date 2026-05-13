@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Zalando Sans SemiExpanded", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Zalando Sans Expanded", ui-sans-serif, system-ui, sans-serif;
   --color-primary: #2d2d2d;
   --color-accent: #e8a0bf;
   --color-accent-light: #fce4ec;
@@ -17,4 +18,9 @@ body {
   font-family: var(--font-sans);
   background-color: var(--color-bg);
   color: var(--color-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  text-transform: lowercase;
 }

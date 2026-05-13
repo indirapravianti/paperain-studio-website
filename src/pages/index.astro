@@ -4,8 +4,9 @@ import HeroCarousel from '../components/HeroCarousel.astro';
 import ProductCard from '../components/ProductCard.astro';
 import products from '../data/products.json';
 
-const newItems = products.filter(p => p.isNew).slice(0, 4);
-const favorites = products.filter(p => p.isFavorite).slice(0, 4);
+const activeProducts = products.filter(p => p.isActive);
+const newItems = activeProducts.filter(p => p.isNew).slice(0, 4);
+const favorites = activeProducts.filter(p => p.isFavorite).slice(0, 4);
 ---
 
 <Layout title="Home">
@@ -14,8 +15,7 @@ const favorites = products.filter(p => p.isFavorite).slice(0, 4);
   <!-- New Arrivals -->
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="text-center mb-10">
-      <h2 class="text-2xl font-semibold">New Arrivals</h2>
-      <p class="text-sm text-gray-400 mt-2">Fresh designs, just added</p>
+      <h2 class="text-2xl font-semibold">new arrivals</h2>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
       {newItems.map(product => (
@@ -39,8 +39,7 @@ const favorites = products.filter(p => p.isFavorite).slice(0, 4);
   <section class="bg-gray-50/50 py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-10">
-        <h2 class="text-2xl font-semibold">♡ Favorite Picks ♡</h2>
-        <p class="text-sm text-gray-400 mt-2">Most loved by our customers</p>
+        <h2 class="text-2xl font-semibold">favorite picks</h2>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
         {favorites.map(product => (

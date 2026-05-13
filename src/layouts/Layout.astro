@@ -19,7 +19,7 @@ const { title = 'Paperain Studio' } = Astro.props;
     <meta name="description" content="Paperain Studio - Cute stickers, keychains, griptoks, and more" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&family=Zalando+Sans+SemiExpanded:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
     <title>{title} | Paperain Studio</title>
   </head>
   <body class="min-h-screen flex flex-col">
@@ -50,6 +50,64 @@ const { title = 'Paperain Studio' } = Astro.props;
     </div>
 
     <script is:inline>
+      // Locale & pricing utilities
+      var PRICING = {
+        USD: { symbol: '$', rate: 1 },
+        IDR: { symbol: 'Rp', rate: 1 }
+      };
+
+      // IDR price map: product base USD price -> IDR price
+      // These are manually set IDR prices (not just exchange rate conversions)
+      var IDR_PRICES = {
+        2.50: 15000,
+        3.00: 18000,
+        3.50: 20000,
+        4.00: 25000
+      };
+
+      function getUserCurrency() {
+        try {
+          var saved = localStorage.getItem('paperain-currency');
+          if (saved) return saved;
+        } catch(e) {}
+        return null;
+      }
+
+      function setUserCurrency(currency) {
+        try { localStorage.setItem('paperain-currency', currency); } catch(e) {}
+      }
+
+      function detectCurrency() {
+        var saved = getUserCurrency();
+        if (saved) return saved;
+        
+        try {
+          var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+          var lang = navigator.language || '';
+          if (tz.indexOf('Asia/Jakarta') !== -1 || tz.indexOf('Asia/Makassar') !== -1 || tz.indexOf('Asia/Jayapura') !== -1 || lang.indexOf('id') !== -1) {
+            return 'IDR';
+          }
+        } catch(e) {}
+        return 'USD';
+      }
+
+      function formatPrice(usdPrice, currency) {
+        currency = currency || detectCurrency();
+        if (currency === 'IDR') {
+          var idrPrice = IDR_PRICES[usdPrice] || Math.round(usdPrice * 16000);
+          return 'Rp' + idrPrice.toLocaleString('id-ID');
+        }
+        return '$' + usdPrice.toFixed(2);
+      }
+
+      function updateAllPrices() {
+        var currency = detectCurrency();
+        document.querySelectorAll('[data-price-usd]').forEach(function(el) {
+          var usd = parseFloat(el.dataset.priceUsd);
+          el.textContent = formatPrice(usd, currency);
+        });
+      }
+
       function getCart() {
         try { return JSON.parse(localStorage.getItem('paperain-cart') || '[]'); }
         catch { return []; }
@@ -136,26 +194,27 @@ const { title = 'Paperain Studio' } = Astro.props;
         }
         const total = subtotal - discount;
 
+        var currency = detectCurrency();
         if (discount > 0) {
           discountEl.classList.remove('hidden');
-          discountEl.textContent = `20% discount applied! You save $${discount.toFixed(2)}`;
+          discountEl.textContent = '20% discount applied! You save ' + formatPrice(discount, currency);
         } else {
           discountEl.classList.add('hidden');
           const remaining = 50 - subtotal;
           if (remaining > 0 && remaining <= 20) {
             discountEl.classList.remove('hidden');
-            discountEl.textContent = `Add $${remaining.toFixed(2)} more to get 20% off!`;
+            discountEl.textContent = 'Add ' + formatPrice(remaining, currency) + ' more to get 20% off!';
             discountEl.className = 'text-sm text-amber-600 mb-2';
           }
         }
 
-        totalEl.textContent = `$${total.toFixed(2)}`;
+        totalEl.textContent = formatPrice(total, currency);
         container.innerHTML = cart.map(item => `
           <div class="flex gap-4 py-4 border-b border-gray-50">
             <img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded-lg" />
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium truncate">${item.title}</p>
-              <p class="text-sm text-gray-500">$${item.price.toFixed(2)}</p>
+              <p class="text-sm text-gray-500">${formatPrice(item.price, currency)}</p>
               <div class="flex items-center gap-2 mt-1">
                 <button onclick="updateQty('${item.id}', -1)" class="w-6 h-6 rounded border border-gray-200 text-xs hover:bg-gray-50">−</button>
                 <span class="text-sm">${item.qty}</span>
@@ -167,7 +226,10 @@ const { title = 'Paperain Studio' } = Astro.props;
         `).join('');
       }
 
-      document.addEventListener('DOMContentLoaded', updateCartCount);
+      document.addEventListener('DOMContentLoaded', function() {
+        updateCartCount();
+        updateAllPrices();
+      });
     </script>
   </body>
 </html>

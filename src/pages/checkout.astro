@@ -81,6 +81,7 @@ import Layout from '../layouts/Layout.astro';
     const discountRow = document.getElementById('checkout-discount-row');
     const discountEl = document.getElementById('checkout-discount');
 
+    var currency = detectCurrency();
     if (cart.length === 0) {
       container.innerHTML = '<p class="text-sm text-gray-400">Your cart is empty.</p>';
       document.getElementById('submit-btn').disabled = true;
@@ -92,7 +93,7 @@ import Layout from '../layouts/Layout.astro';
         return `
           <div class="flex justify-between text-sm">
             <span class="text-gray-600">${item.title} × ${item.qty}</span>
-            <span>$${(item.price * item.qty).toFixed(2)}</span>
+            <span>${formatPrice(item.price * item.qty, currency)}</span>
           </div>`;
       }).join('');
 
@@ -100,9 +101,9 @@ import Layout from '../layouts/Layout.astro';
       if (subtotal >= 50) {
         discount = subtotal * 0.2;
         discountRow.classList.remove('hidden');
-        discountEl.textContent = `-$${discount.toFixed(2)}`;
+        discountEl.textContent = '-' + formatPrice(discount, currency);
       }
-      totalEl.textContent = `$${(subtotal - discount).toFixed(2)}`;
+      totalEl.textContent = formatPrice(subtotal - discount, currency);
     }
 
     document.getElementById('checkout-form').addEventListener('submit', (e) => {

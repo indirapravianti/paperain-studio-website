@@ -4,7 +4,7 @@ import products from '../../data/products.json';
 import ProductCard from '../../components/ProductCard.astro';
 
 export function getStaticPaths() {
-  return products.map(product => ({
+  return products.filter(p => p.isActive).map(product => ({
     params: { id: product.id },
     props: { product },
   }));
@@ -13,17 +13,20 @@ export function getStaticPaths() {
 const { product } = Astro.props;
 
 const related = products
-  .filter(p => p.category === product.category && p.id !== product.id)
+  .filter(p => p.isActive && p.category === product.category && p.id !== product.id)
   .slice(0, 4);
 
 const categoryLabels: Record<string, string> = {
-  sticker: 'Sticker',
+  'sticker sheet': 'Sticker Sheet',
   keychain: 'Keychain',
   griptok: 'Griptok',
-  artprint: 'Art Print & Greeting Card',
+  artprint: 'Art Print',
+  'greeting card': 'Greeting Card',
   postcard: 'Postcard',
   phonestrap: 'Phone Strap',
 };
+
+const hasVariants = product.variants && product.variants.length > 0;
 ---
 
 <Layout title={product.title}>
@@ -40,7 +43,7 @@ const categoryLabels: Record<string, string> = {
     <div class="grid md:grid-cols-2 gap-8 lg:gap-12">
       <!-- Image -->
       <div class="aspect-square rounded-2xl overflow-hidden bg-gray-50">
-        <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
+        <img id="product-image" src={product.image} alt={product.title} class="w-full h-full object-cover" />
       </div>
 
       <!-- Details -->
@@ -49,12 +52,34 @@ const categoryLabels: Record<string, string> = {
           {categoryLabels[product.category] || product.category}
         </span>
         <h1 class="text-2xl sm:text-3xl font-semibold mb-3">{product.title}</h1>
-        <p class="text-2xl font-medium text-gray-800 mb-6">${product.price.toFixed(2)}</p>
+        <p class="text-2xl font-medium text-gray-800 mb-6" data-price-usd={product.price}>${product.price.toFixed(2)}</p>
 
         {product.description ? (
-          <p class="text-gray-500 text-sm leading-relaxed mb-8">{product.description}</p>
+          <p class="text-gray-500 text-sm leading-relaxed mb-8 whitespace-pre-line">{product.description}</p>
         ) : (
           <p class="text-gray-400 text-sm italic mb-8">Description coming soon.</p>
+        )}
+
+        {/* Variant Selector */}
+        {hasVariants && (
+          <div class="mb-6">
+            <p class="text-sm font-medium text-gray-700 mb-3">variant</p>
+            <div class="flex flex-wrap gap-2" id="variant-selector">
+              {product.variants.map((variant: any, index: number) => (
+                <button
+                  class:list={[
+                    'variant-btn text-sm px-4 py-2 rounded-full border transition-colors',
+                    index === 0 ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-600 hover:border-gray-400'
+                  ]}
+                  data-variant-image={variant.image}
+                  data-variant-id={variant.id}
+                  data-variant-label={variant.label}
+                >
+                  {variant.label}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         <!-- Quantity + Add to Cart -->
@@ -86,7 +111,7 @@ const categoryLabels: Record<string, string> = {
     <!-- Related Products -->
     {related.length > 0 && (
       <div class="mt-20">
-        <h2 class="text-xl font-semibold mb-6">You Might Also Like</h2>
+        <h2 class="text-xl font-semibold mb-6">you might also like</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {related.map(p => (
             <ProductCard id={p.id} title={p.title} price={p.price} image={p.image} isNew={p.isNew} />
@@ -97,11 +122,13 @@ const categoryLabels: Record<string, string> = {
   </section>
 </Layout>
 
-<script is:inline define:vars={{ productData: JSON.stringify({ id: product.id, title: product.title, price: product.price, image: product.image }) }}>
+<script is:inline define:vars={{ productData: JSON.stringify({ id: product.id, title: product.title, price: product.price, image: product.image, variants: product.variants || [] }) }}>
   (function() {
     const product = JSON.parse(productData);
     let qty = 1;
+    let selectedVariant = product.variants.length > 0 ? product.variants[0] : null;
     const qtyEl = document.getElementById('qty-value');
+    const productImage = document.getElementById('product-image');
 
     document.getElementById('qty-minus').addEventListener('click', () => {
       if (qty > 1) { qty--; qtyEl.textContent = qty; }
@@ -112,13 +139,36 @@ const categoryLabels: Record<string, string> = {
       qtyEl.textContent = qty;
     });
 
+    const variantBtns = document.querySelectorAll('.variant-btn');
+    variantBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        variantBtns.forEach(b => {
+          b.classList.remove('bg-primary', 'text-white', 'border-primary');
+          b.classList.add('border-gray-200', 'text-gray-600');
+        });
+        btn.classList.add('bg-primary', 'text-white', 'border-primary');
+        btn.classList.remove('border-gray-200', 'text-gray-600');
+
+        productImage.src = btn.dataset.variantImage;
+        selectedVariant = {
+          id: btn.dataset.variantId,
+          label: btn.dataset.variantLabel,
+          image: btn.dataset.variantImage
+        };
+      });
+    });
+
     document.getElementById('add-to-cart-btn').addEventListener('click', () => {
       const cart = getCart();
-      const existing = cart.find(item => item.id === product.id);
+      const cartId = selectedVariant ? selectedVariant.id : product.id;
+      const cartTitle = selectedVariant ? product.title + ' - ' + selectedVariant.label : product.title;
+      const cartImage = selectedVariant ? selectedVariant.image : product.image;
+
+      const existing = cart.find(item => item.id === cartId);
       if (existing) {
         existing.qty += qty;
       } else {
-        cart.push({ ...product, qty });
+        cart.push({ id: cartId, title: cartTitle, price: product.price, image: cartImage, qty });
       }
       saveCart(cart);
       toggleCart(true);
