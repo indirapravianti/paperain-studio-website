@@ -1,9 +1,9 @@
 {
-  "name": "retrograde-radiation",
+  "name": "paperain-studio",
   "type": "module",
   "version": "0.0.1",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "dev": "astro dev",
