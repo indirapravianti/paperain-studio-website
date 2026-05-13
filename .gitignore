@@ -24,4 +24,4 @@ pnpm-debug.log*
 .idea/
 
 # raw data files (not needed for deployment)
-data/
+/data/

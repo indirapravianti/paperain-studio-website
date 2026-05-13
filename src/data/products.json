@@ -1,0 +1,1112 @@
+[
+  {
+    "id": "st-001",
+    "title": "3D Pastel Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/3d_pastel.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-002",
+    "title": "3D Vibrant Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/3d_vibrant.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-003",
+    "title": "Alphabet Hearts Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/alphabet hearts.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-004",
+    "title": "Baby Ducks Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/baby_ducks.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": true
+  },
+  {
+    "id": "st-006",
+    "title": "Bears Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/bears.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-007",
+    "title": "Bears And Plaids Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/bears_and_plaids.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-008",
+    "title": "Biscuits Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/biscuits.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-009",
+    "title": "Black Circles Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/black circles alphabet.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-010",
+    "title": "Blushing Bunny Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/blushing_bunny.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": true
+  },
+  {
+    "id": "st-011",
+    "title": "Cakes Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/cakes.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-012",
+    "title": "Camping Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/camping.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-013",
+    "title": "Cats Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/cats.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-014",
+    "title": "Celebrating Myself Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/celebrating myself.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-015",
+    "title": "Colorful Circles Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/colorful circles alphabet.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-016",
+    "title": "Confetti Bold Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/confetti_bold.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-017",
+    "title": "Confetti Delicate Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/confetti_delicate.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-018",
+    "title": "Confetti Pink Sky Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/confetti_pink sky.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-019",
+    "title": "Cozy Room Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/cozy room sticker sheet.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-020",
+    "title": "Cute Cats Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/cute_cats.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-021",
+    "title": "Daily Sayings Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/daily_sayings.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-022",
+    "title": "Donuts Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/donuts.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-023",
+    "title": "Doodles 1 Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/doodles_1 (2).jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-024",
+    "title": "Farm Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/farm_1.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-025",
+    "title": "Flower Pots Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/flower_pots.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-026",
+    "title": "Flowers Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/flowers.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-027",
+    "title": "Frogs Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/frogs.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-028",
+    "title": "Happy Mail Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/happy mail.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-029",
+    "title": "Pink Hearts Alphabet Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/pink hearts alphabet.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-030",
+    "title": "Hedgehog Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/hedgehog.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-031",
+    "title": "Ice Creams Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/ice creams.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-033",
+    "title": "Koi Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/koi_and_lotus.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-034",
+    "title": "Leaves Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/leaves.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-036",
+    "title": "Love Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/love sticker sheet.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-037",
+    "title": "Lovely Day Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/it_s a lovely day.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-038",
+    "title": "Magic Bubbles Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/magic_bubbles.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-039",
+    "title": "Makeup Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/makeup sticker sheet.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-040",
+    "title": "Mauve Alphabet Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/mauve_alphabet (2).jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-041",
+    "title": "Morning Favorites Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/morning favorites.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-042",
+    "title": "Mushrooms Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/mushrooms.jpg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": false
+  },
+  {
+    "id": "st-043",
+    "title": "Office Emails Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/office_emails.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-044",
+    "title": "Outline Alphabet Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/outline alphabets.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-045",
+    "title": "Outline Numbers Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/outline numbers.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-046",
+    "title": "Pastel Brown Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/pastel brown alphabet.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-047",
+    "title": "Picnic Date Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/picnic_date.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-048",
+    "title": "Plaid Hearts Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/plaid_hearts.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-050",
+    "title": "Primary Alphabet Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/primary_alphabets.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-058",
+    "title": "Quote Bahasa Romansa Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/quote bahasa - motivasi.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-061",
+    "title": "Quotes Friendship Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/quotes - friendship.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-062",
+    "title": "Quotes Girlboss Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/quotes - girlboss.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-063",
+    "title": "Quotes Inspiration Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/quotes - inspiration.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-064",
+    "title": "Quotes Love Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/quotes_love (1).jpg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": false
+  },
+  {
+    "id": "st-065",
+    "title": "Quotes Motivational Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/quotes_motivational (1).jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-066",
+    "title": "Quotes Self Love Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/quotes_selflove (1).jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-067",
+    "title": "Ransom Primary Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/ransom_primary.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-068",
+    "title": "Ransom Retro Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/ransom_retro (2).jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-069",
+    "title": "Ransom Rosy Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/ransom_rosy.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-070",
+    "title": "Self Care Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/self care sticker sheet.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-071",
+    "title": "Adorable Stamps Vol 1 Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/adorable_stamps_vol1.jpg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": true
+  },
+  {
+    "id": "st-072",
+    "title": "Adorable Stamps Vol 2 Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/adorable_stamps_vol2.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-073",
+    "title": "Adorable Stamps Vol 3 Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/adorable_stamps_vol3.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-074",
+    "title": "Studytime Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/studytime sticker sheet.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-075",
+    "title": "Teddy Bear Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/teddy_bear.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-076",
+    "title": "Watermelon Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/watermelon_1.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-077",
+    "title": "When In Japan Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/when_in_japan.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-080",
+    "title": "Bananas Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/bananas.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-081",
+    "title": "Dessert Time Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/dessert time sticker sheet.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-082",
+    "title": "Puppies Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/puppies.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-084",
+    "title": "Tiny Birds Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/tiny_birds.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-085",
+    "title": "Capybara Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/capybara.jpg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": true
+  },
+  {
+    "id": "st-086",
+    "title": "Doodles 2 Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/doodles_vol_2.jpg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": false
+  },
+  {
+    "id": "st-087",
+    "title": "Panda Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/perky_panda.jpg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": false
+  },
+  {
+    "id": "st-088",
+    "title": "Dogs Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/sticker_dogs.jpeg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": false
+  },
+  {
+    "id": "st-089",
+    "title": "Doodles 3 Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/sticker_doodles_vol_3.jpeg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": false
+  },
+  {
+    "id": "st-092",
+    "title": "Goose Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/sticker_goose.jpeg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": true
+  },
+  {
+    "id": "st-misc-01",
+    "title": "Boba Shop Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/boba shop sticker sheet.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-misc-02",
+    "title": "Spooky Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/spooky.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "st-misc-03",
+    "title": "House Plan Sticker",
+    "price": 2.50,
+    "category": "sticker",
+    "image": "/images/products/stickers/House Plan.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "kc-001",
+    "title": "Busy Doing Nothing Keychain",
+    "price": 4.00,
+    "category": "keychain",
+    "image": "/images/products/keychains/keychain_busy_doing_nothing.jpeg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": true
+  },
+  {
+    "id": "kc-002",
+    "title": "Cat Keychain",
+    "price": 4.00,
+    "category": "keychain",
+    "image": "/images/products/keychains/keychain_cat.jpeg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "kc-003",
+    "title": "Chaotic Mess Keychain",
+    "price": 4.00,
+    "category": "keychain",
+    "image": "/images/products/keychains/keychain_chaotic_mess.jpeg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "kc-004",
+    "title": "Grow At Your Own Pace Keychain",
+    "price": 4.00,
+    "category": "keychain",
+    "image": "/images/products/keychains/keychain_grow_at_your_own_pace.png",
+    "description": "",
+    "isNew": false,
+    "isFavorite": true
+  },
+  {
+    "id": "kc-005",
+    "title": "Learning To Live Keychain",
+    "price": 4.00,
+    "category": "keychain",
+    "image": "/images/products/keychains/keychain_learning_to_live.png",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "kc-006",
+    "title": "Not In The Mood Keychain",
+    "price": 4.00,
+    "category": "keychain",
+    "image": "/images/products/keychains/keychain_not_in_the_mood.png",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "kc-007",
+    "title": "Puppy Keychain",
+    "price": 4.00,
+    "category": "keychain",
+    "image": "/images/products/keychains/keychain_puppy.jpeg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "gt-001",
+    "title": "Avocado Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/avocado.jpg",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "gt-002",
+    "title": "Cactus Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/cactus.jpg",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "gt-003",
+    "title": "Egg Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/egg.jpg",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": false,
+    "isFavorite": true
+  },
+  {
+    "id": "gt-004",
+    "title": "Monstera Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/monstera.jpg",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "gt-005",
+    "title": "Pink Bear Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/pink bear.JPG",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "gt-006",
+    "title": "Flowers Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/flowers.jpg",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "gt-007",
+    "title": "I Love U Pink Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/i love u - pink - 1.jpg",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": true,
+    "isFavorite": false
+  },
+  {
+    "id": "gt-008",
+    "title": "I Love U Primary Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/i love u - primary -1.jpg",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": true,
+    "isFavorite": false
+  },
+  {
+    "id": "gt-009",
+    "title": "Magic Hands Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/magic hands.jpg",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": true,
+    "isFavorite": false
+  },
+  {
+    "id": "gt-010",
+    "title": "Chick Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/popsocket_chick.jpg",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "gt-011",
+    "title": "Flower Dome Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/popsocket_flower_dome.jpg",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "gt-012",
+    "title": "Stargazing Griptok",
+    "price": 3.50,
+    "category": "griptok",
+    "image": "/images/products/griptoks/stargazing-1.jpg",
+    "description": "Acrylic griptok, 3mm thick with UV print",
+    "isNew": true,
+    "isFavorite": true
+  },
+  {
+    "id": "ps-001",
+    "title": "Phonestrap A",
+    "price": 3.00,
+    "category": "phonestrap",
+    "image": "/images/products/phonestraps/phonestrap_A_1.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "ps-002",
+    "title": "Phonestrap B",
+    "price": 3.00,
+    "category": "phonestrap",
+    "image": "/images/products/phonestraps/phonestrap_B_1.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "pc-001",
+    "title": "Postcard Set",
+    "price": 3.50,
+    "category": "postcard",
+    "image": "/images/products/postcards/postcard_cover.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "ap-001",
+    "title": "Birthday Cat Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/birthday-cat.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "ap-002",
+    "title": "Cheers Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/cheers - front.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "ap-003",
+    "title": "Congrats Graduation Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/congrats - graduation.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "ap-004",
+    "title": "Congrats Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/congrats.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "ap-005",
+    "title": "Gift To Find You Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/gift_to_find_you_1.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "ap-006",
+    "title": "Glad I Met You Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/glad_met_you_1.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "ap-007",
+    "title": "Magic In You Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/magic-in-you.jpg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": false
+  },
+  {
+    "id": "ap-008",
+    "title": "Rooting For You Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/rooting-for-you.jpg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": true
+  },
+  {
+    "id": "ap-009",
+    "title": "The Best Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/the best.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "ap-010",
+    "title": "Wedding Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/wedding-greeting-card.jpg",
+    "description": "",
+    "isNew": false,
+    "isFavorite": false
+  },
+  {
+    "id": "ap-011",
+    "title": "Wedding Pink Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/wedding-greeting-card-pink.jpg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": false
+  },
+  {
+    "id": "ap-012",
+    "title": "Wedding Sage Greeting Card",
+    "price": 4.00,
+    "category": "artprint",
+    "image": "/images/products/artprints/wedding-greeting-card-sage-1.jpg",
+    "description": "",
+    "isNew": true,
+    "isFavorite": false
+  }
+]
