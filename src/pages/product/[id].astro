@@ -1,0 +1,127 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import products from '../../data/products.json';
+import ProductCard from '../../components/ProductCard.astro';
+
+export function getStaticPaths() {
+  return products.map(product => ({
+    params: { id: product.id },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+
+const related = products
+  .filter(p => p.category === product.category && p.id !== product.id)
+  .slice(0, 4);
+
+const categoryLabels: Record<string, string> = {
+  sticker: 'Sticker',
+  keychain: 'Keychain',
+  griptok: 'Griptok',
+  artprint: 'Art Print & Greeting Card',
+  postcard: 'Postcard',
+  phonestrap: 'Phone Strap',
+};
+---
+
+<Layout title={product.title}>
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-400 mb-8">
+      <a href="/" class="hover:text-primary">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/products" class="hover:text-primary">Products</a>
+      <span class="mx-2">/</span>
+      <span class="text-gray-600">{product.title}</span>
+    </nav>
+
+    <div class="grid md:grid-cols-2 gap-8 lg:gap-12">
+      <!-- Image -->
+      <div class="aspect-square rounded-2xl overflow-hidden bg-gray-50">
+        <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
+      </div>
+
+      <!-- Details -->
+      <div class="flex flex-col justify-center">
+        <span class="text-xs uppercase tracking-wider text-accent font-medium mb-2">
+          {categoryLabels[product.category] || product.category}
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-semibold mb-3">{product.title}</h1>
+        <p class="text-2xl font-medium text-gray-800 mb-6">${product.price.toFixed(2)}</p>
+
+        {product.description ? (
+          <p class="text-gray-500 text-sm leading-relaxed mb-8">{product.description}</p>
+        ) : (
+          <p class="text-gray-400 text-sm italic mb-8">Description coming soon.</p>
+        )}
+
+        <!-- Quantity + Add to Cart -->
+        <div class="flex items-center gap-4 mb-6">
+          <div class="flex items-center border border-gray-200 rounded-lg">
+            <button id="qty-minus" class="px-3 py-2 text-gray-400 hover:text-primary transition-colors">−</button>
+            <span id="qty-value" class="px-3 py-2 text-sm font-medium min-w-[2rem] text-center">1</span>
+            <button id="qty-plus" class="px-3 py-2 text-gray-400 hover:text-primary transition-colors">+</button>
+          </div>
+          <button
+            id="add-to-cart-btn"
+            class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+          >
+            Add to Cart
+          </button>
+        </div>
+
+        <div class="border-t border-gray-100 pt-6">
+          <div class="flex items-center gap-2 text-sm text-gray-500">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+            </svg>
+            Spend $50 to get 20% off!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    {related.length > 0 && (
+      <div class="mt-20">
+        <h2 class="text-xl font-semibold mb-6">You Might Also Like</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {related.map(p => (
+            <ProductCard id={p.id} title={p.title} price={p.price} image={p.image} isNew={p.isNew} />
+          ))}
+        </div>
+      </div>
+    )}
+  </section>
+</Layout>
+
+<script is:inline define:vars={{ productData: JSON.stringify({ id: product.id, title: product.title, price: product.price, image: product.image }) }}>
+  (function() {
+    const product = JSON.parse(productData);
+    let qty = 1;
+    const qtyEl = document.getElementById('qty-value');
+
+    document.getElementById('qty-minus').addEventListener('click', () => {
+      if (qty > 1) { qty--; qtyEl.textContent = qty; }
+    });
+
+    document.getElementById('qty-plus').addEventListener('click', () => {
+      qty++;
+      qtyEl.textContent = qty;
+    });
+
+    document.getElementById('add-to-cart-btn').addEventListener('click', () => {
+      const cart = getCart();
+      const existing = cart.find(item => item.id === product.id);
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        cart.push({ ...product, qty });
+      }
+      saveCart(cart);
+      toggleCart(true);
+    });
+  })();
+</script>

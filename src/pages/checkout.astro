@@ -1,0 +1,134 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Checkout">
+  <section class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+    <h1 class="text-2xl font-semibold mb-8">Checkout</h1>
+
+    <div class="grid md:grid-cols-5 gap-8">
+      <!-- Form -->
+      <div class="md:col-span-3">
+        <form id="checkout-form" class="space-y-5">
+          <div>
+            <label for="name" class="block text-sm font-medium mb-1.5">Full Name</label>
+            <input type="text" id="name" name="name" required
+              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium mb-1.5">Email Address</label>
+            <input type="email" id="email" name="email" required
+              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
+          </div>
+          <div>
+            <label for="phone" class="block text-sm font-medium mb-1.5">Phone Number</label>
+            <input type="tel" id="phone" name="phone" required
+              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors" />
+          </div>
+          <div>
+            <label for="address" class="block text-sm font-medium mb-1.5">Shipping Address</label>
+            <textarea id="address" name="address" rows="3" required
+              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition-colors resize-none"
+              placeholder="Street, City, State, Postal Code, Country"></textarea>
+          </div>
+
+          <button type="submit" id="submit-btn"
+            class="w-full bg-primary text-white py-3 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium mt-4">
+            Place Order
+          </button>
+        </form>
+
+        <div id="order-success" class="hidden text-center py-12">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 class="text-xl font-semibold mb-2">Order Placed!</h2>
+          <p class="text-gray-500 text-sm mb-6">Thank you for your order. We'll send a receipt to your email shortly.</p>
+          <a href="/" class="inline-block text-sm border border-gray-200 rounded-full px-6 py-2 text-gray-600 hover:border-gray-400 transition-colors">
+            Continue Shopping
+          </a>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="md:col-span-2">
+        <div class="bg-gray-50 rounded-xl p-6 sticky top-24">
+          <h2 class="font-medium mb-4">Order Summary</h2>
+          <div id="checkout-items" class="space-y-3 mb-4"></div>
+          <div class="border-t border-gray-200 pt-4 space-y-2">
+            <div id="checkout-discount-row" class="flex justify-between text-sm text-green-600 hidden">
+              <span>Discount (20%)</span>
+              <span id="checkout-discount">-$0.00</span>
+            </div>
+            <div class="flex justify-between font-medium">
+              <span>Total</span>
+              <span id="checkout-total">$0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script is:inline>
+  (function() {
+    const cart = getCart();
+    const container = document.getElementById('checkout-items');
+    const totalEl = document.getElementById('checkout-total');
+    const discountRow = document.getElementById('checkout-discount-row');
+    const discountEl = document.getElementById('checkout-discount');
+
+    if (cart.length === 0) {
+      container.innerHTML = '<p class="text-sm text-gray-400">Your cart is empty.</p>';
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('submit-btn').classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+      let subtotal = 0;
+      container.innerHTML = cart.map(item => {
+        subtotal += item.price * item.qty;
+        return `
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">${item.title} × ${item.qty}</span>
+            <span>$${(item.price * item.qty).toFixed(2)}</span>
+          </div>`;
+      }).join('');
+
+      let discount = 0;
+      if (subtotal >= 50) {
+        discount = subtotal * 0.2;
+        discountRow.classList.remove('hidden');
+        discountEl.textContent = `-$${discount.toFixed(2)}`;
+      }
+      totalEl.textContent = `$${(subtotal - discount).toFixed(2)}`;
+    }
+
+    document.getElementById('checkout-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        items: cart,
+        subtotal: cart.reduce((s, i) => s + i.price * i.qty, 0),
+      };
+      formData.discount = formData.subtotal >= 50 ? formData.subtotal * 0.2 : 0;
+      formData.total = formData.subtotal - formData.discount;
+
+      const btn = document.getElementById('submit-btn');
+      btn.textContent = 'Placing order...';
+      btn.disabled = true;
+
+      // For now, simulate order placement (replace with Apps Script URL later)
+      setTimeout(() => {
+        localStorage.removeItem('paperain-cart');
+        updateCartCount();
+        document.getElementById('checkout-form').classList.add('hidden');
+        document.getElementById('order-success').classList.remove('hidden');
+      }, 1500);
+    });
+  })();
+</script>

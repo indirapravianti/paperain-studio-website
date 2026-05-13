@@ -1,0 +1,173 @@
+---
+import '../styles/global.css';
+import AnnouncementBar from '../components/AnnouncementBar.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+}
+
+const { title = 'Paperain Studio' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Paperain Studio - Cute stickers, keychains, griptoks, and more" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <title>{title} | Paperain Studio</title>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <AnnouncementBar />
+    <Navbar />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+
+    <div id="cart-drawer-overlay" class="fixed inset-0 bg-black/40 z-40 hidden" onclick="toggleCart()"></div>
+    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
+      <div class="flex items-center justify-between p-6 border-b border-gray-100">
+        <h2 class="text-lg font-semibold">Your Cart</h2>
+        <button onclick="toggleCart()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+      </div>
+      <div id="cart-items" class="flex-1 overflow-y-auto p-6">
+        <p class="text-gray-400 text-center py-12">Your cart is empty</p>
+      </div>
+      <div id="cart-footer" class="border-t border-gray-100 p-6 hidden">
+        <div id="cart-discount" class="text-sm text-green-600 mb-2 hidden"></div>
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-medium">Total</span>
+          <span id="cart-total" class="text-lg font-semibold">$0.00</span>
+        </div>
+        <a href="/checkout" class="block w-full bg-primary text-white text-center py-3 rounded-lg hover:bg-gray-800 transition-colors">Checkout</a>
+      </div>
+    </div>
+
+    <script is:inline>
+      function getCart() {
+        try { return JSON.parse(localStorage.getItem('paperain-cart') || '[]'); }
+        catch { return []; }
+      }
+
+      function saveCart(cart) {
+        localStorage.setItem('paperain-cart', JSON.stringify(cart));
+        updateCartUI();
+        updateCartCount();
+      }
+
+      function addToCart(product) {
+        const cart = getCart();
+        const existing = cart.find(item => item.id === product.id);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          cart.push({ ...product, qty: 1 });
+        }
+        saveCart(cart);
+        toggleCart(true);
+      }
+
+      function removeFromCart(id) {
+        const cart = getCart().filter(item => item.id !== id);
+        saveCart(cart);
+      }
+
+      function updateQty(id, delta) {
+        const cart = getCart();
+        const item = cart.find(i => i.id === id);
+        if (!item) return;
+        item.qty += delta;
+        if (item.qty <= 0) {
+          saveCart(cart.filter(i => i.id !== id));
+        } else {
+          saveCart(cart);
+        }
+      }
+
+      function toggleCart(forceOpen) {
+        const drawer = document.getElementById('cart-drawer');
+        const overlay = document.getElementById('cart-drawer-overlay');
+        const isOpen = !drawer.classList.contains('translate-x-full');
+        if (forceOpen === true || !isOpen) {
+          drawer.classList.remove('translate-x-full');
+          overlay.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+          updateCartUI();
+        } else {
+          drawer.classList.add('translate-x-full');
+          overlay.classList.add('hidden');
+          document.body.style.overflow = '';
+        }
+      }
+
+      function updateCartCount() {
+        const cart = getCart();
+        const count = cart.reduce((sum, item) => sum + item.qty, 0);
+        document.querySelectorAll('.cart-count').forEach(el => {
+          el.textContent = count;
+          el.style.display = count > 0 ? 'flex' : 'none';
+        });
+      }
+
+      function updateCartUI() {
+        const cart = getCart();
+        const container = document.getElementById('cart-items');
+        const footer = document.getElementById('cart-footer');
+        const totalEl = document.getElementById('cart-total');
+        const discountEl = document.getElementById('cart-discount');
+
+        if (cart.length === 0) {
+          container.innerHTML = '<p class="text-gray-400 text-center py-12">Your cart is empty</p>';
+          footer.classList.add('hidden');
+          return;
+        }
+
+        footer.classList.remove('hidden');
+        let subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+        let discount = 0;
+        if (subtotal >= 50) {
+          discount = subtotal * 0.2;
+        }
+        const total = subtotal - discount;
+
+        if (discount > 0) {
+          discountEl.classList.remove('hidden');
+          discountEl.textContent = `20% discount applied! You save $${discount.toFixed(2)}`;
+        } else {
+          discountEl.classList.add('hidden');
+          const remaining = 50 - subtotal;
+          if (remaining > 0 && remaining <= 20) {
+            discountEl.classList.remove('hidden');
+            discountEl.textContent = `Add $${remaining.toFixed(2)} more to get 20% off!`;
+            discountEl.className = 'text-sm text-amber-600 mb-2';
+          }
+        }
+
+        totalEl.textContent = `$${total.toFixed(2)}`;
+        container.innerHTML = cart.map(item => `
+          <div class="flex gap-4 py-4 border-b border-gray-50">
+            <img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded-lg" />
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium truncate">${item.title}</p>
+              <p class="text-sm text-gray-500">$${item.price.toFixed(2)}</p>
+              <div class="flex items-center gap-2 mt-1">
+                <button onclick="updateQty('${item.id}', -1)" class="w-6 h-6 rounded border border-gray-200 text-xs hover:bg-gray-50">−</button>
+                <span class="text-sm">${item.qty}</span>
+                <button onclick="updateQty('${item.id}', 1)" class="w-6 h-6 rounded border border-gray-200 text-xs hover:bg-gray-50">+</button>
+              </div>
+            </div>
+            <button onclick="removeFromCart('${item.id}')" class="text-gray-300 hover:text-red-400 text-lg self-start">&times;</button>
+          </div>
+        `).join('');
+      }
+
+      document.addEventListener('DOMContentLoaded', updateCartCount);
+    </script>
+  </body>
+</html>

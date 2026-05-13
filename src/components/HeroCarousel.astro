@@ -1,0 +1,90 @@
+---
+const slides = [
+  { src: '/images/hero/hero-1.jpg', alt: 'Paperain Studio Illustration Stickers' },
+  { src: '/images/hero/hero-2.jpg', alt: 'Paperain Studio Sticker Collection' },
+  { src: '/images/hero/hero-3.jpg', alt: 'Paperain Studio Alphabet Stickers' },
+  { src: '/images/hero/hero-4.png', alt: 'Paperain Studio Keychains' },
+  { src: '/images/hero/hero-5.jpg', alt: 'Paperain Studio Griptoks' },
+];
+---
+
+<div class="relative w-full overflow-hidden bg-gray-50" id="hero-carousel">
+  <div class="flex transition-transform duration-500 ease-in-out" id="carousel-track">
+    {slides.map((slide) => (
+      <div class="w-full flex-shrink-0">
+        <div class="aspect-[21/9] sm:aspect-[21/8] w-full">
+          <img src={slide.src} alt={slide.alt} class="w-full h-full object-cover" />
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Arrows -->
+  <button
+    id="carousel-prev"
+    class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-colors"
+    aria-label="Previous slide"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+  <button
+    id="carousel-next"
+    class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-md transition-colors"
+    aria-label="Next slide"
+  >
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+
+  <!-- Dots -->
+  <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+    {slides.map((_, i) => (
+      <button
+        class:list={['carousel-dot w-2 h-2 rounded-full transition-all', i === 0 ? 'bg-white w-6' : 'bg-white/50']}
+        data-index={i}
+        aria-label={`Go to slide ${i + 1}`}
+      />
+    ))}
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    const track = document.getElementById('carousel-track');
+    const dots = document.querySelectorAll('.carousel-dot');
+    const total = dots.length;
+    let current = 0;
+    let interval;
+
+    function goTo(index) {
+      current = ((index % total) + total) % total;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('bg-white', i === current);
+        dot.classList.toggle('w-6', i === current);
+        dot.classList.toggle('bg-white/50', i !== current);
+        dot.classList.toggle('w-2', i !== current);
+      });
+    }
+
+    function startAutoplay() {
+      interval = setInterval(() => goTo(current + 1), 5000);
+    }
+
+    function resetAutoplay() {
+      clearInterval(interval);
+      startAutoplay();
+    }
+
+    document.getElementById('carousel-prev').addEventListener('click', () => { goTo(current - 1); resetAutoplay(); });
+    document.getElementById('carousel-next').addEventListener('click', () => { goTo(current + 1); resetAutoplay(); });
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => { goTo(parseInt(dot.dataset.index)); resetAutoplay(); });
+    });
+
+    startAutoplay();
+  })();
+</script>

@@ -1,0 +1,86 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import products from '../data/products.json';
+
+const categories = [
+  { id: 'all', label: 'All' },
+  { id: 'sticker', label: 'Stickers' },
+  { id: 'keychain', label: 'Keychains' },
+  { id: 'griptok', label: 'Griptoks' },
+  { id: 'artprint', label: 'Art Prints & Cards' },
+  { id: 'postcard', label: 'Postcards' },
+  { id: 'phonestrap', label: 'Phone Straps' },
+];
+---
+
+<Layout title="Products">
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-semibold">All Products</h1>
+      <p class="text-sm text-gray-400 mt-2">Browse our full collection</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex flex-wrap justify-center gap-2 mb-10" id="filter-bar">
+      {categories.map(cat => (
+        <button
+          class:list={[
+            'filter-btn text-sm px-4 py-2 rounded-full border transition-colors',
+            cat.id === 'all' ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-600 hover:border-gray-400'
+          ]}
+          data-category={cat.id}
+        >
+          {cat.label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Products Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6" id="products-grid">
+      {products.map(product => (
+        <div class="product-item" data-category={product.category}>
+          <ProductCard
+            id={product.id}
+            title={product.title}
+            price={product.price}
+            image={product.image}
+            isNew={product.isNew}
+          />
+        </div>
+      ))}
+    </div>
+
+    <p id="no-results" class="hidden text-center text-gray-400 py-12">No products found in this category.</p>
+  </section>
+</Layout>
+
+<script is:inline>
+  (function() {
+    const buttons = document.querySelectorAll('.filter-btn');
+    const items = document.querySelectorAll('.product-item');
+    const noResults = document.getElementById('no-results');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cat = btn.dataset.category;
+
+        buttons.forEach(b => {
+          b.classList.remove('bg-primary', 'text-white', 'border-primary');
+          b.classList.add('border-gray-200', 'text-gray-600');
+        });
+        btn.classList.add('bg-primary', 'text-white', 'border-primary');
+        btn.classList.remove('border-gray-200', 'text-gray-600');
+
+        let visible = 0;
+        items.forEach(item => {
+          const show = cat === 'all' || item.dataset.category === cat;
+          item.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+
+        noResults.classList.toggle('hidden', visible > 0);
+      });
+    });
+  })();
+</script>
