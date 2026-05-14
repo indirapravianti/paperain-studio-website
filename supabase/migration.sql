@@ -46,11 +46,13 @@ create table public.orders (
   currency text not null default 'USD',
   subtotal numeric(12,2) not null,
   discount numeric(12,2) default 0,
+  shipping_fee numeric(12,2) default 0,
   total numeric(12,2) not null,
   shipping_name text not null,
   shipping_email text not null,
   shipping_phone text not null,
   shipping_address text not null,
+  shipping_country text,
   notes text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -109,6 +111,11 @@ create policy "Users can view own orders"
 create policy "Users can create own orders"
   on public.orders for insert
   with check (auth.uid() = customer_id);
+
+-- Users can cancel their own pending orders
+create policy "Users can cancel own pending orders"
+  on public.orders for update
+  using (auth.uid() = customer_id and status = 'pending');
 
 -- Order items: users can read items from their own orders
 create policy "Users can view own order items"

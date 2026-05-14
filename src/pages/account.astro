@@ -107,13 +107,13 @@ import Layout from '../layouts/Layout.astro';
           'apikey': SUPABASE_KEY,
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
-          'Prefer': options.prefer || 'return=representation',
+          'Prefer': options.method === 'PATCH' ? 'return=minimal' : 'return=representation',
           ...options.headers,
         },
         method: options.method || 'GET',
         body: options.body ? JSON.stringify(options.body) : undefined,
       });
-      if (options.method === 'PATCH' && res.ok) return res.json();
+      if (options.method === 'PATCH') return { ok: res.ok, status: res.status };
       return res.json();
     }
 
@@ -178,7 +178,7 @@ import Layout from '../layouts/Layout.astro';
       btn.disabled = true;
 
       try {
-        await sbFetch(`customers?id=eq.${user.id}`, {
+        const result = await sbFetch(`customers?id=eq.${user.id}`, {
           method: 'PATCH',
           body: {
             full_name: document.getElementById('pf-name').value,
@@ -187,8 +187,14 @@ import Layout from '../layouts/Layout.astro';
             updated_at: new Date().toISOString(),
           },
         });
-        msgEl.textContent = 'profile saved!';
-        msgEl.className = 'text-sm text-green-600';
+
+        if (result.ok || result.status === 204) {
+          msgEl.textContent = 'profile saved!';
+          msgEl.className = 'text-sm text-green-600';
+        } else {
+          msgEl.textContent = 'could not save profile. please try again.';
+          msgEl.className = 'text-sm text-red-500';
+        }
         msgEl.classList.remove('hidden');
       } catch {
         msgEl.textContent = 'could not save profile.';
@@ -237,14 +243,17 @@ import Layout from '../layouts/Layout.astro';
             year: 'numeric', month: 'short', day: 'numeric'
           });
 
-          const symbol = order.currency === 'IDR' ? 'Rp' : '$';
           const formatAmt = (val) => {
             if (order.currency === 'IDR') return 'Rp' + Math.round(val).toLocaleString('id-ID');
             return '$' + Number(val).toFixed(2);
           };
 
+          const itemCount = (order.order_items || []).reduce((s, i) => s + i.quantity, 0);
+          const firstItems = (order.order_items || []).slice(0, 3);
+          const moreCount = (order.order_items || []).length - 3;
+
           return `
-            <div class="border border-gray-100 rounded-xl p-5">
+            <a href="/account/order?id=${order.id}" class="block border border-gray-100 rounded-xl p-5 hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer">
               <div class="flex items-center justify-between mb-3">
                 <div>
                   <p class="text-sm font-medium">${date}</p>
@@ -253,7 +262,7 @@ import Layout from '../layouts/Layout.astro';
                 <span class="text-xs px-2.5 py-1 rounded-full font-medium ${statusClass}">${order.status}</span>
               </div>
               <div class="space-y-2 mb-3">
-                ${(order.order_items || []).map(item => `
+                ${firstItems.map(item => `
                   <div class="flex items-center gap-3">
                     <img src="${item.image}" alt="${item.title}" class="w-10 h-10 rounded object-cover" />
                     <div class="flex-1 min-w-0">
@@ -263,12 +272,18 @@ import Layout from '../layouts/Layout.astro';
                     <p class="text-sm">${formatAmt(item.price * item.quantity)}</p>
                   </div>
                 `).join('')}
+                ${moreCount > 0 ? `<p class="text-xs text-gray-400 pl-13">+ ${moreCount} more item${moreCount > 1 ? 's' : ''}</p>` : ''}
               </div>
               <div class="border-t border-gray-50 pt-3 flex justify-between items-center">
-                <span class="text-sm text-gray-500">total</span>
-                <span class="text-sm font-medium">${formatAmt(order.total)}</span>
+                <span class="text-sm text-gray-500">${itemCount} item${itemCount > 1 ? 's' : ''} · total</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium">${formatAmt(order.total)}</span>
+                  <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
-            </div>
+            </a>
           `;
         }).join('');
       } catch {

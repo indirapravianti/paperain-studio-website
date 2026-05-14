@@ -1,0 +1,291 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="order detail">
+  <section class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+    <div id="order-loading" class="text-center py-20">
+      <p class="text-gray-400">loading order...</p>
+    </div>
+
+    <div id="order-error" class="hidden text-center py-20">
+      <h1 class="text-2xl font-semibold mb-4">order not found</h1>
+      <p class="text-gray-500 text-sm mb-4">this order doesn't exist or you don't have access to it.</p>
+      <a href="/account" class="text-sm text-primary hover:underline">back to my account</a>
+    </div>
+
+    <div id="order-detail" class="hidden">
+      <!-- Back link -->
+      <a href="/account" class="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-primary mb-6">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        back to my account
+      </a>
+
+      <!-- Header -->
+      <div class="flex items-start justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-semibold">order detail</h1>
+          <p class="text-xs text-gray-400 mt-1" id="od-id"></p>
+        </div>
+        <span id="od-status" class="text-xs px-3 py-1.5 rounded-full font-medium"></span>
+      </div>
+
+      <!-- Date -->
+      <div class="bg-gray-50 rounded-xl p-5 mb-6">
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p class="text-gray-400 text-xs mb-1">date</p>
+            <p id="od-date" class="font-medium"></p>
+          </div>
+          <div>
+            <p class="text-gray-400 text-xs mb-1">currency</p>
+            <p id="od-currency" class="font-medium"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items -->
+      <div class="mb-6">
+        <h2 class="text-sm font-medium mb-3">items</h2>
+        <div id="od-items" class="border border-gray-100 rounded-xl divide-y divide-gray-50"></div>
+      </div>
+
+      <!-- Price Breakdown -->
+      <div class="border border-gray-100 rounded-xl p-5 mb-6">
+        <h2 class="text-sm font-medium mb-3">price breakdown</h2>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-500">subtotal</span>
+            <span id="od-subtotal"></span>
+          </div>
+          <div id="od-discount-row" class="flex justify-between text-green-600 hidden">
+            <span>discount (20%)</span>
+            <span id="od-discount"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-500">shipping fee</span>
+            <span id="od-shipping"></span>
+          </div>
+          <div class="flex justify-between font-medium text-base border-t border-gray-100 pt-2 mt-2">
+            <span>total</span>
+            <span id="od-total"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shipping Info -->
+      <div class="border border-gray-100 rounded-xl p-5 mb-6">
+        <h2 class="text-sm font-medium mb-3">shipping information</h2>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-400">name</span>
+            <span id="od-name"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">email</span>
+            <span id="od-email"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">phone</span>
+            <span id="od-phone"></span>
+          </div>
+          <div>
+            <p class="text-gray-400 mb-1">address</p>
+            <p id="od-address" class="whitespace-pre-line"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div id="od-notes-section" class="border border-gray-100 rounded-xl p-5 mb-6 hidden">
+        <h2 class="text-sm font-medium mb-2">order notes</h2>
+        <p id="od-notes" class="text-sm text-gray-600"></p>
+      </div>
+
+      <!-- Cancel Button -->
+      <div id="od-cancel-section" class="hidden">
+        <button id="od-cancel-btn"
+          class="w-full border border-red-200 text-red-500 py-3 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium">
+          cancel order
+        </button>
+        <p class="text-xs text-gray-400 text-center mt-2">you can only cancel orders that are still pending.</p>
+      </div>
+
+      <!-- Cancel confirmation modal -->
+      <div id="cancel-modal" class="fixed inset-0 bg-black/40 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl p-6 max-w-sm w-full">
+          <h3 class="text-lg font-semibold mb-2">cancel this order?</h3>
+          <p class="text-sm text-gray-500 mb-6">this action cannot be undone. your order will be cancelled.</p>
+          <div class="flex gap-3">
+            <button id="cancel-no" class="flex-1 border border-gray-200 py-2.5 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+              keep order
+            </button>
+            <button id="cancel-yes" class="flex-1 bg-red-500 text-white py-2.5 rounded-lg text-sm hover:bg-red-600 transition-colors">
+              yes, cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script is:inline>
+  (function() {
+    const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
+    const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content;
+
+    function getUser() {
+      try { return JSON.parse(localStorage.getItem('sb-user')); } catch { return null; }
+    }
+    function getToken() { return localStorage.getItem('sb-access-token'); }
+
+    const user = getUser();
+    const token = getToken();
+
+    if (!user || !token || !SUPABASE_URL || !SUPABASE_KEY) {
+      document.getElementById('order-loading').classList.add('hidden');
+      document.getElementById('order-error').classList.remove('hidden');
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('id');
+
+    if (!orderId) {
+      document.getElementById('order-loading').classList.add('hidden');
+      document.getElementById('order-error').classList.remove('hidden');
+      return;
+    }
+
+    async function loadOrder() {
+      try {
+        const res = await fetch(
+          `${SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}&select=*,order_items(*)`,
+          {
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': 'Bearer ' + token,
+            },
+          }
+        );
+        const data = await res.json();
+
+        if (!data || data.length === 0) {
+          document.getElementById('order-loading').classList.add('hidden');
+          document.getElementById('order-error').classList.remove('hidden');
+          return;
+        }
+
+        const order = data[0];
+        document.getElementById('order-loading').classList.add('hidden');
+        document.getElementById('order-detail').classList.remove('hidden');
+
+        const statusColors = {
+          pending: 'bg-yellow-100 text-yellow-700',
+          confirmed: 'bg-blue-100 text-blue-700',
+          shipped: 'bg-purple-100 text-purple-700',
+          delivered: 'bg-green-100 text-green-700',
+          cancelled: 'bg-red-100 text-red-700',
+        };
+
+        const fmt = (val) => {
+          if (order.currency === 'IDR') return 'Rp' + Math.round(Number(val)).toLocaleString('id-ID');
+          return '$' + Number(val).toFixed(2);
+        };
+
+        // Header
+        document.getElementById('od-id').textContent = 'order id: ' + order.id;
+        const statusEl = document.getElementById('od-status');
+        statusEl.textContent = order.status;
+        statusEl.className = 'text-xs px-3 py-1.5 rounded-full font-medium ' + (statusColors[order.status] || 'bg-gray-100 text-gray-700');
+
+        // Date
+        const date = new Date(order.created_at);
+        document.getElementById('od-date').textContent = date.toLocaleDateString('en-US', {
+          year: 'numeric', month: 'long', day: 'numeric',
+          hour: '2-digit', minute: '2-digit',
+        });
+        document.getElementById('od-currency').textContent = order.currency;
+
+        // Items
+        const itemsEl = document.getElementById('od-items');
+        itemsEl.innerHTML = (order.order_items || []).map(item => `
+          <div class="flex items-center gap-4 p-4">
+            <img src="${item.image || ''}" alt="${item.title}" class="w-14 h-14 rounded-lg object-cover" />
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium truncate">${item.title}</p>
+              <p class="text-xs text-gray-400 mt-0.5">qty: ${item.quantity} × ${fmt(item.price)}</p>
+            </div>
+            <p class="text-sm font-medium">${fmt(item.price * item.quantity)}</p>
+          </div>
+        `).join('');
+
+        // Price breakdown
+        document.getElementById('od-subtotal').textContent = fmt(order.subtotal);
+        if (Number(order.discount) > 0) {
+          document.getElementById('od-discount-row').classList.remove('hidden');
+          document.getElementById('od-discount').textContent = '-' + fmt(order.discount);
+        }
+        document.getElementById('od-shipping').textContent = Number(order.shipping_fee) > 0 ? fmt(order.shipping_fee) : 'free';
+        document.getElementById('od-total').textContent = fmt(order.total);
+
+        // Shipping info
+        document.getElementById('od-name').textContent = order.shipping_name;
+        document.getElementById('od-email').textContent = order.shipping_email;
+        document.getElementById('od-phone').textContent = order.shipping_phone;
+        document.getElementById('od-address').textContent = order.shipping_address;
+
+        // Notes
+        if (order.notes) {
+          document.getElementById('od-notes-section').classList.remove('hidden');
+          document.getElementById('od-notes').textContent = order.notes;
+        }
+
+        // Cancel button (only for pending orders)
+        if (order.status === 'pending') {
+          document.getElementById('od-cancel-section').classList.remove('hidden');
+
+          document.getElementById('od-cancel-btn').addEventListener('click', () => {
+            document.getElementById('cancel-modal').classList.remove('hidden');
+          });
+
+          document.getElementById('cancel-no').addEventListener('click', () => {
+            document.getElementById('cancel-modal').classList.add('hidden');
+          });
+
+          document.getElementById('cancel-yes').addEventListener('click', async () => {
+            const cancelBtn = document.getElementById('cancel-yes');
+            cancelBtn.textContent = 'cancelling...';
+            cancelBtn.disabled = true;
+
+            try {
+              await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}`, {
+                method: 'PATCH',
+                headers: {
+                  'apikey': SUPABASE_KEY,
+                  'Authorization': 'Bearer ' + token,
+                  'Content-Type': 'application/json',
+                  'Prefer': 'return=minimal',
+                },
+                body: JSON.stringify({ status: 'cancelled', updated_at: new Date().toISOString() }),
+              });
+              window.location.reload();
+            } catch {
+              cancelBtn.textContent = 'yes, cancel';
+              cancelBtn.disabled = false;
+              document.getElementById('cancel-modal').classList.add('hidden');
+            }
+          });
+        }
+      } catch {
+        document.getElementById('order-loading').classList.add('hidden');
+        document.getElementById('order-error').classList.remove('hidden');
+      }
+    }
+
+    loadOrder();
+  })();
+</script>

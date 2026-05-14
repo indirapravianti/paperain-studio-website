@@ -235,9 +235,20 @@ import Layout from '../../layouts/Layout.astro';
               `).join('')}
             </div>
 
-            <div class="border-t border-gray-50 pt-3 flex justify-between text-sm">
-              ${order.discount > 0 ? `<span class="text-green-600">discount: -${fmtAmt(order.discount)}</span>` : '<span></span>'}
-              <span class="font-medium">total: ${fmtAmt(order.total)} (${order.currency})</span>
+            <div class="border-t border-gray-50 pt-3 space-y-1 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-400">subtotal</span>
+                <span>${fmtAmt(order.subtotal)}</span>
+              </div>
+              ${Number(order.discount) > 0 ? `<div class="flex justify-between text-green-600"><span>discount</span><span>-${fmtAmt(order.discount)}</span></div>` : ''}
+              <div class="flex justify-between">
+                <span class="text-gray-400">shipping ${order.shipping_country ? '(' + order.shipping_country + ')' : ''}</span>
+                <span>${Number(order.shipping_fee) > 0 ? fmtAmt(order.shipping_fee) : 'free'}</span>
+              </div>
+              <div class="flex justify-between font-medium border-t border-gray-50 pt-1">
+                <span>total (${order.currency})</span>
+                <span>${fmtAmt(order.total)}</span>
+              </div>
             </div>
           </div>
         `;
