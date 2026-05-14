@@ -27,6 +27,8 @@ const categoryLabels: Record<string, string> = {
 };
 
 const hasVariants = product.variants && product.variants.length > 0;
+const productImages = product.images && product.images.length > 0 ? product.images : [product.image];
+const hasMultipleImages = productImages.length > 1;
 ---
 
 <Layout title={product.title}>
@@ -41,9 +43,26 @@ const hasVariants = product.variants && product.variants.length > 0;
     </nav>
 
     <div class="grid md:grid-cols-2 gap-8 lg:gap-12">
-      <!-- Image -->
-      <div class="aspect-square rounded-2xl overflow-hidden bg-gray-50">
-        <img id="product-image" src={product.image} alt={product.title} class="w-full h-full object-cover" />
+      <!-- Image Gallery -->
+      <div>
+        <div class="aspect-square rounded-2xl overflow-hidden bg-gray-50">
+          <img id="product-image" src={product.image} alt={product.title} class="w-full h-full object-cover" />
+        </div>
+        {hasMultipleImages && (
+          <div class="flex gap-3 mt-3" id="image-thumbnails">
+            {productImages.map((img: string, index: number) => (
+              <button
+                class:list={[
+                  'thumb-btn w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all',
+                  index === 0 ? 'border-primary' : 'border-transparent hover:border-gray-300'
+                ]}
+                data-image={img}
+              >
+                <img src={img} alt={`${product.title} ${index + 1}`} class="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <!-- Details -->
@@ -91,7 +110,7 @@ const hasVariants = product.variants && product.variants.length > 0;
           </div>
           <button
             id="add-to-cart-btn"
-            class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+            class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-primary/80 transition-colors text-sm font-medium"
           >
             Add to Cart
           </button>
@@ -139,6 +158,21 @@ const hasVariants = product.variants && product.variants.length > 0;
       qtyEl.textContent = qty;
     });
 
+    // Image thumbnails
+    const thumbBtns = document.querySelectorAll('.thumb-btn');
+    thumbBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        thumbBtns.forEach(b => {
+          b.classList.remove('border-primary');
+          b.classList.add('border-transparent');
+        });
+        btn.classList.add('border-primary');
+        btn.classList.remove('border-transparent');
+        productImage.src = btn.dataset.image;
+      });
+    });
+
+    // Variant buttons
     const variantBtns = document.querySelectorAll('.variant-btn');
     variantBtns.forEach(btn => {
       btn.addEventListener('click', () => {
