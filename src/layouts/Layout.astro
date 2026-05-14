@@ -266,7 +266,65 @@ const { title = 'paperain studio' } = Astro.props;
         `).join('');
       }
 
+      // Auth: token refresh + auto-logout on expiry
+      function parseJwt(token) {
+        try {
+          var base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+          return JSON.parse(atob(base64));
+        } catch { return null; }
+      }
+
+      function isTokenExpired(token) {
+        if (!token) return true;
+        var payload = parseJwt(token);
+        if (!payload || !payload.exp) return true;
+        return Date.now() >= payload.exp * 1000;
+      }
+
+      async function tryRefreshToken() {
+        var SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
+        var SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content;
+        var refreshToken = localStorage.getItem('sb-refresh-token');
+        if (!SUPABASE_URL || !SUPABASE_KEY || !refreshToken) return false;
+        try {
+          var res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+            body: JSON.stringify({ refresh_token: refreshToken }),
+          });
+          if (!res.ok) return false;
+          var data = await res.json();
+          localStorage.setItem('sb-access-token', data.access_token);
+          localStorage.setItem('sb-refresh-token', data.refresh_token);
+          localStorage.setItem('sb-user', JSON.stringify(data.user));
+          return true;
+        } catch { return false; }
+      }
+
+      function doLogout() {
+        localStorage.removeItem('sb-access-token');
+        localStorage.removeItem('sb-refresh-token');
+        localStorage.removeItem('sb-user');
+      }
+
+      async function checkAuth() {
+        var token = localStorage.getItem('sb-access-token');
+        if (!token) return;
+        if (isTokenExpired(token)) {
+          var refreshed = await tryRefreshToken();
+          if (!refreshed) {
+            doLogout();
+            var isProtected = window.location.pathname.startsWith('/account') ||
+                              window.location.pathname.startsWith('/admin');
+            if (isProtected) {
+              window.location.href = '/auth/signin';
+            }
+          }
+        }
+      }
+
       document.addEventListener('DOMContentLoaded', function() {
+        checkAuth();
         updateCartCount();
         updateAllPrices();
       });

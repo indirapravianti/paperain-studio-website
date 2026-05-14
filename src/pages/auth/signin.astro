@@ -69,7 +69,13 @@ import Layout from '../../layouts/Layout.astro';
         const data = await res.json();
 
         if (!res.ok) {
-          throw new Error(data.error_description || data.msg || 'Invalid email or password');
+          var code = data.error || '';
+          if (code === 'invalid_grant' || res.status === 400) {
+            throw new Error('incorrect email or password. please try again.');
+          } else if (res.status === 429) {
+            throw new Error('too many attempts. please wait a moment and try again.');
+          }
+          throw new Error('something went wrong. please try again later.');
         }
 
         localStorage.setItem('sb-access-token', data.access_token);

@@ -41,6 +41,7 @@ create table public.customers (
 -- 4. Orders
 create table public.orders (
   id uuid primary key default gen_random_uuid(),
+  display_id text unique,
   customer_id uuid references public.customers(id),
   status text not null default 'pending',
   currency text not null default 'USD',
@@ -57,6 +58,24 @@ create table public.orders (
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
+
+-- Auto-generate readable order ID: INV/YYYYMMDD/PS/XXXXXXXX
+create or replace function public.generate_display_id()
+returns trigger as $$
+declare
+  date_part text;
+  rand_part text;
+begin
+  date_part := to_char(now(), 'YYYYMMDD');
+  rand_part := lpad(floor(random() * 100000000)::text, 8, '0');
+  new.display_id := 'INV/' || date_part || '/PS/' || rand_part;
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger set_display_id
+  before insert on public.orders
+  for each row execute function public.generate_display_id();
 
 -- 5. Order line items
 create table public.order_items (

@@ -333,8 +333,11 @@ import Layout from '../layouts/Layout.astro';
         });
 
         if (!orderRes.ok) {
-          const err = await orderRes.json();
-          throw new Error(err.message || 'Could not place order');
+          var status = orderRes.status;
+          if (status === 401 || status === 403) {
+            throw new Error('session');
+          }
+          throw new Error('order_failed');
         }
 
         const [order] = await orderRes.json();
@@ -349,24 +352,38 @@ import Layout from '../layouts/Layout.astro';
           image: item.image,
         }));
 
-        await fetch(`${SUPABASE_URL}/rest/v1/order_items`, {
+        const itemsRes = await fetch(`${SUPABASE_URL}/rest/v1/order_items`, {
           method: 'POST',
           headers,
           body: JSON.stringify(itemRows),
         });
+
+        if (!itemsRes.ok) {
+          throw new Error('items_failed');
+        }
 
         localStorage.removeItem('paperain-cart');
         updateCartCount();
         document.getElementById('checkout-form').classList.add('hidden');
         document.getElementById('auth-notice')?.classList.add('hidden');
         document.getElementById('order-success').classList.remove('hidden');
-        document.getElementById('order-id-display').textContent = 'order id: ' + order.id.slice(0, 8) + '...';
+        document.getElementById('order-id-display').textContent = order.display_id
+          ? order.display_id
+          : ('order #' + order.id.slice(0, 8));
 
         if (user) {
           document.getElementById('view-orders-link').classList.remove('hidden');
         }
       } catch (err) {
-        errorEl.textContent = err.message || 'something went wrong. please try again.';
+        var msg = 'something went wrong. please try again later.';
+        if (err.message === 'session') {
+          msg = 'your session has expired. please sign in again to place your order.';
+        } else if (err.message === 'order_failed') {
+          msg = 'we couldn\'t process your order right now. please try again in a moment.';
+        } else if (err.message === 'items_failed') {
+          msg = 'your order was created but we had trouble saving the items. please contact us.';
+        }
+        errorEl.textContent = msg;
         errorEl.classList.remove('hidden');
         btn.textContent = 'place order';
         btn.disabled = false;

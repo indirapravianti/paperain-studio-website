@@ -83,7 +83,16 @@ import Layout from '../../layouts/Layout.astro';
         const data = await res.json();
 
         if (!res.ok) {
-          throw new Error(data.error_description || data.msg || 'Could not create account');
+          var code = data.error_code || data.error || '';
+          var msg = data.msg || '';
+          if (res.status === 422 || msg.toLowerCase().includes('already registered')) {
+            throw new Error('this email is already registered. try signing in instead.');
+          } else if (res.status === 429) {
+            throw new Error('too many attempts. please wait a moment and try again.');
+          } else if (code === 'weak_password') {
+            throw new Error('password is too weak. please use at least 6 characters.');
+          }
+          throw new Error('we couldn\'t create your account right now. please try again later.');
         }
 
         if (data.access_token) {
@@ -92,7 +101,7 @@ import Layout from '../../layouts/Layout.astro';
           localStorage.setItem('sb-user', JSON.stringify(data.user));
           window.location.href = '/account';
         } else {
-          successEl.textContent = 'Account created! Please check your email to confirm, then sign in.';
+          successEl.textContent = 'account created! check your email to confirm, then sign in.';
           successEl.classList.remove('hidden');
           form.reset();
           btn.textContent = 'sign up';

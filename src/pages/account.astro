@@ -257,7 +257,7 @@ import Layout from '../layouts/Layout.astro';
               <div class="flex items-center justify-between mb-3">
                 <div>
                   <p class="text-sm font-medium">${date}</p>
-                  <p class="text-xs text-gray-400 mt-0.5">${order.id.slice(0, 8)}...</p>
+                  <p class="text-xs text-gray-400 mt-0.5">${order.display_id || order.id.slice(0, 8)}</p>
                 </div>
                 <span class="text-xs px-2.5 py-1 rounded-full font-medium ${statusClass}">${order.status}</span>
               </div>

@@ -207,7 +207,7 @@ import Layout from '../../layouts/Layout.astro';
                 <p class="text-sm font-medium">${order.shipping_name}</p>
                 <p class="text-xs text-gray-400">${order.shipping_email} · ${order.shipping_phone}</p>
                 <p class="text-xs text-gray-400 mt-1">${date}</p>
-                <p class="text-xs text-gray-300 mt-0.5">id: ${order.id}</p>
+                <p class="text-xs text-gray-300 mt-0.5">${order.display_id || order.id.slice(0, 8)}</p>
               </div>
               <div class="flex items-center gap-2">
                 <span class="text-xs px-2.5 py-1 rounded-full font-medium ${statusClass}">${order.status}</span>

@@ -197,7 +197,7 @@ import Layout from '../../layouts/Layout.astro';
         };
 
         // Header
-        document.getElementById('od-id').textContent = 'order id: ' + order.id;
+        document.getElementById('od-id').textContent = order.display_id || ('order #' + order.id.slice(0, 8));
         const statusEl = document.getElementById('od-status');
         statusEl.textContent = order.status;
         statusEl.className = 'text-xs px-3 py-1.5 rounded-full font-medium ' + (statusColors[order.status] || 'bg-gray-100 text-gray-700');
