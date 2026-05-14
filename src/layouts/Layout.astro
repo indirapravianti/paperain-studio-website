@@ -22,6 +22,8 @@ const { title = 'paperain studio' } = Astro.props;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&family=Zalando+Sans+SemiExpanded:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
+    <meta name="supabase-url" content={import.meta.env.PUBLIC_SUPABASE_URL || ''} />
+    <meta name="supabase-key" content={import.meta.env.PUBLIC_SUPABASE_ANON_KEY || ''} />
     <title>{title} | paperain studio</title>
   </head>
   <body class="min-h-screen flex flex-col">

@@ -1,0 +1,109 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="sign up">
+  <section class="max-w-md mx-auto px-4 py-16">
+    <div class="text-center mb-8">
+      <h1 class="text-2xl font-semibold">create account</h1>
+      <p class="text-sm text-gray-500 mt-2">join paperain studio</p>
+    </div>
+
+    <form id="signup-form" class="space-y-4">
+      <div>
+        <label for="fullname" class="block text-sm font-medium mb-1.5">full name</label>
+        <input type="text" id="fullname" required
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
+      </div>
+      <div>
+        <label for="email" class="block text-sm font-medium mb-1.5">email</label>
+        <input type="email" id="email" required
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium mb-1.5">password</label>
+        <input type="password" id="password" required minlength="6"
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
+          placeholder="at least 6 characters" />
+      </div>
+
+      <div id="auth-error" class="text-sm text-red-500 hidden"></div>
+      <div id="auth-success" class="text-sm text-green-600 hidden"></div>
+
+      <button type="submit" id="submit-btn"
+        class="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/80 transition-colors text-sm font-medium">
+        sign up
+      </button>
+    </form>
+
+    <p class="text-sm text-center text-gray-500 mt-6">
+      already have an account?
+      <a href="/auth/signin" class="text-primary hover:underline">sign in</a>
+    </p>
+  </section>
+</Layout>
+
+<script is:inline>
+  (function() {
+    const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
+    const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content;
+
+    if (!SUPABASE_URL || !SUPABASE_KEY) return;
+
+    const form = document.getElementById('signup-form');
+    const errorEl = document.getElementById('auth-error');
+    const successEl = document.getElementById('auth-success');
+    const btn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.classList.add('hidden');
+      successEl.classList.add('hidden');
+      btn.textContent = 'creating account...';
+      btn.disabled = true;
+
+      const fullname = document.getElementById('fullname').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_KEY,
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            data: { full_name: fullname },
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error_description || data.msg || 'Could not create account');
+        }
+
+        if (data.access_token) {
+          localStorage.setItem('sb-access-token', data.access_token);
+          localStorage.setItem('sb-refresh-token', data.refresh_token);
+          localStorage.setItem('sb-user', JSON.stringify(data.user));
+          window.location.href = '/account';
+        } else {
+          successEl.textContent = 'Account created! Please check your email to confirm, then sign in.';
+          successEl.classList.remove('hidden');
+          form.reset();
+          btn.textContent = 'sign up';
+          btn.disabled = false;
+        }
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.classList.remove('hidden');
+        btn.textContent = 'sign up';
+        btn.disabled = false;
+      }
+    });
+  })();
+</script>

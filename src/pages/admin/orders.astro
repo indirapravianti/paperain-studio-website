@@ -1,0 +1,255 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="admin - orders">
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+    <div id="admin-loading" class="text-center py-20">
+      <p class="text-gray-400">verifying access...</p>
+    </div>
+
+    <div id="admin-denied" class="hidden text-center py-20">
+      <h1 class="text-2xl font-semibold mb-4">access denied</h1>
+      <p class="text-gray-500 text-sm">you need admin access to view this page.</p>
+      <a href="/auth/signin" class="inline-block mt-4 text-sm text-primary hover:underline">sign in</a>
+    </div>
+
+    <div id="admin-main" class="hidden">
+      <div class="flex items-center justify-between mb-8">
+        <h1 class="text-2xl font-semibold">order management</h1>
+        <div class="flex items-center gap-3">
+          <select id="status-filter" class="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none">
+            <option value="all">all statuses</option>
+            <option value="pending" selected>pending</option>
+            <option value="confirmed">confirmed</option>
+            <option value="shipped">shipped</option>
+            <option value="delivered">delivered</option>
+            <option value="cancelled">cancelled</option>
+          </select>
+          <button id="refresh-btn" class="text-sm border border-gray-200 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors">
+            refresh
+          </button>
+        </div>
+      </div>
+
+      <div id="orders-stats" class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
+        <div class="bg-yellow-50 rounded-lg p-4 text-center">
+          <p class="text-2xl font-semibold text-yellow-700" id="stat-pending">-</p>
+          <p class="text-xs text-yellow-600 mt-1">pending</p>
+        </div>
+        <div class="bg-blue-50 rounded-lg p-4 text-center">
+          <p class="text-2xl font-semibold text-blue-700" id="stat-confirmed">-</p>
+          <p class="text-xs text-blue-600 mt-1">confirmed</p>
+        </div>
+        <div class="bg-purple-50 rounded-lg p-4 text-center">
+          <p class="text-2xl font-semibold text-purple-700" id="stat-shipped">-</p>
+          <p class="text-xs text-purple-600 mt-1">shipped</p>
+        </div>
+        <div class="bg-green-50 rounded-lg p-4 text-center">
+          <p class="text-2xl font-semibold text-green-700" id="stat-delivered">-</p>
+          <p class="text-xs text-green-600 mt-1">delivered</p>
+        </div>
+        <div class="bg-red-50 rounded-lg p-4 text-center">
+          <p class="text-2xl font-semibold text-red-700" id="stat-cancelled">-</p>
+          <p class="text-xs text-red-600 mt-1">cancelled</p>
+        </div>
+      </div>
+
+      <div id="admin-orders-list" class="space-y-4"></div>
+      <div id="admin-orders-empty" class="hidden text-center py-12">
+        <p class="text-gray-400 text-sm">no orders found.</p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script is:inline>
+  (function() {
+    const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
+    const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content;
+
+    const loadingEl = document.getElementById('admin-loading');
+    const deniedEl = document.getElementById('admin-denied');
+    const mainEl = document.getElementById('admin-main');
+
+    function getUser() {
+      try { return JSON.parse(localStorage.getItem('sb-user')); } catch { return null; }
+    }
+    function getToken() { return localStorage.getItem('sb-access-token'); }
+
+    const user = getUser();
+    const token = getToken();
+
+    // Admin check: verify user has admin role via app_metadata
+    async function checkAdmin() {
+      if (!user || !token || !SUPABASE_URL || !SUPABASE_KEY) {
+        loadingEl.classList.add('hidden');
+        deniedEl.classList.remove('hidden');
+        return false;
+      }
+
+      // Check if user email matches admin email stored in Supabase
+      // For simplicity, we check app_metadata.role = 'admin' set via Supabase dashboard
+      const isAdmin = user.app_metadata?.role === 'admin' ||
+                      user.user_metadata?.role === 'admin' ||
+                      user.role === 'admin';
+
+      if (!isAdmin) {
+        // Fallback: try refreshing user data from token
+        try {
+          const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token },
+          });
+          const freshUser = await res.json();
+          if (freshUser.app_metadata?.role === 'admin') {
+            localStorage.setItem('sb-user', JSON.stringify(freshUser));
+            loadingEl.classList.add('hidden');
+            mainEl.classList.remove('hidden');
+            return true;
+          }
+        } catch {}
+        loadingEl.classList.add('hidden');
+        deniedEl.classList.remove('hidden');
+        return false;
+      }
+
+      loadingEl.classList.add('hidden');
+      mainEl.classList.remove('hidden');
+      return true;
+    }
+
+    async function adminFetch(path) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+        },
+      });
+      return res.json();
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+      await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify({ status: newStatus, updated_at: new Date().toISOString() }),
+      });
+      loadOrders();
+    }
+
+    // Make updateOrderStatus global for inline onclick
+    window.adminUpdateStatus = updateOrderStatus;
+
+    async function loadOrders() {
+      const listEl = document.getElementById('admin-orders-list');
+      const emptyEl = document.getElementById('admin-orders-empty');
+      const filter = document.getElementById('status-filter').value;
+
+      let query = `orders?select=*,order_items(*)&order=created_at.desc`;
+      if (filter !== 'all') {
+        query += `&status=eq.${filter}`;
+      }
+
+      const orders = await adminFetch(query);
+
+      // Stats
+      const allOrders = await adminFetch('orders?select=id,status');
+      const counts = { pending: 0, confirmed: 0, shipped: 0, delivered: 0, cancelled: 0 };
+      allOrders.forEach(o => { if (counts[o.status] !== undefined) counts[o.status]++; });
+      Object.keys(counts).forEach(s => {
+        const el = document.getElementById('stat-' + s);
+        if (el) el.textContent = counts[s];
+      });
+
+      if (!orders || orders.length === 0) {
+        listEl.innerHTML = '';
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+
+      emptyEl.classList.add('hidden');
+
+      const statusOptions = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+      const statusColors = {
+        pending: 'bg-yellow-100 text-yellow-700',
+        confirmed: 'bg-blue-100 text-blue-700',
+        shipped: 'bg-purple-100 text-purple-700',
+        delivered: 'bg-green-100 text-green-700',
+        cancelled: 'bg-red-100 text-red-700',
+      };
+
+      listEl.innerHTML = orders.map(order => {
+        const date = new Date(order.created_at).toLocaleDateString('en-US', {
+          year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+
+        const fmtAmt = (val) => {
+          if (order.currency === 'IDR') return 'Rp' + Math.round(val).toLocaleString('id-ID');
+          return '$' + Number(val).toFixed(2);
+        };
+
+        const statusClass = statusColors[order.status] || 'bg-gray-100 text-gray-700';
+
+        const statusSelect = statusOptions.map(s =>
+          `<option value="${s}" ${s === order.status ? 'selected' : ''}>${s}</option>`
+        ).join('');
+
+        return `
+          <div class="border border-gray-100 rounded-xl p-5">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
+              <div>
+                <p class="text-sm font-medium">${order.shipping_name}</p>
+                <p class="text-xs text-gray-400">${order.shipping_email} · ${order.shipping_phone}</p>
+                <p class="text-xs text-gray-400 mt-1">${date}</p>
+                <p class="text-xs text-gray-300 mt-0.5">id: ${order.id}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs px-2.5 py-1 rounded-full font-medium ${statusClass}">${order.status}</span>
+                <select onchange="adminUpdateStatus('${order.id}', this.value)"
+                  class="text-xs border border-gray-200 rounded px-2 py-1">
+                  ${statusSelect}
+                </select>
+              </div>
+            </div>
+
+            <div class="text-xs text-gray-500 mb-3 bg-gray-50 rounded-lg p-3">
+              <p class="font-medium mb-1">shipping address:</p>
+              <p class="whitespace-pre-line">${order.shipping_address}</p>
+              ${order.notes ? `<p class="mt-2 font-medium">notes:</p><p>${order.notes}</p>` : ''}
+            </div>
+
+            <div class="space-y-2 mb-3">
+              ${(order.order_items || []).map(item => `
+                <div class="flex items-center gap-3 text-sm">
+                  <img src="${item.image || ''}" alt="" class="w-8 h-8 rounded object-cover" />
+                  <span class="flex-1 truncate">${item.title}</span>
+                  <span class="text-gray-400">×${item.quantity}</span>
+                  <span>${fmtAmt(item.price * item.quantity)}</span>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="border-t border-gray-50 pt-3 flex justify-between text-sm">
+              ${order.discount > 0 ? `<span class="text-green-600">discount: -${fmtAmt(order.discount)}</span>` : '<span></span>'}
+              <span class="font-medium">total: ${fmtAmt(order.total)} (${order.currency})</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    checkAdmin().then(isAdmin => {
+      if (isAdmin) {
+        loadOrders();
+        document.getElementById('status-filter').addEventListener('change', loadOrders);
+        document.getElementById('refresh-btn').addEventListener('click', loadOrders);
+      }
+    });
+  })();
+</script>

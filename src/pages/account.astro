@@ -1,0 +1,280 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="my account">
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+    <!-- Loading state -->
+    <div id="account-loading" class="text-center py-20">
+      <p class="text-gray-400">loading...</p>
+    </div>
+
+    <!-- Not logged in -->
+    <div id="account-guest" class="hidden text-center py-20">
+      <h1 class="text-2xl font-semibold mb-4">sign in to view your account</h1>
+      <a href="/auth/signin" class="inline-block bg-primary text-white text-sm rounded-full px-8 py-3 hover:bg-primary/80 transition-colors">
+        sign in
+      </a>
+    </div>
+
+    <!-- Logged in -->
+    <div id="account-main" class="hidden">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h1 class="text-2xl font-semibold">my account</h1>
+          <p class="text-sm text-gray-500 mt-1" id="account-email"></p>
+        </div>
+        <button id="signout-btn"
+          class="text-sm border border-gray-200 rounded-full px-4 py-1.5 text-gray-600 hover:border-red-300 hover:text-red-500 transition-colors">
+          sign out
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-4 border-b border-gray-100 mb-8">
+        <button class="account-tab text-sm font-medium pb-3 border-b-2 border-primary text-primary" data-tab="profile">
+          profile
+        </button>
+        <button class="account-tab text-sm font-medium pb-3 border-b-2 border-transparent text-gray-400 hover:text-gray-600" data-tab="orders">
+          orders
+        </button>
+      </div>
+
+      <!-- Profile Tab -->
+      <div id="tab-profile">
+        <form id="profile-form" class="max-w-md space-y-4">
+          <div>
+            <label for="pf-name" class="block text-sm font-medium mb-1.5">full name</label>
+            <input type="text" id="pf-name"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
+          </div>
+          <div>
+            <label for="pf-phone" class="block text-sm font-medium mb-1.5">phone</label>
+            <input type="tel" id="pf-phone"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
+          </div>
+          <div>
+            <label for="pf-address" class="block text-sm font-medium mb-1.5">shipping address</label>
+            <textarea id="pf-address" rows="3"
+              class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+              placeholder="street, city, state, postal code, country"></textarea>
+          </div>
+          <div id="profile-msg" class="text-sm hidden"></div>
+          <button type="submit" id="profile-save-btn"
+            class="bg-primary text-white text-sm px-6 py-2.5 rounded-lg hover:bg-primary/80 transition-colors">
+            save changes
+          </button>
+        </form>
+      </div>
+
+      <!-- Orders Tab -->
+      <div id="tab-orders" class="hidden">
+        <div id="orders-loading" class="text-center py-12">
+          <p class="text-gray-400 text-sm">loading orders...</p>
+        </div>
+        <div id="orders-empty" class="hidden text-center py-12">
+          <p class="text-gray-400 text-sm">you haven't placed any orders yet.</p>
+          <a href="/products" class="inline-block mt-4 text-sm text-primary hover:underline">start shopping</a>
+        </div>
+        <div id="orders-list" class="hidden space-y-4"></div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script is:inline>
+  (function() {
+    const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
+    const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content;
+
+    const loadingEl = document.getElementById('account-loading');
+    const guestEl = document.getElementById('account-guest');
+    const mainEl = document.getElementById('account-main');
+
+    function getUser() {
+      try { return JSON.parse(localStorage.getItem('sb-user')); }
+      catch { return null; }
+    }
+
+    function getToken() {
+      return localStorage.getItem('sb-access-token');
+    }
+
+    async function sbFetch(path, options = {}) {
+      const token = getToken();
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Prefer': options.prefer || 'return=representation',
+          ...options.headers,
+        },
+        method: options.method || 'GET',
+        body: options.body ? JSON.stringify(options.body) : undefined,
+      });
+      if (options.method === 'PATCH' && res.ok) return res.json();
+      return res.json();
+    }
+
+    const user = getUser();
+    loadingEl.classList.add('hidden');
+
+    if (!user) {
+      guestEl.classList.remove('hidden');
+      return;
+    }
+
+    mainEl.classList.remove('hidden');
+    document.getElementById('account-email').textContent = user.email;
+
+    // Sign out
+    document.getElementById('signout-btn').addEventListener('click', () => {
+      localStorage.removeItem('sb-access-token');
+      localStorage.removeItem('sb-refresh-token');
+      localStorage.removeItem('sb-user');
+      window.location.href = '/';
+    });
+
+    // Tabs
+    const tabs = document.querySelectorAll('.account-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => {
+          t.classList.remove('border-primary', 'text-primary');
+          t.classList.add('border-transparent', 'text-gray-400');
+        });
+        tab.classList.add('border-primary', 'text-primary');
+        tab.classList.remove('border-transparent', 'text-gray-400');
+
+        document.getElementById('tab-profile').classList.toggle('hidden', tab.dataset.tab !== 'profile');
+        document.getElementById('tab-orders').classList.toggle('hidden', tab.dataset.tab !== 'orders');
+
+        if (tab.dataset.tab === 'orders') loadOrders();
+      });
+    });
+
+    // Load profile
+    async function loadProfile() {
+      try {
+        const data = await sbFetch(`customers?id=eq.${user.id}&select=*`);
+        if (data && data.length > 0) {
+          const c = data[0];
+          document.getElementById('pf-name').value = c.full_name || '';
+          document.getElementById('pf-phone').value = c.phone || '';
+          document.getElementById('pf-address').value = c.address || '';
+        }
+      } catch {}
+    }
+
+    loadProfile();
+
+    // Save profile
+    document.getElementById('profile-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msgEl = document.getElementById('profile-msg');
+      const btn = document.getElementById('profile-save-btn');
+      btn.textContent = 'saving...';
+      btn.disabled = true;
+
+      try {
+        await sbFetch(`customers?id=eq.${user.id}`, {
+          method: 'PATCH',
+          body: {
+            full_name: document.getElementById('pf-name').value,
+            phone: document.getElementById('pf-phone').value,
+            address: document.getElementById('pf-address').value,
+            updated_at: new Date().toISOString(),
+          },
+        });
+        msgEl.textContent = 'profile saved!';
+        msgEl.className = 'text-sm text-green-600';
+        msgEl.classList.remove('hidden');
+      } catch {
+        msgEl.textContent = 'could not save profile.';
+        msgEl.className = 'text-sm text-red-500';
+        msgEl.classList.remove('hidden');
+      }
+
+      btn.textContent = 'save changes';
+      btn.disabled = false;
+      setTimeout(() => msgEl.classList.add('hidden'), 3000);
+    });
+
+    // Load orders
+    async function loadOrders() {
+      const loadingEl = document.getElementById('orders-loading');
+      const emptyEl = document.getElementById('orders-empty');
+      const listEl = document.getElementById('orders-list');
+
+      loadingEl.classList.remove('hidden');
+      emptyEl.classList.add('hidden');
+      listEl.classList.add('hidden');
+
+      try {
+        const orders = await sbFetch(
+          `orders?customer_id=eq.${user.id}&select=*,order_items(*)&order=created_at.desc`
+        );
+
+        loadingEl.classList.add('hidden');
+
+        if (!orders || orders.length === 0) {
+          emptyEl.classList.remove('hidden');
+          return;
+        }
+
+        listEl.classList.remove('hidden');
+        listEl.innerHTML = orders.map(order => {
+          const statusColors = {
+            pending: 'bg-yellow-100 text-yellow-700',
+            confirmed: 'bg-blue-100 text-blue-700',
+            shipped: 'bg-purple-100 text-purple-700',
+            delivered: 'bg-green-100 text-green-700',
+            cancelled: 'bg-red-100 text-red-700',
+          };
+          const statusClass = statusColors[order.status] || 'bg-gray-100 text-gray-700';
+          const date = new Date(order.created_at).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric'
+          });
+
+          const symbol = order.currency === 'IDR' ? 'Rp' : '$';
+          const formatAmt = (val) => {
+            if (order.currency === 'IDR') return 'Rp' + Math.round(val).toLocaleString('id-ID');
+            return '$' + Number(val).toFixed(2);
+          };
+
+          return `
+            <div class="border border-gray-100 rounded-xl p-5">
+              <div class="flex items-center justify-between mb-3">
+                <div>
+                  <p class="text-sm font-medium">${date}</p>
+                  <p class="text-xs text-gray-400 mt-0.5">${order.id.slice(0, 8)}...</p>
+                </div>
+                <span class="text-xs px-2.5 py-1 rounded-full font-medium ${statusClass}">${order.status}</span>
+              </div>
+              <div class="space-y-2 mb-3">
+                ${(order.order_items || []).map(item => `
+                  <div class="flex items-center gap-3">
+                    <img src="${item.image}" alt="${item.title}" class="w-10 h-10 rounded object-cover" />
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm truncate">${item.title}</p>
+                      <p class="text-xs text-gray-400">qty: ${item.quantity}</p>
+                    </div>
+                    <p class="text-sm">${formatAmt(item.price * item.quantity)}</p>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="border-t border-gray-50 pt-3 flex justify-between items-center">
+                <span class="text-sm text-gray-500">total</span>
+                <span class="text-sm font-medium">${formatAmt(order.total)}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch {
+        loadingEl.classList.add('hidden');
+        emptyEl.classList.remove('hidden');
+      }
+    }
+  })();
+</script>
