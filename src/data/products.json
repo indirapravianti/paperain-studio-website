@@ -2,7 +2,7 @@
   {
     "id": "st-001",
     "title": "3d alphabets sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/3d_pastel.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -10,14 +10,22 @@
     "isFavorite": false,
     "isActive": true,
     "variants": [
-      { "id": "st-001-pastel", "label": "pastel", "image": "/images/products/stickers/3d_pastel.jpg" },
-      { "id": "st-001-vibrant", "label": "vibrant", "image": "/images/products/stickers/3d_vibrant.jpg" }
+      {
+        "id": "st-001-pastel",
+        "label": "pastel",
+        "image": "/images/products/stickers/3d_pastel.jpg"
+      },
+      {
+        "id": "st-001-vibrant",
+        "label": "vibrant",
+        "image": "/images/products/stickers/3d_vibrant.jpg"
+      }
     ]
   },
   {
     "id": "st-003",
     "title": "alphabet hearts sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/alphabet hearts.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -28,7 +36,7 @@
   {
     "id": "st-004",
     "title": "baby ducks sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/baby_ducks.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -39,7 +47,7 @@
   {
     "id": "st-006",
     "title": "bears sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/bears.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -50,7 +58,7 @@
   {
     "id": "st-007",
     "title": "bears and plaids sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/bears_and_plaids.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -61,7 +69,7 @@
   {
     "id": "st-008",
     "title": "biscuits sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/biscuits.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -72,7 +80,7 @@
   {
     "id": "st-009",
     "title": "black circles sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/black circles alphabet.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -83,7 +91,7 @@
   {
     "id": "st-010",
     "title": "blushing bunny sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/blushing_bunny.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -94,7 +102,7 @@
   {
     "id": "st-011",
     "title": "cakes sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/cakes.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -105,7 +113,7 @@
   {
     "id": "st-012",
     "title": "camping sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/camping.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -116,7 +124,7 @@
   {
     "id": "st-013",
     "title": "cats sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/cats.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -127,7 +135,7 @@
   {
     "id": "st-014",
     "title": "celebrating myself sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/celebrating myself.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -138,7 +146,7 @@
   {
     "id": "st-015",
     "title": "colorful circles alphabet sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/colorful circles alphabet.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -149,7 +157,7 @@
   {
     "id": "st-016",
     "title": "confetti bold sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/confetti_bold.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -160,7 +168,7 @@
   {
     "id": "st-017",
     "title": "confetti delicate sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/confetti_delicate.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -171,7 +179,7 @@
   {
     "id": "st-018",
     "title": "confetti pink sky sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/confetti_pink sky.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -182,7 +190,7 @@
   {
     "id": "st-019",
     "title": "cozy room sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/cozy_room.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -193,7 +201,7 @@
   {
     "id": "st-020",
     "title": "cute cats sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/cute_cats.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -204,7 +212,7 @@
   {
     "id": "st-021",
     "title": "daily sayings sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/daily_sayings.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -215,7 +223,7 @@
   {
     "id": "st-022",
     "title": "donuts sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/donuts.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -226,7 +234,7 @@
   {
     "id": "st-023",
     "title": "doodles vol 1 sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/doodles_1 (2).jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -237,7 +245,7 @@
   {
     "id": "st-024",
     "title": "farm sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/farm_1.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -248,7 +256,7 @@
   {
     "id": "st-025",
     "title": "flower pots sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/flower_pots.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -259,7 +267,7 @@
   {
     "id": "st-026",
     "title": "flowers sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/flowers.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -270,7 +278,7 @@
   {
     "id": "st-027",
     "title": "frogs sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/frogs.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -281,7 +289,7 @@
   {
     "id": "st-028",
     "title": "happy mail sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/happy mail.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -292,7 +300,7 @@
   {
     "id": "st-029",
     "title": "pink hearts alphabet sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/pink hearts alphabet.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -303,7 +311,7 @@
   {
     "id": "st-030",
     "title": "hedgehog sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/hedgehog.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -314,7 +322,7 @@
   {
     "id": "st-031",
     "title": "ice creams sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/ice creams.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -325,7 +333,7 @@
   {
     "id": "st-033",
     "title": "koi and lotus sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/koi_and_lotus.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -336,7 +344,7 @@
   {
     "id": "st-034",
     "title": "leaves sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/leaves.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -347,7 +355,7 @@
   {
     "id": "st-036",
     "title": "love sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/love sticker sheet.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -358,7 +366,7 @@
   {
     "id": "st-037",
     "title": "it's a lovely day sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/it_s a lovely day.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -369,7 +377,7 @@
   {
     "id": "st-038",
     "title": "magic bubbles sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/magic_bubbles.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -380,7 +388,7 @@
   {
     "id": "st-039",
     "title": "makeup sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/makeup sticker sheet.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -391,7 +399,7 @@
   {
     "id": "st-040",
     "title": "mauve alphabet sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/mauve_alphabet (2).jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -402,7 +410,7 @@
   {
     "id": "st-041",
     "title": "morning favorites sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/morning favorites.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -413,7 +421,7 @@
   {
     "id": "st-042",
     "title": "mushrooms sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/mushrooms.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -424,7 +432,7 @@
   {
     "id": "st-043",
     "title": "office emails sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/office_emails.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -435,7 +443,7 @@
   {
     "id": "st-044",
     "title": "outline alphabet sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/outline alphabets.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -446,7 +454,7 @@
   {
     "id": "st-045",
     "title": "outline numbers sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/outline numbers.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -457,7 +465,7 @@
   {
     "id": "st-046",
     "title": "pastel brown alphabet sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/pastel brown alphabet.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -468,7 +476,7 @@
   {
     "id": "st-047",
     "title": "picnic date sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/picnic_date.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -479,7 +487,7 @@
   {
     "id": "st-048",
     "title": "plaid hearts sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/plaid_hearts.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -490,7 +498,7 @@
   {
     "id": "st-050",
     "title": "primary alphabet sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/primary_alphabets.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -501,7 +509,7 @@
   {
     "id": "st-058",
     "title": "quote bahasa romansa sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/quote bahasa - motivasi.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -512,7 +520,7 @@
   {
     "id": "st-061",
     "title": "quotes friendship sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/quotes - friendship.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -523,7 +531,7 @@
   {
     "id": "st-062",
     "title": "quotes girlboss sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/quotes - girlboss.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -534,7 +542,7 @@
   {
     "id": "st-063",
     "title": "quotes inspiration sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/quotes - inspiration.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -545,7 +553,7 @@
   {
     "id": "st-064",
     "title": "quotes love sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/quotes_love (1).jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -556,7 +564,7 @@
   {
     "id": "st-065",
     "title": "quotes motivational sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/quotes_motivational (1).jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -567,7 +575,7 @@
   {
     "id": "st-066",
     "title": "quotes self-love sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/quotes_selflove (1).jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -578,7 +586,7 @@
   {
     "id": "st-067",
     "title": "ransom alphabets sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/ransom_primary.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -586,15 +594,27 @@
     "isFavorite": false,
     "isActive": true,
     "variants": [
-      { "id": "st-067-primary", "label": "primary", "image": "/images/products/stickers/ransom_primary.jpg" },
-      { "id": "st-067-retro", "label": "retro", "image": "/images/products/stickers/ransom_retro (2).jpg" },
-      { "id": "st-067-rosy", "label": "rosy", "image": "/images/products/stickers/ransom_rosy.jpg" }
+      {
+        "id": "st-067-primary",
+        "label": "primary",
+        "image": "/images/products/stickers/ransom_primary.jpg"
+      },
+      {
+        "id": "st-067-retro",
+        "label": "retro",
+        "image": "/images/products/stickers/ransom_retro (2).jpg"
+      },
+      {
+        "id": "st-067-rosy",
+        "label": "rosy",
+        "image": "/images/products/stickers/ransom_rosy.jpg"
+      }
     ]
   },
   {
     "id": "st-070",
     "title": "self-care sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/selfcare.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -605,7 +625,7 @@
   {
     "id": "st-071",
     "title": "adorable stamps vol 1 sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/adorable_stamps_vol1.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -616,7 +636,7 @@
   {
     "id": "st-072",
     "title": "adorable stamps vol 2 sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/adorable_stamps_vol2.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -627,7 +647,7 @@
   {
     "id": "st-073",
     "title": "adorable stamps vol 3 sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/adorable_stamps_vol3.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -638,7 +658,7 @@
   {
     "id": "st-074",
     "title": "studytime sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/studytime.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -649,7 +669,7 @@
   {
     "id": "st-075",
     "title": "teddy bear sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/teddy_bear.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -660,7 +680,7 @@
   {
     "id": "st-076",
     "title": "watermelon sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/watermelon_1.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -671,7 +691,7 @@
   {
     "id": "st-077",
     "title": "when in japan sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/when_in_japan.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -682,7 +702,7 @@
   {
     "id": "st-080",
     "title": "bananas sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/bananas.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -693,7 +713,7 @@
   {
     "id": "st-081",
     "title": "dessert time sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/dessert_time.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -704,7 +724,7 @@
   {
     "id": "st-082",
     "title": "puppies sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/puppies.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -715,7 +735,7 @@
   {
     "id": "st-084",
     "title": "tiny birds sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/tiny_birds.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -726,7 +746,7 @@
   {
     "id": "st-085",
     "title": "capybara sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/capybara.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -737,7 +757,7 @@
   {
     "id": "st-086",
     "title": "doodles vol 2 sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/doodles_vol_2.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -748,7 +768,7 @@
   {
     "id": "st-087",
     "title": "perky panda sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/perky_panda.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -759,7 +779,7 @@
   {
     "id": "st-088",
     "title": "dogs sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/sticker_dogs.jpeg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -770,7 +790,7 @@
   {
     "id": "st-089",
     "title": "doodles vol 3 sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/sticker_doodles_vol_3.jpeg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -781,7 +801,7 @@
   {
     "id": "st-090",
     "title": "ugh bad days sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/ugh_bad_days.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -792,7 +812,7 @@
   {
     "id": "st-092",
     "title": "goose sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/sticker_goose.jpeg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -803,7 +823,7 @@
   {
     "id": "st-misc-01",
     "title": "boba shop sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/boba shop sticker sheet.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -814,7 +834,7 @@
   {
     "id": "st-misc-02",
     "title": "spooky sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/spooky.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -825,7 +845,7 @@
   {
     "id": "st-misc-03",
     "title": "house plan sticker sheet",
-    "price": 2.50,
+    "price": 4,
     "category": "sticker sheet",
     "image": "/images/products/stickers/House Plan.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
@@ -836,7 +856,7 @@
   {
     "id": "kc-001",
     "title": "busy doing nothing keychain",
-    "price": 4.00,
+    "price": 6,
     "category": "keychain",
     "image": "/images/products/keychains/keychain_busy_doing_nothing.jpeg",
     "description": "size approximately 5x5cm (varying according to the design). printed on 3mm acrylic with UV",
@@ -847,7 +867,7 @@
   {
     "id": "kc-002",
     "title": "cat keychain",
-    "price": 4.00,
+    "price": 6,
     "category": "keychain",
     "image": "/images/products/keychains/keychain_cat.jpeg",
     "description": "size approximately 5x5cm (varying according to the design). printed on 3mm acrylic with UV",
@@ -858,7 +878,7 @@
   {
     "id": "kc-003",
     "title": "chaotic mess keychain",
-    "price": 4.00,
+    "price": 6,
     "category": "keychain",
     "image": "/images/products/keychains/keychain_chaotic_mess.jpeg",
     "description": "size approximately 5x5cm (varying according to the design). printed on 3mm acrylic with UV",
@@ -869,10 +889,13 @@
   {
     "id": "kc-004",
     "title": "grow at your own pace keychain",
-    "price": 4.00,
+    "price": 6,
     "category": "keychain",
     "image": "/images/products/keychains/03.jpg",
-    "images": ["/images/products/keychains/03.jpg", "/images/products/keychains/keychain_grow_at_your_own_pace.png"],
+    "images": [
+      "/images/products/keychains/03.jpg",
+      "/images/products/keychains/keychain_grow_at_your_own_pace.png"
+    ],
     "description": "size approximately 5x5cm (varying according to the design). printed on 3mm acrylic with UV",
     "isNew": false,
     "isFavorite": true,
@@ -881,10 +904,13 @@
   {
     "id": "kc-005",
     "title": "learning to live keychain",
-    "price": 4.00,
+    "price": 6,
     "category": "keychain",
     "image": "/images/products/keychains/keychain_learning_to_live.png",
-    "images": ["/images/products/keychains/keychain_learning_to_live.png", "/images/products/keychains/01.jpg"],
+    "images": [
+      "/images/products/keychains/keychain_learning_to_live.png",
+      "/images/products/keychains/01.jpg"
+    ],
     "description": "size approximately 5x5cm (varying according to the design). printed on 3mm acrylic with UV",
     "isNew": false,
     "isFavorite": false,
@@ -893,10 +919,13 @@
   {
     "id": "kc-006",
     "title": "not in the mood keychain",
-    "price": 4.00,
+    "price": 6,
     "category": "keychain",
     "image": "/images/products/keychains/keychain_not_in_the_mood.png",
-    "images": ["/images/products/keychains/keychain_not_in_the_mood.png", "/images/products/keychains/02.jpg"],
+    "images": [
+      "/images/products/keychains/keychain_not_in_the_mood.png",
+      "/images/products/keychains/02.jpg"
+    ],
     "description": "size approximately 5x5cm (varying according to the design). printed on 3mm acrylic with UV",
     "isNew": false,
     "isFavorite": false,
@@ -905,7 +934,7 @@
   {
     "id": "kc-007",
     "title": "puppy keychain",
-    "price": 4.00,
+    "price": 6,
     "category": "keychain",
     "image": "/images/products/keychains/keychain_puppy.jpeg",
     "description": "size approximately 5x5cm (varying according to the design). printed on 3mm acrylic with UV",
@@ -916,7 +945,7 @@
   {
     "id": "gt-001",
     "title": "avocado griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/avocado.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -927,7 +956,7 @@
   {
     "id": "gt-002",
     "title": "cactus griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/cactus.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -938,7 +967,7 @@
   {
     "id": "gt-003",
     "title": "egg griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/egg.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -949,7 +978,7 @@
   {
     "id": "gt-004",
     "title": "monstera griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/monstera.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -960,7 +989,7 @@
   {
     "id": "gt-005",
     "title": "pink bear griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/pink bear.JPG",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -971,7 +1000,7 @@
   {
     "id": "gt-006",
     "title": "flowers griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/flowers.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -982,7 +1011,7 @@
   {
     "id": "gt-007",
     "title": "i love u pink griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/i love u - pink - 1.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -993,7 +1022,7 @@
   {
     "id": "gt-008",
     "title": "i love u primary griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/i love u - primary -1.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -1004,7 +1033,7 @@
   {
     "id": "gt-009",
     "title": "magic hands griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/magic hands.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -1015,7 +1044,7 @@
   {
     "id": "gt-010",
     "title": "chick griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/popsocket_chick.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -1026,7 +1055,7 @@
   {
     "id": "gt-011",
     "title": "flower dome griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/popsocket_flower_dome.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -1037,7 +1066,7 @@
   {
     "id": "gt-012",
     "title": "stargazing griptok",
-    "price": 3.50,
+    "price": 8,
     "category": "griptok",
     "image": "/images/products/griptoks/stargazing-1.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
@@ -1048,7 +1077,7 @@
   {
     "id": "ps-001",
     "title": "phonestrap a",
-    "price": 3.00,
+    "price": 7,
     "category": "phonestrap",
     "image": "/images/products/phonestraps/phonestrap_A_1.jpg",
     "description": "",
@@ -1059,7 +1088,7 @@
   {
     "id": "ps-002",
     "title": "phonestrap b",
-    "price": 3.00,
+    "price": 7,
     "category": "phonestrap",
     "image": "/images/products/phonestraps/phonestrap_B_1.jpg",
     "description": "",
@@ -1070,7 +1099,7 @@
   {
     "id": "pc-001",
     "title": "postcards - japan edition",
-    "price": 3.50,
+    "price": 3,
     "category": "postcard",
     "image": "/images/products/postcards/postcard_cover.jpg",
     "description": "",
@@ -1078,18 +1107,42 @@
     "isFavorite": false,
     "isActive": true,
     "variants": [
-      { "id": "pc-001-kiyomizu", "label": "kiyomizu-dera", "image": "/images/products/postcards/kiyomizu_dera.png" },
-      { "id": "pc-001-fushimi", "label": "fushimi inari-taisha", "image": "/images/products/postcards/fushimi_inari_taisha.png" },
-      { "id": "pc-001-spring", "label": "spring in japan", "image": "/images/products/postcards/spring_in_japan.png" },
-      { "id": "pc-001-kobe", "label": "kobe harborland", "image": "/images/products/postcards/kobe_harborland.png" },
-      { "id": "pc-001-osaka", "label": "osaka castle", "image": "/images/products/postcards/osaka_castle.png" },
-      { "id": "pc-001-dotonbori", "label": "dotonbori", "image": "/images/products/postcards/dotonbori.png" }
+      {
+        "id": "pc-001-kiyomizu",
+        "label": "kiyomizu-dera",
+        "image": "/images/products/postcards/kiyomizu_dera.png"
+      },
+      {
+        "id": "pc-001-fushimi",
+        "label": "fushimi inari-taisha",
+        "image": "/images/products/postcards/fushimi_inari_taisha.png"
+      },
+      {
+        "id": "pc-001-spring",
+        "label": "spring in japan",
+        "image": "/images/products/postcards/spring_in_japan.png"
+      },
+      {
+        "id": "pc-001-kobe",
+        "label": "kobe harborland",
+        "image": "/images/products/postcards/kobe_harborland.png"
+      },
+      {
+        "id": "pc-001-osaka",
+        "label": "osaka castle",
+        "image": "/images/products/postcards/osaka_castle.png"
+      },
+      {
+        "id": "pc-001-dotonbori",
+        "label": "dotonbori",
+        "image": "/images/products/postcards/dotonbori.png"
+      }
     ]
   },
   {
     "id": "ap-001",
     "title": "birthday cat artprint",
-    "price": 4.00,
+    "price": 3,
     "category": "artprint",
     "image": "/images/products/artprints/birthday-cat.jpg",
     "description": "10x10cm artprint, double-side print on linen paper",
@@ -1100,7 +1153,7 @@
   {
     "id": "ap-002",
     "title": "cheers to new adventures greeting card",
-    "price": 4.00,
+    "price": 4.5,
     "category": "greeting card",
     "image": "/images/products/artprints/cheers - front.jpg",
     "description": "foldable greeting card, including brown envelope! size: A6 (folded condition)",
@@ -1111,7 +1164,7 @@
   {
     "id": "ap-003",
     "title": "congrats greeting card",
-    "price": 4.00,
+    "price": 4.5,
     "category": "greeting card",
     "image": "/images/products/artprints/congrats - graduation.jpg",
     "description": "foldable greeting card, including brown envelope! size: A6 (folded condition)",
@@ -1122,7 +1175,7 @@
   {
     "id": "ap-004",
     "title": "congrats artprint",
-    "price": 4.00,
+    "price": 3,
     "category": "artprint",
     "image": "/images/products/artprints/congrats.jpg",
     "description": "10x10cm artprint, double-side print on linen paper",
@@ -1133,7 +1186,7 @@
   {
     "id": "ap-005",
     "title": "gift to find you greeting card",
-    "price": 4.00,
+    "price": 4.5,
     "category": "greeting card",
     "image": "/images/products/artprints/gift_to_find_you_1.jpg",
     "description": "foldable greeting card, including brown envelope! size: A6 (folded condition)",
@@ -1144,7 +1197,7 @@
   {
     "id": "ap-006",
     "title": "glad i met you greeting card",
-    "price": 4.00,
+    "price": 4.5,
     "category": "greeting card",
     "image": "/images/products/artprints/glad_met_you_1.jpg",
     "description": "foldable greeting card, including brown envelope! size: A6 (folded condition)",
@@ -1155,7 +1208,7 @@
   {
     "id": "ap-007",
     "title": "magic in you artprint",
-    "price": 4.00,
+    "price": 3,
     "category": "artprint",
     "image": "/images/products/artprints/magic-in-you.jpg",
     "description": "10x10cm artprint, double-side print on linen paper",
@@ -1166,7 +1219,7 @@
   {
     "id": "ap-008",
     "title": "rooting for you artprint",
-    "price": 4.00,
+    "price": 3,
     "category": "artprint",
     "image": "/images/products/artprints/rooting-for-you.jpg",
     "description": "10x10cm artprint, double-side print on linen paper",
@@ -1177,7 +1230,7 @@
   {
     "id": "ap-009",
     "title": "the best is yet to come greeting card",
-    "price": 4.00,
+    "price": 4.5,
     "category": "greeting card",
     "image": "/images/products/artprints/the best.jpg",
     "description": "foldable greeting card, including brown envelope! size: A6 (folded condition)",
@@ -1188,7 +1241,7 @@
   {
     "id": "ap-010",
     "title": "wedding greeting card",
-    "price": 4.00,
+    "price": 4.5,
     "category": "greeting card",
     "image": "/images/products/artprints/wedding-greeting-card.jpg",
     "description": "foldable greeting card, including brown envelope! size: A6 (folded condition)",
@@ -1196,8 +1249,16 @@
     "isFavorite": false,
     "isActive": true,
     "variants": [
-      { "id": "ap-010-pink", "label": "pink", "image": "/images/products/artprints/wedding-greeting-card-pink.jpg" },
-      { "id": "ap-010-sage", "label": "sage", "image": "/images/products/artprints/wedding-greeting-card-sage-1.jpg" }
+      {
+        "id": "ap-010-pink",
+        "label": "pink",
+        "image": "/images/products/artprints/wedding-greeting-card-pink.jpg"
+      },
+      {
+        "id": "ap-010-sage",
+        "label": "sage",
+        "image": "/images/products/artprints/wedding-greeting-card-sage-1.jpg"
+      }
     ]
   }
 ]

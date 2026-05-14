@@ -71,7 +71,7 @@ const hasMultipleImages = productImages.length > 1;
           {categoryLabels[product.category] || product.category}
         </span>
         <h1 class="text-2xl sm:text-3xl font-semibold mb-3">{product.title}</h1>
-        <p class="text-2xl font-medium text-gray-800 mb-6" data-price-usd={product.price}>${product.price.toFixed(2)}</p>
+        <p class="text-2xl font-medium text-gray-800 mb-6" data-price-usd={product.price} data-price-category={product.category}>${product.price.toFixed(2)}</p>
 
         {product.description ? (
           <p class="text-gray-500 text-sm leading-relaxed mb-8 whitespace-pre-line">{product.description}</p>
@@ -133,7 +133,7 @@ const hasMultipleImages = productImages.length > 1;
         <h2 class="text-xl font-semibold mb-6">you might also like</h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {related.map(p => (
-            <ProductCard id={p.id} title={p.title} price={p.price} image={p.image} isNew={p.isNew} />
+            <ProductCard id={p.id} title={p.title} price={p.price} image={p.image} isNew={p.isNew} category={p.category} />
           ))}
         </div>
       </div>
@@ -141,7 +141,7 @@ const hasMultipleImages = productImages.length > 1;
   </section>
 </Layout>
 
-<script is:inline define:vars={{ productData: JSON.stringify({ id: product.id, title: product.title, price: product.price, image: product.image, variants: product.variants || [] }) }}>
+<script is:inline define:vars={{ productData: JSON.stringify({ id: product.id, title: product.title, price: product.price, image: product.image, category: product.category, variants: product.variants || [] }) }}>
   (function() {
     const product = JSON.parse(productData);
     let qty = 1;
@@ -202,7 +202,7 @@ const hasMultipleImages = productImages.length > 1;
       if (existing) {
         existing.qty += qty;
       } else {
-        cart.push({ id: cartId, title: cartTitle, price: product.price, image: cartImage, qty });
+        cart.push({ id: cartId, title: cartTitle, price: product.price, image: cartImage, category: product.category, qty });
       }
       saveCart(cart);
       toggleCart(true);
