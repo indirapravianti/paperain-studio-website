@@ -3,9 +3,12 @@
 @theme {
   --font-sans: "Zalando Sans SemiExpanded", ui-sans-serif, system-ui, sans-serif;
   --font-heading: "Zalando Sans Expanded", ui-sans-serif, system-ui, sans-serif;
-  --color-primary: #2d2d2d;
-  --color-accent: #e8a0bf;
-  --color-accent-light: #fce4ec;
+  --color-primary: #43302E;
+  --color-accent: #C1DBE8;
+  --color-accent-light: #FFF1B5;
+  --color-burgundy: #43302E;
+  --color-buttermilk: #FFF1B5;
+  --color-pastel-blue: #C1DBE8;
   --color-bg: #ffffff;
   --color-muted: #6b7280;
 }

@@ -3,12 +3,13 @@ import '../styles/global.css';
 import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import InstagramTicker from '../components/InstagramTicker.astro';
 
 interface Props {
   title?: string;
 }
 
-const { title = 'Paperain Studio' } = Astro.props;
+const { title = 'paperain studio' } = Astro.props;
 ---
 
 <!doctype html>
@@ -16,11 +17,12 @@ const { title = 'Paperain Studio' } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Paperain Studio - Cute stickers, keychains, griptoks, and more" />
+    <meta name="description" content="paperain studio - cute stickers, keychains, griptoks, and more" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&family=Zalando+Sans+SemiExpanded:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
-    <title>{title} | Paperain Studio</title>
+    <title>{title} | paperain studio</title>
   </head>
   <body class="min-h-screen flex flex-col">
     <AnnouncementBar />
@@ -28,6 +30,7 @@ const { title = 'Paperain Studio' } = Astro.props;
     <main class="flex-1">
       <slot />
     </main>
+    <InstagramTicker />
     <Footer />
 
     <div id="cart-drawer-overlay" class="fixed inset-0 bg-black/40 z-40 hidden" onclick="toggleCart()"></div>
@@ -45,7 +48,7 @@ const { title = 'Paperain Studio' } = Astro.props;
           <span class="font-medium">Total</span>
           <span id="cart-total" class="text-lg font-semibold">$0.00</span>
         </div>
-        <a href="/checkout" class="block w-full bg-primary text-white text-center py-3 rounded-lg hover:bg-gray-800 transition-colors">Checkout</a>
+        <a href="/checkout" class="block w-full bg-burgundy text-white text-center py-3 rounded-lg hover:bg-burgundy/80 transition-colors">Checkout</a>
       </div>
     </div>
 
