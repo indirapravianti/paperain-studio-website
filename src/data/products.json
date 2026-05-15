@@ -96,7 +96,7 @@
     "image": "/images/products/stickers/blushing_bunny.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
     "isNew": false,
-    "isFavorite": true,
+    "isFavorite": false,
     "isActive": true
   },
   {
@@ -249,7 +249,7 @@
     "category": "sticker sheet",
     "image": "/images/products/stickers/farm_1.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
-    "isNew": false,
+    "isNew": true,
     "isFavorite": false,
     "isActive": true
   },
@@ -425,7 +425,7 @@
     "category": "sticker sheet",
     "image": "/images/products/stickers/mushrooms.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
-    "isNew": true,
+    "isNew": false,
     "isFavorite": false,
     "isActive": true
   },
@@ -500,11 +500,53 @@
     "title": "primary alphabet sticker sheet",
     "price": 4,
     "category": "sticker sheet",
-    "image": "/images/products/stickers/primary_alphabets.jpg",
+    "image": "/images/products/stickers/primary_alphabets_all variant.png",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
     "isNew": false,
     "isFavorite": false,
-    "isActive": true
+    "isActive": true,
+    "variants": [
+      {
+        "id": "st-050-rosewater",
+        "label": "rosewater",
+        "image": "/images/products/stickers/primary_alphabets_all variant.png"
+      },
+      {
+        "id": "st-050-salmon",
+        "label": "salmon",
+        "image": "/images/products/stickers/primary_alphabets_all variant.png"
+      },
+      {
+        "id": "st-050-choco",
+        "label": "choco",
+        "image": "/images/products/stickers/primary_alphabets_all variant.png"
+      },
+      {
+        "id": "st-050-periwinkle",
+        "label": "periwinkle",
+        "image": "/images/products/stickers/primary_alphabets_all variant.png"
+      },
+      {
+        "id": "st-050-amber",
+        "label": "amber",
+        "image": "/images/products/stickers/primary_alphabets_all variant.png"
+      },
+      {
+        "id": "st-050-crimson",
+        "label": "crimson",
+        "image": "/images/products/stickers/primary_alphabets_all variant.png"
+      },
+      {
+        "id": "st-050-navy-green",
+        "label": "navy green",
+        "image": "/images/products/stickers/primary_alphabets_all variant.png"
+      },
+      {
+        "id": "st-050-cream",
+        "label": "cream",
+        "image": "/images/products/stickers/primary_alphabets_all variant.png"
+      }
+    ]
   },
   {
     "id": "st-058",
@@ -557,7 +599,7 @@
     "category": "sticker sheet",
     "image": "/images/products/stickers/quotes_love (1).jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
-    "isNew": true,
+    "isNew": false,
     "isFavorite": false,
     "isActive": true
   },
@@ -629,8 +671,8 @@
     "category": "sticker sheet",
     "image": "/images/products/stickers/adorable_stamps_vol1.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
-    "isNew": true,
-    "isFavorite": true,
+    "isNew": false,
+    "isFavorite": false,
     "isActive": true
   },
   {
@@ -750,8 +792,8 @@
     "category": "sticker sheet",
     "image": "/images/products/stickers/capybara.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
-    "isNew": true,
-    "isFavorite": true,
+    "isNew": false,
+    "isFavorite": false,
     "isActive": true
   },
   {
@@ -772,7 +814,7 @@
     "category": "sticker sheet",
     "image": "/images/products/stickers/perky_panda.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
-    "isNew": true,
+    "isNew": false,
     "isFavorite": false,
     "isActive": true
   },
@@ -783,7 +825,7 @@
     "category": "sticker sheet",
     "image": "/images/products/stickers/sticker_dogs.jpeg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
-    "isNew": true,
+    "isNew": false,
     "isFavorite": false,
     "isActive": true
   },
@@ -794,7 +836,7 @@
     "category": "sticker sheet",
     "image": "/images/products/stickers/sticker_doodles_vol_3.jpeg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
-    "isNew": true,
+    "isNew": false,
     "isFavorite": false,
     "isActive": true
   },
@@ -805,7 +847,7 @@
     "category": "sticker sheet",
     "image": "/images/products/stickers/ugh_bad_days.jpg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
-    "isNew": true,
+    "isNew": false,
     "isFavorite": false,
     "isActive": true
   },
@@ -816,8 +858,8 @@
     "category": "sticker sheet",
     "image": "/images/products/stickers/sticker_goose.jpeg",
     "description": "a6 sticker sheet\nmaterial: vinyl matte (water proof)\nkiss cut so you just need to peel it off!\n\nsuitable for journaling or decorating your favorite thing",
-    "isNew": true,
-    "isFavorite": true,
+    "isNew": false,
+    "isFavorite": false,
     "isActive": true
   },
   {
@@ -860,8 +902,8 @@
     "category": "keychain",
     "image": "/images/products/keychains/keychain_busy_doing_nothing.jpeg",
     "description": "size approximately 5x5cm (varying according to the design). printed on 3mm acrylic with UV",
-    "isNew": false,
-    "isFavorite": true,
+    "isNew": true,
+    "isFavorite": false,
     "isActive": true
   },
   {
@@ -882,7 +924,7 @@
     "category": "keychain",
     "image": "/images/products/keychains/keychain_chaotic_mess.jpeg",
     "description": "size approximately 5x5cm (varying according to the design). printed on 3mm acrylic with UV",
-    "isNew": false,
+    "isNew": true,
     "isFavorite": false,
     "isActive": true
   },
@@ -950,7 +992,7 @@
     "image": "/images/products/griptoks/avocado.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
     "isNew": false,
-    "isFavorite": false,
+    "isFavorite": true,
     "isActive": true
   },
   {
@@ -972,7 +1014,7 @@
     "image": "/images/products/griptoks/egg.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
     "isNew": false,
-    "isFavorite": true,
+    "isFavorite": false,
     "isActive": true
   },
   {
@@ -1015,7 +1057,7 @@
     "category": "griptok",
     "image": "/images/products/griptoks/i love u - pink - 1.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
-    "isNew": true,
+    "isNew": false,
     "isFavorite": false,
     "isActive": true
   },
@@ -1026,7 +1068,7 @@
     "category": "griptok",
     "image": "/images/products/griptoks/i love u - primary -1.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
-    "isNew": true,
+    "isNew": false,
     "isFavorite": false,
     "isActive": true
   },
@@ -1037,7 +1079,7 @@
     "category": "griptok",
     "image": "/images/products/griptoks/magic hands.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
-    "isNew": true,
+    "isNew": false,
     "isFavorite": false,
     "isActive": true
   },
@@ -1070,8 +1112,8 @@
     "category": "griptok",
     "image": "/images/products/griptoks/stargazing-1.jpg",
     "description": "size approximately 5x5cm (varying according to the design), printed on 3mm acrylic with UV. we use 3M adhesive backing to ensure stability",
-    "isNew": true,
-    "isFavorite": true,
+    "isNew": false,
+    "isFavorite": false,
     "isActive": true
   },
   {
@@ -1212,8 +1254,8 @@
     "category": "artprint",
     "image": "/images/products/artprints/magic-in-you.jpg",
     "description": "10x10cm artprint, double-side print on linen paper",
-    "isNew": true,
-    "isFavorite": false,
+    "isNew": false,
+    "isFavorite": true,
     "isActive": true
   },
   {
@@ -1223,8 +1265,8 @@
     "category": "artprint",
     "image": "/images/products/artprints/rooting-for-you.jpg",
     "description": "10x10cm artprint, double-side print on linen paper",
-    "isNew": true,
-    "isFavorite": true,
+    "isNew": false,
+    "isFavorite": false,
     "isActive": true
   },
   {
