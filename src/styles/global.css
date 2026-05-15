@@ -3,12 +3,12 @@
 @theme {
   --font-sans: "Zalando Sans SemiExpanded", ui-sans-serif, system-ui, sans-serif;
   --font-heading: "Zalando Sans Expanded", ui-sans-serif, system-ui, sans-serif;
-  --color-primary: #28301c;
-  --color-accent: #d2db76;
-  --color-accent-light: #ffc3cc;
-  --color-dark-green: #28301c;
-  --color-lime: #d2db76;
-  --color-pink: #ffc3cc;
+  --color-primary: #43302E;
+  --color-accent: #C1DBE8;
+  --color-accent-light: #FFF1B5;
+  --color-burgundy: #43302E;
+  --color-pastel-blue: #C1DBE8;
+  --color-buttermilk: #FFF1B5;
   --color-bg: #ffffff;
   --color-muted: #6b7280;
 }
