@@ -1,0 +1,28 @@
+-- ============================================================
+-- Patch 002: Database webhook for order receipt emails
+-- Run this in Supabase Dashboard > SQL Editor
+-- ============================================================
+-- This creates a database webhook that calls the send-receipt
+-- Edge Function every time a new order is inserted.
+--
+-- IMPORTANT: After running this SQL, you also need to set up
+-- the webhook in the Supabase Dashboard manually:
+--
+-- 1. Go to Database > Webhooks
+-- 2. Create a new webhook:
+--    - Name: send-receipt
+--    - Table: orders
+--    - Events: INSERT
+--    - Type: Supabase Edge Function
+--    - Edge Function: send-receipt
+--    - HTTP Headers: (none needed, Supabase handles auth automatically)
+--
+-- The Edge Function needs these secrets (set via CLI or Dashboard):
+--   - RESEND_API_KEY
+--   - SITE_URL (your deployed website URL)
+--   - FROM_EMAIL (optional, defaults to orders@paperainstudio.com)
+-- ============================================================
+
+-- No SQL changes needed for the webhook itself.
+-- The webhook is configured via the Supabase Dashboard UI.
+-- This file is kept as documentation for the setup process.
