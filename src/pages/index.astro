@@ -105,137 +105,128 @@ const tickerItems = tickerIds
   </section>
 
   <!-- Customer Love Letters -->
-  <section class="bg-pastel-blue/20 py-16 overflow-hidden">
+  <section class="bg-pastel-blue/20 py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h2 class="text-2xl font-semibold">our love letters⋆｡°✩</h2>
         <p class="text-sm text-muted mt-2">kind words from our friends</p>
       </div>
-    </div>
 
-    <div class="relative">
-      <div class="reviews-track flex gap-6 px-4" id="reviews-track">
-        <div class="review-card shrink-0 w-[300px] bg-white rounded-2xl p-6 shadow-sm">
-          <div class="flex gap-1 mb-3">
-            <span class="text-accent text-sm">★★★★★</span>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed mb-4">"desain stikernya bagus banget, print-nya juga bagusss, top banget pokoknya 🥹 lucu, gemes, cakepp. packing-nya juga aman banget dan rapih 🫂🫂🫂"</p>
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-buttermilk/30 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">F</div>
-            <div>
-              <p class="text-xs font-medium">Fia</p>
-              <p class="text-xs text-gray-400">Shopee</p>
+      <div class="relative">
+        <!-- Arrow Left -->
+        <button id="reviews-prev" class="absolute -left-2 sm:left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-burgundy hover:bg-burgundy hover:text-white transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+
+        <!-- Cards Container -->
+        <div class="overflow-hidden mx-8 sm:mx-12" id="reviews-viewport">
+          <div class="flex gap-6 transition-transform duration-300 ease-in-out" id="reviews-track">
+            <div class="review-card shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl p-6 shadow-sm">
+              <div class="flex gap-1 mb-3"><span class="text-accent text-sm">★★★★★</span></div>
+              <p class="text-sm text-gray-600 leading-relaxed mb-4">"desain stikernya bagus banget, print-nya juga bagusss, top banget pokoknya 🥹 lucu, gemes, cakepp. packing-nya juga aman banget dan rapih 🫂🫂🫂"</p>
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-buttermilk/30 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">F</div>
+                <div><p class="text-xs font-medium">Fia</p><p class="text-xs text-gray-400">Shopee</p></div>
+              </div>
+            </div>
+
+            <div class="review-card shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl p-6 shadow-sm">
+              <div class="flex gap-1 mb-3"><span class="text-accent text-sm">★★★★★</span></div>
+              <p class="text-sm text-gray-600 leading-relaxed mb-4">"it's perfect as it is. 🔆 thank you for creating such a nice piece!!!"</p>
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-pastel-blue/50 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">D</div>
+                <div><p class="text-xs font-medium">Dian</p><p class="text-xs text-gray-400">Shopee</p></div>
+              </div>
+            </div>
+
+            <div class="review-card shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl p-6 shadow-sm">
+              <div class="flex gap-1 mb-3"><span class="text-accent text-sm">★★★★★</span></div>
+              <p class="text-sm text-gray-600 leading-relaxed mb-4">"barang sampai dengan aman, kualitasnya oke sekaliii, dipasang di tumblr juga bagus! semoga awet"</p>
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-buttermilk/30 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">K</div>
+                <div><p class="text-xs font-medium">Khanisa</p><p class="text-xs text-gray-400">Shopee</p></div>
+              </div>
+            </div>
+
+            <div class="review-card shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl p-6 shadow-sm">
+              <div class="flex gap-1 mb-3"><span class="text-accent text-sm">★★★★★</span></div>
+              <p class="text-sm text-gray-600 leading-relaxed mb-4">"Mantab banget sesuai foto komplit buat jurnaling, keren deh, sukakpuol"</p>
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-pastel-blue/50 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">D</div>
+                <div><p class="text-xs font-medium">Debora</p><p class="text-xs text-gray-400">Shopee</p></div>
+              </div>
+            </div>
+
+            <div class="review-card shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl p-6 shadow-sm">
+              <div class="flex gap-1 mb-3"><span class="text-accent text-sm">★★★★★</span></div>
+              <p class="text-sm text-gray-600 leading-relaxed mb-4">"Puas bangettt..mana cantik bgt tulisannya. Di kasih bonus stiker byk bgt.. Makasii seller"</p>
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-buttermilk/30 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">V</div>
+                <div><p class="text-xs font-medium">Vidya</p><p class="text-xs text-gray-400">Shopee</p></div>
+              </div>
+            </div>
+
+            <div class="review-card shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl p-6 shadow-sm">
+              <div class="flex gap-1 mb-3"><span class="text-accent text-sm">★★★★★</span></div>
+              <p class="text-sm text-gray-600 leading-relaxed mb-4">"LUCUUUU BANGET, akriliknya tebel, and the print is good quality! The packaging is good and adorable, the duck is sooo cute, suka banget!"</p>
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-pastel-blue/50 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">T</div>
+                <div><p class="text-xs font-medium">Trex</p><p class="text-xs text-gray-400">Shopee</p></div>
+              </div>
+            </div>
+
+            <div class="review-card shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl p-6 shadow-sm">
+              <div class="flex gap-1 mb-3"><span class="text-accent text-sm">★★★★★</span></div>
+              <p class="text-sm text-gray-600 leading-relaxed mb-4">"cuma beli satuu tp dpt free stikernya banyak bgtt😭 trs packingnya juga niatttt yaampuunnn😭💖💖✨ kaa maaf yaa cuma beli satu doangg, lain kali aku beli banyakk deh kl tau kaka nya sebaik inii!!!😭✨✨✨"</p>
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-buttermilk/30 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">T</div>
+                <div><p class="text-xs font-medium">Tiara</p><p class="text-xs text-gray-400">Shopee</p></div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="review-card shrink-0 w-[300px] bg-white rounded-2xl p-6 shadow-sm">
-          <div class="flex gap-1 mb-3">
-            <span class="text-accent text-sm">★★★★★</span>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed mb-4">"it's perfect as it is. 🔆 thank you for creating such a nice piece!!!"</p>
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-pastel-blue/50 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">D</div>
-            <div>
-              <p class="text-xs font-medium">Dian</p>
-              <p class="text-xs text-gray-400">Shopee</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="review-card shrink-0 w-[300px] bg-white rounded-2xl p-6 shadow-sm">
-          <div class="flex gap-1 mb-3">
-            <span class="text-accent text-sm">★★★★★</span>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed mb-4">"barang sampai dengan aman, kualitasnya oke sekaliii, dipasang di tumblr juga bagus! semoga awet"</p>
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-buttermilk/30 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">K</div>
-            <div>
-              <p class="text-xs font-medium">Khanisa</p>
-              <p class="text-xs text-gray-400">Shopee</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="review-card shrink-0 w-[300px] bg-white rounded-2xl p-6 shadow-sm">
-          <div class="flex gap-1 mb-3">
-            <span class="text-accent text-sm">★★★★★</span>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed mb-4">"Mantab banget sesuai foto komplit buat jurnaling, keren deh, sukakpuol"</p>
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-pastel-blue/50 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">D</div>
-            <div>
-              <p class="text-xs font-medium">Debora</p>
-              <p class="text-xs text-gray-400">Shopee</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="review-card shrink-0 w-[300px] bg-white rounded-2xl p-6 shadow-sm">
-          <div class="flex gap-1 mb-3">
-            <span class="text-accent text-sm">★★★★★</span>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed mb-4">"Puas bangettt..mana cantik bgt tulisannya. Di kasih bonus stiker byk bgt.. Makasii seller"</p>
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-buttermilk/30 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">V</div>
-            <div>
-              <p class="text-xs font-medium">Vidya</p>
-              <p class="text-xs text-gray-400">Shopee</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="review-card shrink-0 w-[300px] bg-white rounded-2xl p-6 shadow-sm">
-          <div class="flex gap-1 mb-3">
-            <span class="text-accent text-sm">★★★★★</span>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed mb-4">"LUCUUUU BANGET, akriliknya tebel, and the print is good quality! The packaging is good and adorable, the duck is sooo cute, suka banget!"</p>
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-pastel-blue/50 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">T</div>
-            <div>
-              <p class="text-xs font-medium">Trex</p>
-              <p class="text-xs text-gray-400">Shopee</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="review-card shrink-0 w-[300px] bg-white rounded-2xl p-6 shadow-sm">
-          <div class="flex gap-1 mb-3">
-            <span class="text-accent text-sm">★★★★★</span>
-          </div>
-          <p class="text-sm text-gray-600 leading-relaxed mb-4">"cuma beli satuu tp dpt free stikernya banyak bgtt😭 trs packingnya juga niatttt yaampuunnn😭💖💖✨ kaa maaf yaa cuma beli satu doangg, lain kali aku beli banyakk deh kl tau kaka nya sebaik inii!!!😭✨✨✨"</p>
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-buttermilk/30 rounded-full flex items-center justify-center text-xs font-medium text-burgundy">T</div>
-            <div>
-              <p class="text-xs font-medium">Tiara</p>
-              <p class="text-xs text-gray-400">Shopee</p>
-            </div>
-          </div>                                                                                                                                          
-        </div>
+        <!-- Arrow Right -->
+        <button id="reviews-next" class="absolute -right-2 sm:right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-burgundy hover:bg-burgundy hover:text-white transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
       </div>
-    </div>                                                  
-  </section>            
-
-  <style>
-    .reviews-track {
-      animation: scroll-reviews 40s linear infinite;
-    }
-    .reviews-track:hover {
-      animation-play-state: paused;
-    }
-    @keyframes scroll-reviews {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-  </style>
+    </div>
+  </section>
 
   <script is:inline>
-    // Duplicate review cards for seamless loop
     (function() {
       var track = document.getElementById('reviews-track');
-      if (!track) return;
-      var cards = track.innerHTML;
-      track.innerHTML = cards + cards;
+      var prev = document.getElementById('reviews-prev');
+      var next = document.getElementById('reviews-next');
+      if (!track || !prev || !next) return;
+
+      var pos = 0;
+      var cards = track.querySelectorAll('.review-card');
+      if (!cards.length) return;
+
+      function getCardWidth() {
+        return cards[0].offsetWidth + 24;
+      }
+
+      function getMaxPos() {
+        var viewport = document.getElementById('reviews-viewport');
+        return Math.max(0, track.scrollWidth - viewport.offsetWidth);
+      }
+
+      function update() {
+        track.style.transform = 'translateX(-' + pos + 'px)';
+      }
+
+      prev.addEventListener('click', function() {
+        pos = Math.max(0, pos - getCardWidth());
+        update();
+      });
+
+      next.addEventListener('click', function() {
+        pos = Math.min(getMaxPos(), pos + getCardWidth());
+        update();
+      });
     })();
   </script>
 
