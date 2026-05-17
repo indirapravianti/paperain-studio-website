@@ -156,7 +156,7 @@ serve(async (req) => {
     <div style="padding: 32px 40px; text-align: center;">
       <p style="margin: 0 0 16px; font-size: 13px; color: #888; line-height: 1.6;">
         if you have any questions regarding your order,<br/>feel free to contact us at
-        <a href="mailto:paperainstudio@gmail.com" style="color: #43302E; text-decoration: underline;">paperainstudio@gmail.com</a>
+        <a href="mailto:hello@paperainstudio.com" style="color: #43302E; text-decoration: underline;">hello@paperainstudio.com</a>
       </p>
       <div style="margin-top: 20px;">
         <a href="https://instagram.com/paperainstudio" style="display: inline-block; margin: 0 8px; color: #43302E; text-decoration: none; font-size: 12px;">instagram</a>
