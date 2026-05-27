@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # raw data files (not needed for deployment)
 /data/
+
+# private setup guides (not for public repo)
+/private/

@@ -64,6 +64,10 @@ import Layout from '../../layouts/Layout.astro';
             <span>discount (20%)</span>
             <span id="od-discount"></span>
           </div>
+          <div id="od-promo-row" class="flex justify-between text-green-600 hidden">
+            <span id="od-promo-label">promo</span>
+            <span id="od-promo-discount"></span>
+          </div>
           <div class="flex justify-between">
             <span class="text-gray-500">shipping fee</span>
             <span id="od-shipping"></span>
@@ -225,9 +229,17 @@ import Layout from '../../layouts/Layout.astro';
 
         // Price breakdown
         document.getElementById('od-subtotal').textContent = fmt(order.subtotal);
-        if (Number(order.discount) > 0) {
+        const promoDisc = Number(order.promo_discount) || 0;
+        const totalDisc = Number(order.discount) || 0;
+        const volumeDisc = totalDisc - promoDisc;
+        if (volumeDisc > 0) {
           document.getElementById('od-discount-row').classList.remove('hidden');
-          document.getElementById('od-discount').textContent = '-' + fmt(order.discount);
+          document.getElementById('od-discount').textContent = '-' + fmt(volumeDisc);
+        }
+        if (promoDisc > 0 && order.promo_code) {
+          document.getElementById('od-promo-row').classList.remove('hidden');
+          document.getElementById('od-promo-label').textContent = 'promo (' + order.promo_code + ')';
+          document.getElementById('od-promo-discount').textContent = '-' + fmt(promoDisc);
         }
         document.getElementById('od-shipping').textContent = Number(order.shipping_fee) > 0 ? fmt(order.shipping_fee) : 'free';
         document.getElementById('od-total').textContent = fmt(order.total);

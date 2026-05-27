@@ -115,10 +115,30 @@ serve(async (req) => {
         </tr>
         ${
           Number(order.discount) > 0
-            ? `<tr>
+            ? (() => {
+                const promoDiscount = Number(order.promo_discount) || 0;
+                const volumeDiscount = Number(order.discount) - promoDiscount;
+                let rows = "";
+                if (volumeDiscount > 0) {
+                  rows += `<tr>
           <td style="padding: 4px 0; color: #16a34a;">discount (20%)</td>
+          <td style="padding: 4px 0; text-align: right; color: #16a34a;">-${fmt(volumeDiscount)}</td>
+        </tr>`;
+                }
+                if (promoDiscount > 0 && order.promo_code) {
+                  rows += `<tr>
+          <td style="padding: 4px 0; color: #16a34a;">promo (${order.promo_code})</td>
+          <td style="padding: 4px 0; text-align: right; color: #16a34a;">-${fmt(promoDiscount)}</td>
+        </tr>`;
+                }
+                if (!rows && Number(order.discount) > 0) {
+                  rows = `<tr>
+          <td style="padding: 4px 0; color: #16a34a;">discount</td>
           <td style="padding: 4px 0; text-align: right; color: #16a34a;">-${fmt(order.discount)}</td>
-        </tr>`
+        </tr>`;
+                }
+                return rows;
+              })()
             : ""
         }
         <tr>

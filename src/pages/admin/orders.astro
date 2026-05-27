@@ -240,7 +240,16 @@ import Layout from '../../layouts/Layout.astro';
                 <span class="text-gray-400">subtotal</span>
                 <span>${fmtAmt(order.subtotal)}</span>
               </div>
-              ${Number(order.discount) > 0 ? `<div class="flex justify-between text-green-600"><span>discount</span><span>-${fmtAmt(order.discount)}</span></div>` : ''}
+              ${(() => {
+                const promoDisc = Number(order.promo_discount) || 0;
+                const totalDisc = Number(order.discount) || 0;
+                const volumeDisc = totalDisc - promoDisc;
+                let rows = '';
+                if (volumeDisc > 0) rows += `<div class="flex justify-between text-green-600"><span>discount (20%)</span><span>-${fmtAmt(volumeDisc)}</span></div>`;
+                if (promoDisc > 0 && order.promo_code) rows += `<div class="flex justify-between text-green-600"><span>promo (${order.promo_code})</span><span>-${fmtAmt(promoDisc)}</span></div>`;
+                if (!rows && totalDisc > 0) rows = `<div class="flex justify-between text-green-600"><span>discount</span><span>-${fmtAmt(totalDisc)}</span></div>`;
+                return rows;
+              })()}
               <div class="flex justify-between">
                 <span class="text-gray-400">shipping ${order.shipping_country ? '(' + order.shipping_country + ')' : ''}</span>
                 <span>${Number(order.shipping_fee) > 0 ? fmtAmt(order.shipping_fee) : 'free'}</span>
