@@ -1,0 +1,86 @@
+[
+  {
+    "region": "Asia",
+    "countries": [
+      { "name": "India", "days": 15 },
+      { "name": "Indonesia", "days": 16 },
+      { "name": "Vietnam", "days": 10 },
+      { "name": "Republic of Korea", "days": 10 },
+      { "name": "Singapore", "days": 9 },
+      { "name": "Sri Lanka", "days": 21 },
+      { "name": "Thailand", "days": 10 },
+      { "name": "Taiwan", "days": 9 },
+      { "name": "China (Shanghai)", "days": 11 },
+      { "name": "China (Beijing)", "days": 11 },
+      { "name": "Hong Kong", "days": 10 },
+      { "name": "Pakistan", "days": 16 },
+      { "name": "Bangladesh", "days": 17 },
+      { "name": "Philippines", "days": 19 },
+      { "name": "Malaysia", "days": 11 }
+    ]
+  },
+  {
+    "region": "Oceania",
+    "countries": [
+      { "name": "Australia", "days": 14 },
+      { "name": "New Zealand", "days": 16 }
+    ]
+  },
+  {
+    "region": "North America",
+    "countries": [
+      { "name": "Canada (Vancouver)", "days": 13 },
+      { "name": "Canada (Montreal)", "days": 13 },
+      { "name": "United States (San Francisco)", "days": 18 },
+      { "name": "United States (Chicago)", "days": 18 },
+      { "name": "United States (New York)", "days": 18 },
+      { "name": "United States (Los Angeles)", "days": 18 },
+      { "name": "Mexico", "days": 18 }
+    ]
+  },
+  {
+    "region": "Middle East",
+    "countries": [
+      { "name": "United Arab Emirates", "days": 16 },
+      { "name": "Israel", "days": 20 },
+      { "name": "Iran", "days": 17 },
+      { "name": "Saudi Arabia", "days": 20 },
+      { "name": "Turkey", "days": 18 }
+    ]
+  },
+  {
+    "region": "Europe",
+    "countries": [
+      { "name": "Italy", "days": 16 },
+      { "name": "United Kingdom", "days": 12 },
+      { "name": "Austria", "days": 18 },
+      { "name": "Netherlands", "days": 18 },
+      { "name": "Switzerland", "days": 14 },
+      { "name": "Sweden", "days": 14 },
+      { "name": "Spain", "days": 17 },
+      { "name": "Denmark", "days": 15 },
+      { "name": "Germany", "days": 12 },
+      { "name": "Hungary", "days": 19 },
+      { "name": "Finland", "days": 13 },
+      { "name": "France", "days": 13 },
+      { "name": "Belgium", "days": 14 },
+      { "name": "Poland", "days": 17 },
+      { "name": "Russian Federation", "days": 17 }
+    ]
+  },
+  {
+    "region": "Africa",
+    "countries": [
+      { "name": "Egypt", "days": 16 },
+      { "name": "Ghana", "days": 21 }
+    ]
+  },
+  {
+    "region": "South America",
+    "countries": [
+      { "name": "Argentina", "days": 16 },
+      { "name": "Brazil", "days": 17 },
+      { "name": "Peru", "days": 17 }
+    ]
+  }
+]

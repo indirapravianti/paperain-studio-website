@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import deliveryRegions from '../../data/delivery-days.json';
 ---
 
 <Layout title="Shipping & Refund">
@@ -12,6 +13,48 @@ import Layout from '../../layouts/Layout.astro';
         <li>Shipping times vary depending on your location.</li>
         <li>Tracking information will be provided once your order has shipped.</li>
       </ul>
+
+      <div class="space-y-4">
+        <h3 class="text-base font-medium text-gray-800">Estimated delivery times (air mail)</h3>
+        <p>
+          The table below shows the average number of business days for air mail delivery after your order has shipped.
+          These times are approximate and may vary due to customs, holidays, or local postal delays.
+        </p>
+
+        <div class="not-prose overflow-x-auto rounded-lg border border-gray-200">
+          <table class="w-full text-sm text-left">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th scope="col" class="px-4 py-3 font-medium text-gray-800">Region</th>
+                <th scope="col" class="px-4 py-3 font-medium text-gray-800">Country / area</th>
+                <th scope="col" class="px-4 py-3 font-medium text-gray-800 text-right whitespace-nowrap">Avg. days</th>
+              </tr>
+            </thead>
+            <tbody>
+              {deliveryRegions.map((region) =>
+                region.countries.map((country, index) => (
+                  <tr class="border-b border-gray-100 last:border-0">
+                    {index === 0 && (
+                      <td
+                        rowspan={region.countries.length}
+                        class="px-4 py-2.5 align-top font-medium text-gray-700 bg-gray-50/50 border-r border-gray-100"
+                      >
+                        {region.region}
+                      </td>
+                    )}
+                    <td class="px-4 py-2.5 text-gray-600">{country.name}</td>
+                    <td class="px-4 py-2.5 text-gray-600 text-right tabular-nums">{country.days}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-gray-500 italic">
+          If your country is not listed above, please contact us first so we can confirm whether we are able to ship to your location.
+        </p>
+      </div>
 
       <h2 class="text-lg font-medium text-gray-800">Refund</h2>
       <ul class="list-disc pl-5 space-y-2">
