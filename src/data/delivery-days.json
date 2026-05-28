@@ -3,16 +3,14 @@
     "region": "Asia",
     "countries": [
       { "name": "Bangladesh", "days": 17 },
-      { "name": "China (Beijing)", "days": 11 },
-      { "name": "China (Shanghai)", "days": 11 },
+      { "name": "China", "days": 11 },
       { "name": "Hong Kong", "days": 10 },
       { "name": "India", "days": 15 },
-      { "name": "Indonesia", "days": 16 },
       { "name": "Japan", "days": 10 },
       { "name": "Malaysia", "days": 11 },
       { "name": "Pakistan", "days": 16 },
       { "name": "Philippines", "days": 19 },
-      { "name": "Republic of Korea", "days": 10 },
+      { "name": "South Korea", "days": 10 },
       { "name": "Singapore", "days": 9 },
       { "name": "Sri Lanka", "days": 21 },
       { "name": "Taiwan", "days": 9 },
@@ -30,13 +28,9 @@
   {
     "region": "North America",
     "countries": [
-      { "name": "Canada (Montreal)", "days": 13 },
-      { "name": "Canada (Vancouver)", "days": 13 },
+      { "name": "Canada", "days": 13 },
       { "name": "Mexico", "days": 18 },
-      { "name": "United States (Chicago)", "days": 18 },
-      { "name": "United States (Los Angeles)", "days": 18 },
-      { "name": "United States (New York)", "days": 18 },
-      { "name": "United States (San Francisco)", "days": 18 }
+      { "name": "United States", "days": 18 }
     ]
   },
   {
