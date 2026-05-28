@@ -28,3 +28,4 @@ pnpm-debug.log*
 
 # private setup guides (not for public repo)
 /private/
+private/git-push-as-indirapravianti.md
