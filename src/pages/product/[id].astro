@@ -29,6 +29,22 @@ const categoryLabels: Record<string, string> = {
 const hasVariants = product.variants && product.variants.length > 0;
 const productImages = product.images && product.images.length > 0 ? product.images : [product.image];
 const hasMultipleImages = productImages.length > 1;
+
+const idrMap: Record<string, number> = {
+  'sticker sheet': 75000,
+  'keychain': 110000,
+  'griptok': 145000,
+  'phonestrap': 125000,
+  'postcard': 55000,
+  'artprint': 55000,
+  'greeting card': 85000,
+};
+const usdFallback: Record<number, number> = {
+  3: 55000, 3.5: 65000, 4: 75000, 4.5: 85000,
+  6: 110000, 7: 125000, 8: 145000,
+};
+const idrPrice = (product.category && idrMap[product.category]) ? idrMap[product.category] : (usdFallback[product.price] ?? Math.round(product.price * 16000));
+const idrFormatted = 'Rp' + idrPrice.toLocaleString('id-ID');
 ---
 
 <Layout title={product.title}>
@@ -71,7 +87,10 @@ const hasMultipleImages = productImages.length > 1;
           {categoryLabels[product.category] || product.category}
         </span>
         <h1 class="text-2xl sm:text-3xl font-semibold mb-3">{product.title}</h1>
-        <p class="text-2xl font-medium text-gray-800 mb-6" data-price-usd={product.price} data-price-category={product.category}>${product.price.toFixed(2)}</p>
+        <div class="mb-6" data-price-usd={product.price} data-price-category={product.category}>
+          <p class="text-2xl font-medium text-gray-800">${product.price.toFixed(2)}</p>
+          <p class="text-sm text-gray-400 mt-0.5">{idrFormatted}</p>
+        </div>
 
         {product.description ? (
           <p class="text-gray-500 text-sm leading-relaxed mb-8 whitespace-pre-line">{product.description}</p>
@@ -121,7 +140,7 @@ const hasMultipleImages = productImages.length > 1;
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
             </svg>
-            Spend $50 to get 20% off!
+            Spend $50 / Rp500,000 to get 20% off!
           </div>
         </div>
       </div>

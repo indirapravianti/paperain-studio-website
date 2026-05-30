@@ -78,7 +78,7 @@ import Layout from '../layouts/Layout.astro';
 
           <button type="submit" id="submit-btn"
             class="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary/80 transition-colors text-sm font-medium mt-4">
-            place order
+            proceed to payment
           </button>
         </form>
 
@@ -202,12 +202,8 @@ import Layout from '../layouts/Layout.astro';
 
     var currency = detectCurrency();
 
-    function getItemPrice(item) {
-      if (currency === 'IDR') {
-        if (item.category && IDR_CATEGORY_PRICES[item.category]) return IDR_CATEGORY_PRICES[item.category];
-        return IDR_PRICES[item.price] || Math.round(item.price * 16000);
-      }
-      return item.price;
+    function fmtDual(usd, idr) {
+      return '$' + usd.toFixed(2) + ' / Rp' + Math.round(idr).toLocaleString('id-ID');
     }
 
     function fmtTotal(val) {
@@ -215,32 +211,31 @@ import Layout from '../layouts/Layout.astro';
       return '$' + val.toFixed(2);
     }
 
-    function getShippingFee() {
-      if (cart.length === 0) return 0;
-      return currency === 'IDR' ? SHIPPING_FEE_IDR : SHIPPING_FEE_USD;
-    }
-
-    // Calculate item subtotal
-    var itemSubtotal = 0;
+    // Calculate item subtotals in both currencies
+    var itemSubtotalUsd = 0;
+    var itemSubtotalIdr = 0;
     if (cart.length === 0) {
       container.innerHTML = '<p class="text-sm text-gray-400">your cart is empty.</p>';
       document.getElementById('submit-btn').disabled = true;
       document.getElementById('submit-btn').classList.add('opacity-50', 'cursor-not-allowed');
     } else {
       container.innerHTML = cart.map(item => {
-        const p = getItemPrice(item);
-        itemSubtotal += p * item.qty;
+        var idr = getIdrEquivalent(item.price, item.category);
+        itemSubtotalUsd += item.price * item.qty;
+        itemSubtotalIdr += idr * item.qty;
         return `
           <div class="flex justify-between text-sm">
             <span class="text-gray-600">${item.title} × ${item.qty}</span>
-            <span>${fmtTotal(p * item.qty)}</span>
+            <span>${fmtDual(item.price * item.qty, idr * item.qty)}</span>
           </div>`;
       }).join('');
     }
 
-    function getVolumeDiscount() {
-      var discountThreshold = currency === 'IDR' ? 500000 : 50;
-      return itemSubtotal >= discountThreshold ? itemSubtotal * 0.2 : 0;
+    function getVolumeDiscountUsd() {
+      return itemSubtotalUsd >= 50 ? itemSubtotalUsd * 0.2 : 0;
+    }
+    function getVolumeDiscountIdr() {
+      return itemSubtotalIdr >= 500000 ? itemSubtotalIdr * 0.2 : 0;
     }
 
     function getPromoDiscount() {
@@ -248,13 +243,15 @@ import Layout from '../layouts/Layout.astro';
     }
 
     function updateTotals() {
-      var volumeDiscount = getVolumeDiscount();
+      var volDiscUsd = getVolumeDiscountUsd();
+      var volDiscIdr = getVolumeDiscountIdr();
       var promoDiscount = getPromoDiscount();
-      var shipping = getShippingFee();
+      var shippingUsd = cart.length > 0 ? SHIPPING_FEE_USD : 0;
+      var shippingIdr = cart.length > 0 ? SHIPPING_FEE_IDR : 0;
 
-      if (volumeDiscount > 0) {
+      if (volDiscUsd > 0) {
         discountRow.classList.remove('hidden');
-        discountEl.textContent = '-' + fmtTotal(volumeDiscount);
+        discountEl.textContent = '-' + fmtDual(volDiscUsd, volDiscIdr);
       } else {
         discountRow.classList.add('hidden');
       }
@@ -268,11 +265,13 @@ import Layout from '../layouts/Layout.astro';
       }
 
       if (cart.length > 0) {
-        shippingEl.textContent = fmtTotal(shipping);
-        totalEl.textContent = fmtTotal(itemSubtotal - volumeDiscount - promoDiscount + shipping);
+        shippingEl.textContent = fmtDual(shippingUsd, shippingIdr);
+        var totalUsd = itemSubtotalUsd - volDiscUsd - (currency === 'USD' ? promoDiscount : 0) + shippingUsd;
+        var totalIdr = itemSubtotalIdr - volDiscIdr - (currency === 'IDR' ? promoDiscount : 0) + shippingIdr;
+        totalEl.textContent = fmtDual(totalUsd, totalIdr);
       } else {
         shippingEl.textContent = '—';
-        totalEl.textContent = fmtTotal(0);
+        totalEl.textContent = fmtDual(0, 0);
       }
     }
 
@@ -316,7 +315,7 @@ import Layout from '../layouts/Layout.astro';
           body: JSON.stringify({
             code: code,
             currency: currency,
-            subtotal: itemSubtotal,
+            subtotal: currency === 'IDR' ? itemSubtotalIdr : itemSubtotalUsd,
           }),
         });
 
@@ -361,14 +360,14 @@ import Layout from '../layouts/Layout.astro';
       e.preventDefault();
       errorEl.classList.add('hidden');
       const btn = document.getElementById('submit-btn');
-      btn.textContent = 'placing order...';
+      btn.textContent = 'processing...';
       btn.disabled = true;
 
       const countryCode = document.getElementById('country').value;
       if (!countryCode) {
         errorEl.textContent = 'please select a shipping country.';
         errorEl.classList.remove('hidden');
-        btn.textContent = 'place order';
+        btn.textContent = 'proceed to payment';
         btn.disabled = false;
         return;
       }
@@ -424,16 +423,8 @@ import Layout from '../layouts/Layout.astro';
 
         localStorage.removeItem('paperain-cart');
         updateCartCount();
-        document.getElementById('checkout-form').classList.add('hidden');
-        document.getElementById('auth-notice')?.classList.add('hidden');
-        document.getElementById('order-success').classList.remove('hidden');
-        document.getElementById('order-id-display').textContent = order.display_id
-          ? order.display_id
-          : ('order #' + order.id.slice(0, 8));
 
-        if (user) {
-          document.getElementById('view-orders-link').classList.remove('hidden');
-        }
+        window.location.href = '/payment?id=' + order.id;
       } catch (err) {
         var msg = 'something went wrong. please try again later.';
         if (err.message === 'session') {
@@ -449,7 +440,7 @@ import Layout from '../layouts/Layout.astro';
         }
         errorEl.textContent = msg;
         errorEl.classList.remove('hidden');
-        btn.textContent = 'place order';
+        btn.textContent = 'proceed to payment';
         btn.disabled = false;
       }
     });

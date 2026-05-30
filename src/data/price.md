@@ -1,17 +1,17 @@
 IDR prices:
-- keychain: Rp20,000
-- artprint: Rp10.000
-- greeting cards: Rp14.000
-- sticker sheet: Rp13.000
-- phonestraps: Rp22.000
-- postcards: Rp10.000
-- phone grips: Rp27.000
+- sticker sheet: Rp75,000
+- postcard: Rp55,000
+- artprint: Rp55,000
+- greeting cards: Rp85,000
+- keychain: Rp110,000
+- phonestraps: Rp125,000
+- phone grips (griptok): Rp145,000
 
 USD prices:
-- keychain: 6 USD
-- artprint: 3 USD
-- greeting cards: 4.5 USD
-- sticker sheet: 4 USD
-- phonestraps: 7 USD
-- postcards: 3 USD
-- phone grips: 8 USD
+- sticker sheet: $4.00
+- postcard: $3.00
+- artprint: $3.00
+- greeting cards: $4.50
+- keychain: $6.00
+- phonestraps: $7.00
+- phone grips (griptok): $8.00

@@ -24,7 +24,17 @@ const { title = 'paperain studio' } = Astro.props;
     <link href="https://fonts.googleapis.com/css2?family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&family=Zalando+Sans+SemiExpanded:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet" />
     <meta name="supabase-url" content={import.meta.env.PUBLIC_SUPABASE_URL || ''} />
     <meta name="supabase-key" content={import.meta.env.PUBLIC_SUPABASE_ANON_KEY || ''} />
+    <meta name="midtrans-client-key" content={import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY || ''} />
     <title>{title} | paperain studio</title>
+    {import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY && (
+      <script
+        type="text/javascript"
+        src={import.meta.env.PUBLIC_MIDTRANS_ENV === 'production'
+          ? 'https://app.midtrans.com/snap/snap.js'
+          : 'https://app.sandbox.midtrans.com/snap/snap.js'}
+        data-client-key={import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY}
+      />
+    )}
   </head>
   <body class="min-h-screen flex flex-col">
     <AnnouncementBar />
@@ -63,23 +73,24 @@ const { title = 'paperain studio' } = Astro.props;
 
       // IDR price map keyed by category
       var IDR_CATEGORY_PRICES = {
-        'sticker sheet': 13000,
-        'keychain': 20000,
-        'griptok': 27000,
-        'phonestrap': 22000,
-        'postcard': 10000,
-        'artprint': 10000,
-        'greeting card': 14000
+        'sticker sheet': 75000,
+        'keychain': 110000,
+        'griptok': 145000,
+        'phonestrap': 125000,
+        'postcard': 55000,
+        'artprint': 55000,
+        'greeting card': 85000
       };
 
       // Fallback USD->IDR map for cart items (which don't carry category)
       var IDR_PRICES = {
-        4.00: 13000,
-        6.00: 20000,
-        8.00: 27000,
-        7.00: 22000,
-        3.00: 10000,
-        4.50: 14000
+        3.00: 55000,
+        3.50: 65000,
+        4.00: 75000,
+        4.50: 85000,
+        6.00: 110000,
+        7.00: 125000,
+        8.00: 145000
       };
 
       function getUserCurrency() {
@@ -108,26 +119,36 @@ const { title = 'paperain studio' } = Astro.props;
         return 'USD';
       }
 
+      function getIdrEquivalent(usdPrice, category) {
+        if (category && IDR_CATEGORY_PRICES[category]) {
+          return IDR_CATEGORY_PRICES[category];
+        }
+        return IDR_PRICES[usdPrice] || Math.round(usdPrice * 16000);
+      }
+
       function formatPrice(usdPrice, currency, category) {
         currency = currency || detectCurrency();
         if (currency === 'IDR') {
-          var idrPrice;
-          if (category && IDR_CATEGORY_PRICES[category]) {
-            idrPrice = IDR_CATEGORY_PRICES[category];
-          } else {
-            idrPrice = IDR_PRICES[usdPrice] || Math.round(usdPrice * 16000);
-          }
+          var idrPrice = getIdrEquivalent(usdPrice, category);
           return 'Rp' + idrPrice.toLocaleString('id-ID');
         }
         return '$' + usdPrice.toFixed(2);
       }
 
+      function formatDualPrice(usdPrice, category) {
+        var idrPrice = getIdrEquivalent(usdPrice, category);
+        return '$' + usdPrice.toFixed(2) + ' / Rp' + idrPrice.toLocaleString('id-ID');
+      }
+
       function updateAllPrices() {
-        var currency = detectCurrency();
         document.querySelectorAll('[data-price-usd]').forEach(function(el) {
           var usd = parseFloat(el.dataset.priceUsd);
           var cat = el.dataset.priceCategory || null;
-          el.textContent = formatPrice(usd, currency, cat);
+          var idr = getIdrEquivalent(usd, cat);
+          var idrStr = 'Rp' + idr.toLocaleString('id-ID');
+          if (el.tagName === 'P' || el.tagName === 'SPAN') {
+            el.textContent = '$' + usd.toFixed(2) + ' / ' + idrStr;
+          }
         });
       }
 
@@ -210,51 +231,39 @@ const { title = 'paperain studio' } = Astro.props;
         }
 
         footer.classList.remove('hidden');
-        var currency = detectCurrency();
 
-        function getItemPrice(item) {
-          if (currency === 'IDR') {
-            if (item.category && IDR_CATEGORY_PRICES[item.category]) {
-              return IDR_CATEGORY_PRICES[item.category];
-            }
-            return IDR_PRICES[item.price] || Math.round(item.price * 16000);
-          }
-          return item.price;
-        }
+        let subtotalUsd = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+        let subtotalIdr = cart.reduce((sum, item) => sum + getIdrEquivalent(item.price, item.category) * item.qty, 0);
 
-        let subtotal = cart.reduce((sum, item) => sum + getItemPrice(item) * item.qty, 0);
-        var discountThreshold = currency === 'IDR' ? 500000 : 50;
-        let discount = 0;
-        if (subtotal >= discountThreshold) {
-          discount = subtotal * 0.2;
-        }
-        const total = subtotal - discount;
+        let discountUsd = subtotalUsd >= 50 ? subtotalUsd * 0.2 : 0;
+        let discountIdr = subtotalIdr >= 500000 ? subtotalIdr * 0.2 : 0;
+        const totalUsd = subtotalUsd - discountUsd;
+        const totalIdr = subtotalIdr - discountIdr;
 
-        function formatTotal(val) {
-          if (currency === 'IDR') return 'Rp' + Math.round(val).toLocaleString('id-ID');
-          return '$' + val.toFixed(2);
-        }
-
-        if (discount > 0) {
+        if (discountUsd > 0) {
           discountEl.classList.remove('hidden');
-          discountEl.textContent = '20% discount applied! You save ' + formatTotal(discount);
+          discountEl.className = 'text-sm text-green-600 mb-2';
+          discountEl.textContent = '20% discount applied! You save $' + discountUsd.toFixed(2) + ' / Rp' + Math.round(discountIdr).toLocaleString('id-ID');
         } else {
-          discountEl.classList.add('hidden');
-          const remaining = discountThreshold - subtotal;
-          if (remaining > 0 && remaining <= (currency === 'IDR' ? 200000 : 20)) {
+          var remainingUsd = 50 - subtotalUsd;
+          if (remainingUsd > 0 && remainingUsd <= 20) {
             discountEl.classList.remove('hidden');
-            discountEl.textContent = 'Add ' + formatTotal(remaining) + ' more to get 20% off!';
             discountEl.className = 'text-sm text-amber-600 mb-2';
+            discountEl.textContent = 'Add $' + remainingUsd.toFixed(2) + ' more to get 20% off!';
+          } else {
+            discountEl.classList.add('hidden');
           }
         }
 
-        totalEl.textContent = formatTotal(total);
-        container.innerHTML = cart.map(item => `
+        totalEl.textContent = '$' + totalUsd.toFixed(2) + ' / Rp' + Math.round(totalIdr).toLocaleString('id-ID');
+        container.innerHTML = cart.map(item => {
+          var idr = getIdrEquivalent(item.price, item.category);
+          return `
           <div class="flex gap-4 py-4 border-b border-gray-50">
             <img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded-lg" />
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium truncate">${item.title}</p>
-              <p class="text-sm text-gray-500">${formatPrice(item.price, currency, item.category)}</p>
+              <p class="text-sm text-gray-500">$${item.price.toFixed(2)} / Rp${idr.toLocaleString('id-ID')}</p>
               <div class="flex items-center gap-2 mt-1">
                 <button onclick="updateQty('${item.id}', -1)" class="w-6 h-6 rounded border border-gray-200 text-xs hover:bg-gray-50">−</button>
                 <span class="text-sm">${item.qty}</span>
@@ -262,8 +271,8 @@ const { title = 'paperain studio' } = Astro.props;
               </div>
             </div>
             <button onclick="removeFromCart('${item.id}')" class="text-gray-300 hover:text-red-400 text-lg self-start">&times;</button>
-          </div>
-        `).join('');
+          </div>`;
+        }).join('');
       }
 
       // Auth: token refresh + auto-logout on expiry

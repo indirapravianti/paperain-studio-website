@@ -5,22 +5,23 @@ export const VOLUME_DISCOUNT_THRESHOLD_IDR = 500000;
 export const VOLUME_DISCOUNT_RATE = 0.2;
 
 export const IDR_CATEGORY_PRICES: Record<string, number> = {
-  "sticker sheet": 13000,
-  keychain: 20000,
-  griptok: 27000,
-  phonestrap: 22000,
-  postcard: 10000,
-  artprint: 10000,
-  "greeting card": 14000,
+  "sticker sheet": 75000,
+  keychain: 110000,
+  griptok: 145000,
+  phonestrap: 125000,
+  postcard: 55000,
+  artprint: 55000,
+  "greeting card": 85000,
 };
 
 export const IDR_USD_FALLBACK: Record<number, number> = {
-  4: 13000,
-  6: 20000,
-  8: 27000,
-  7: 22000,
-  3: 10000,
-  4.5: 14000,
+  3: 55000,
+  3.5: 65000,
+  4: 75000,
+  4.5: 85000,
+  6: 110000,
+  7: 125000,
+  8: 145000,
 };
 
 export type CartLine = {
