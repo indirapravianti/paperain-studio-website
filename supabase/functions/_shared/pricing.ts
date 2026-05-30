@@ -39,6 +39,7 @@ export type PricedLine = {
   image: string | null;
 };
 
+/** @deprecated Use resolveCartLineId() in place-order for DB-backed resolution. */
 export function parseCartLineId(id: string) {
   const parts = id.split("-");
   if (parts.length > 2) {
@@ -48,6 +49,36 @@ export function parseCartLineId(id: string) {
     };
   }
   return { product_id: id, variant_id: null };
+}
+
+export async function resolveCartLineId(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  id: string,
+): Promise<
+  { product_id: string; variant_id: string | null } | { error: string }
+> {
+  const { data: variant } = await supabase
+    .from("product_variants")
+    .select("id, product_id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (variant) {
+    return { product_id: variant.product_id, variant_id: variant.id };
+  }
+
+  const { data: product } = await supabase
+    .from("products")
+    .select("id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (product) {
+    return { product_id: product.id, variant_id: null };
+  }
+
+  return { error: `product not found: ${id}` };
 }
 
 export function getIdrPrice(usdPrice: number, category?: string | null) {

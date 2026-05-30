@@ -5,7 +5,7 @@ import {
   getIdrPrice,
   getShippingFee,
   getVolumeDiscount,
-  parseCartLineId,
+  resolveCartLineId,
   roundMoney,
   type PricedLine,
 } from "../_shared/pricing.ts";
@@ -45,7 +45,11 @@ async function priceCartItems(
       return { error: "invalid cart item" };
     }
 
-    const { product_id, variant_id } = parseCartLineId(item.id);
+    const resolved = await resolveCartLineId(supabase, item.id);
+    if ("error" in resolved) {
+      return { error: resolved.error };
+    }
+    const { product_id, variant_id } = resolved;
 
     const { data: product, error } = await supabase
       .from("products")
@@ -112,6 +116,18 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+    let resolvedCustomerId: string | null = customer_id || null;
+    if (resolvedCustomerId) {
+      const { data: customer } = await supabase
+        .from("customers")
+        .select("id")
+        .eq("id", resolvedCustomerId)
+        .maybeSingle();
+      if (!customer) {
+        resolvedCustomerId = null;
+      }
+    }
+
     const priced = await priceCartItems(supabase, items, currency);
     if ("error" in priced) {
       return jsonResponse({ error: priced.error }, 400);
@@ -143,7 +159,7 @@ serve(async (req) => {
     const total = subtotal - totalDiscount + shippingFee;
 
     const orderData = {
-      customer_id: customer_id || null,
+      customer_id: resolvedCustomerId,
       status: "pending",
       currency,
       subtotal: roundMoney(subtotal, currency),

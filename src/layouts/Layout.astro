@@ -152,6 +152,15 @@ const { title = 'paperain studio' } = Astro.props;
         });
       }
 
+      function getApiAuthHeader() {
+        var key = document.querySelector('meta[name="supabase-key"]')?.content;
+        var token = localStorage.getItem('sb-access-token');
+        if (token && !isTokenExpired(token)) {
+          return 'Bearer ' + token;
+        }
+        return 'Bearer ' + (key || '');
+      }
+
       function getCart() {
         try { return JSON.parse(localStorage.getItem('paperain-cart') || '[]'); }
         catch { return []; }

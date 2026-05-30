@@ -144,19 +144,19 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </div>
   </section>
-</Layout>
 
-<script is:inline>
-  (function() {
-    const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
-    const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content;
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function() {
+    (function() {
+      const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
+      const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content;
 
-    function getUser() {
-      try { return JSON.parse(localStorage.getItem('sb-user')); } catch { return null; }
-    }
-    function getToken() { return localStorage.getItem('sb-access-token'); }
+      function getUser() {
+        try { return JSON.parse(localStorage.getItem('sb-user')); } catch { return null; }
+      }
+      function getToken() { return localStorage.getItem('sb-access-token'); }
 
-    const cart = getCart();
+      const cart = getCart();
     const container = document.getElementById('checkout-items');
     const totalEl = document.getElementById('checkout-total');
     const discountRow = document.getElementById('checkout-discount-row');
@@ -187,7 +187,7 @@ import Layout from '../layouts/Layout.astro';
       if (!SUPABASE_URL || !SUPABASE_KEY || !user) return;
       try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/customers?id=eq.${user.id}&select=*`, {
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + getToken() },
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': getApiAuthHeader() },
         });
         const data = await res.json();
         if (data && data.length > 0) {
@@ -310,7 +310,7 @@ import Layout from '../layouts/Layout.astro';
           headers: {
             'Content-Type': 'application/json',
             'apikey': SUPABASE_KEY,
-            'Authorization': 'Bearer ' + (getToken() || SUPABASE_KEY),
+            'Authorization': getApiAuthHeader(),
           },
           body: JSON.stringify({
             code: code,
@@ -386,7 +386,7 @@ import Layout from '../layouts/Layout.astro';
           headers: {
             'Content-Type': 'application/json',
             'apikey': SUPABASE_KEY,
-            'Authorization': 'Bearer ' + (getToken() || SUPABASE_KEY),
+            'Authorization': getApiAuthHeader(),
           },
           body: JSON.stringify({
             items: cart.map(item => ({
@@ -407,7 +407,12 @@ import Layout from '../layouts/Layout.astro';
           }),
         });
 
-        const result = await orderRes.json();
+        var result = {};
+        try {
+          result = await orderRes.json();
+        } catch (parseErr) {
+          throw new Error('invalid_response');
+        }
 
         if (!orderRes.ok) {
           if (orderRes.status === 401 || orderRes.status === 403) {
@@ -416,10 +421,16 @@ import Layout from '../layouts/Layout.astro';
           if (result.error && result.error.includes('promo')) {
             throw new Error('promo_invalid');
           }
-          throw new Error('order_failed');
+          if (result.error && result.error.includes('items failed')) {
+            throw new Error('items_failed');
+          }
+          throw new Error(result.error || 'order_failed');
         }
 
         const order = result.order;
+        if (!order || !order.id) {
+          throw new Error('invalid_order_response');
+        }
 
         localStorage.removeItem('paperain-cart');
         updateCartCount();
@@ -433,10 +444,16 @@ import Layout from '../layouts/Layout.astro';
           msg = 'your promo code is no longer valid. please remove it or try another code.';
           appliedPromo = null;
           updateTotals();
-        } else if (err.message === 'order_failed') {
+        } else if (err.message === 'order_failed' || err.message === 'invalid_order_response' || err.message === 'invalid_response') {
           msg = 'we couldn\'t process your order right now. please try again in a moment.';
         } else if (err.message === 'items_failed') {
           msg = 'your order was created but we had trouble saving the items. please contact us.';
+        } else if (err.message && err.message.startsWith('product not found')) {
+          msg = 'one or more items in your cart are no longer available. please refresh your cart and try again.';
+        } else if (err.message === 'could not create order') {
+          msg = 'we couldn\'t save your order. please try again in a moment.';
+        } else if (err.message && err.message.length < 120) {
+          msg = err.message;
         }
         errorEl.textContent = msg;
         errorEl.classList.remove('hidden');
@@ -445,4 +462,6 @@ import Layout from '../layouts/Layout.astro';
       }
     });
   })();
-</script>
+    });
+  </script>
+</Layout>
