@@ -282,48 +282,9 @@ import Layout from '../layouts/Layout.astro';
         return;
       }
 
-      if (!SUPABASE_URL || !SUPABASE_KEY) {
-        setPromoMessage('promo codes are not available in demo mode', true);
-        return;
-      }
-
-      promoApplyBtn.disabled = true;
-      promoApplyBtn.textContent = 'checking...';
-      setPromoMessage('', false);
-
-      try {
-        var res = await fetch(SUPABASE_URL + '/functions/v1/validate-promo', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_KEY,
-            'Authorization': 'Bearer ' + (getToken() || SUPABASE_KEY),
-          },
-          body: JSON.stringify({
-            code: code,
-            currency: currency,
-            subtotal: itemSubtotal,
-          }),
-        });
-
-        var data = await res.json();
-
-        if (!data.valid) {
-          appliedPromo = null;
-          setPromoMessage(data.message || 'invalid promo code', true);
-        } else {
-          appliedPromo = data;
-          setPromoMessage(data.description || 'promo code applied!', false);
-        }
-        updateTotals();
-      } catch {
-        appliedPromo = null;
-        setPromoMessage('could not validate promo code. try again.', true);
-        updateTotals();
-      } finally {
-        promoApplyBtn.disabled = false;
-        promoApplyBtn.textContent = 'apply';
-      }
+      appliedPromo = null;
+      setPromoMessage('promo codes are coming soon!', true);
+      updateTotals();
     }
 
     promoApplyBtn.addEventListener('click', applyPromoCode);
@@ -340,14 +301,14 @@ import Layout from '../layouts/Layout.astro';
       document.getElementById('country').value = 'ID';
     }
 
-    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+    document.getElementById('checkout-form').addEventListener('submit', function(e) {
       e.preventDefault();
       errorEl.classList.add('hidden');
-      const btn = document.getElementById('submit-btn');
+      var btn = document.getElementById('submit-btn');
       btn.textContent = 'placing order...';
       btn.disabled = true;
 
-      const countryCode = document.getElementById('country').value;
+      var countryCode = document.getElementById('country').value;
       if (!countryCode) {
         errorEl.textContent = 'please select a shipping country.';
         errorEl.classList.remove('hidden');
@@ -356,103 +317,63 @@ import Layout from '../layouts/Layout.astro';
         return;
       }
 
-      if (!SUPABASE_URL || !SUPABASE_KEY) {
-        localStorage.removeItem('paperain-cart');
-        updateCartCount();
-        window.location.href = '/payment?demo=1';
-        return;
-      }
+      var volumeDiscount = getVolumeDiscount();
+      var promoDiscount = getPromoDiscount();
+      var shipping = getShippingFee();
+
+      var subtotalUsd = cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
+      var subtotalIdr = cart.reduce(function(s, i) { return s + getIdrEquivalent(i.price, i.category) * i.qty; }, 0);
+      var volDiscUsd = subtotalUsd >= 50 ? subtotalUsd * 0.2 : 0;
+      var volDiscIdr = subtotalIdr >= 500000 ? subtotalIdr * 0.2 : 0;
+      var totalUsd = subtotalUsd - volDiscUsd + SHIPPING_FEE_USD;
+      var totalIdr = subtotalIdr - volDiscIdr + SHIPPING_FEE_IDR;
+
+      var localOrderId = 'ORD-' + Date.now().toString(36).toUpperCase();
 
       try {
-        const orderRes = await fetch(`${SUPABASE_URL}/functions/v1/place-order`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_KEY,
-            'Authorization': 'Bearer ' + (getToken() || SUPABASE_KEY),
-          },
-          body: JSON.stringify({
-            items: cart.map(item => ({
-              id: item.id,
+        sessionStorage.setItem('paperain-pending-payment', JSON.stringify({
+          order: { id: localOrderId, display_id: localOrderId },
+          items: cart.map(function(item) {
+            return {
               title: item.title,
               qty: item.qty,
-              image: item.image,
-            })),
-            currency: currency,
-            promo_code: appliedPromo ? appliedPromo.code : (promoCodeInput.value.trim() || null),
-            shipping_name: document.getElementById('name').value,
-            shipping_email: document.getElementById('email').value,
-            shipping_phone: document.getElementById('phone').value,
-            shipping_address: document.getElementById('address').value,
-            shipping_country: countryCode,
-            notes: document.getElementById('notes').value || null,
-            customer_id: user ? user.id : null,
+              priceUsd: item.price,
+              priceIdr: getIdrEquivalent(item.price, item.category),
+            };
           }),
-        });
-
-        const result = await orderRes.json();
-
-        if (!orderRes.ok) {
-          if (orderRes.status === 401 || orderRes.status === 403) {
-            throw new Error('session');
-          }
-          if (result.error && result.error.includes('promo')) {
-            throw new Error('promo_invalid');
-          }
-          throw new Error('order_failed');
-        }
-
-        const order = result.order;
-        const volumeDiscount = getVolumeDiscount();
-        const promoDiscount = getPromoDiscount();
-        const shipping = getShippingFee();
-
-        try {
-          sessionStorage.setItem('paperain-pending-payment', JSON.stringify({
-            order: order,
-            items: cart.map(item => ({
-              title: item.title,
-              qty: item.qty,
-              price: getItemPrice(item),
-            })),
-            summary: {
-              subtotal: itemSubtotal,
-              volumeDiscount: volumeDiscount,
-              promoDiscount: promoDiscount,
-              promoCode: appliedPromo ? appliedPromo.code : null,
-              shipping: shipping,
-              total: itemSubtotal - volumeDiscount - promoDiscount + shipping,
-            },
-            shipping: {
-              name: document.getElementById('name').value,
-              email: document.getElementById('email').value,
-              address: document.getElementById('address').value,
-            },
-            currency: currency,
-          }));
-        } catch {}
-
-        localStorage.removeItem('paperain-cart');
-        updateCartCount();
-        window.location.href = '/payment?id=' + order.id;
-      } catch (err) {
-        var msg = 'something went wrong. please try again later.';
-        if (err.message === 'session') {
-          msg = 'your session has expired. please sign in again to place your order.';
-        } else if (err.message === 'promo_invalid') {
-          msg = 'your promo code is no longer valid. please remove it or try another code.';
-          appliedPromo = null;
-          updateTotals();
-        } else if (err.message === 'order_failed') {
-          msg = 'we couldn\'t process your order right now. please try again in a moment.';
-        } else if (err.message === 'Failed to fetch') {
-          msg = 'could not reach our server. please check your connection and try again.';
-        }
-        errorEl.textContent = msg;
+          summary: {
+            subtotalUsd: subtotalUsd,
+            subtotalIdr: subtotalIdr,
+            volumeDiscountUsd: volDiscUsd,
+            volumeDiscountIdr: volDiscIdr,
+            promoDiscount: promoDiscount,
+            promoCode: appliedPromo ? appliedPromo.code : null,
+            shippingUsd: SHIPPING_FEE_USD,
+            shippingIdr: SHIPPING_FEE_IDR,
+            totalUsd: totalUsd,
+            totalIdr: totalIdr,
+          },
+          shipping: {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            address: document.getElementById('address').value,
+            country: countryCode,
+          },
+          notes: document.getElementById('notes').value || null,
+          currency: currency,
+        }));
+      } catch (storageErr) {
+        errorEl.textContent = 'could not save order data. please try again.';
         errorEl.classList.remove('hidden');
         btn.textContent = 'proceed to payment';
         btn.disabled = false;
+        return;
       }
+
+      localStorage.removeItem('paperain-cart');
+      updateCartCount();
+      window.location.href = '/payment?id=' + localOrderId;
     });
   })();
 </script>

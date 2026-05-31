@@ -173,67 +173,53 @@ import Layout from '../layouts/Layout.astro';
   (function() {
     var params = new URLSearchParams(window.location.search);
     var orderId = params.get('id');
-    var isDemo = params.get('demo') === '1';
 
     var data = null;
     try {
       data = JSON.parse(sessionStorage.getItem('paperain-pending-payment'));
     } catch {}
 
-    if (!data && !isDemo) {
+    if (!data) {
       document.getElementById('payment-error').classList.remove('hidden');
       return;
     }
 
-    if (isDemo && !data) {
-      data = {
-        order: { id: 'demo', display_id: 'demo order' },
-        items: [],
-        summary: { subtotal: 0, volumeDiscount: 0, promoDiscount: 0, shipping: 0, total: 0 },
-        shipping: { name: 'demo', email: 'demo@example.com', address: '' },
-        currency: 'USD',
-      };
-    }
-
-    if (orderId && data && data.order && data.order.id !== orderId) {
+    if (orderId && data.order && data.order.id !== orderId) {
       document.getElementById('payment-error').classList.remove('hidden');
       return;
     }
 
-    var currency = data.currency || 'USD';
-
-    function fmt(val) {
-      if (currency === 'IDR') return 'Rp' + Math.round(Number(val)).toLocaleString('id-ID');
-      return '$' + Number(val).toFixed(2);
+    function fmtDual(usd, idr) {
+      return '$' + Number(usd).toFixed(2) + ' / Rp' + Math.round(idr).toLocaleString('id-ID');
     }
 
     document.getElementById('payment-content').classList.remove('hidden');
-    document.getElementById('pay-order-id').textContent = data.order.display_id
-      ? data.order.display_id
-      : ('order #' + (data.order.id || '').slice(0, 8));
+    document.getElementById('pay-order-id').textContent = data.order.display_id || data.order.id || '';
 
     var itemsEl = document.getElementById('pay-items');
     itemsEl.innerHTML = (data.items || []).map(function(item) {
+      var usd = (item.priceUsd || item.price || 0) * item.qty;
+      var idr = (item.priceIdr || 0) * item.qty;
       return '<div class="flex justify-between text-sm">' +
-        '<span class="text-gray-600">' + item.title + ' × ' + item.qty + '</span>' +
-        '<span>' + fmt(item.price * item.qty) + '</span></div>';
+        '<span class="text-gray-600">' + item.title + ' &times; ' + item.qty + '</span>' +
+        '<span>' + fmtDual(usd, idr) + '</span></div>';
     }).join('') || '<p class="text-sm text-gray-400">no items</p>';
 
     var s = data.summary || {};
-    document.getElementById('pay-subtotal').textContent = fmt(s.subtotal || 0);
+    document.getElementById('pay-subtotal').textContent = fmtDual(s.subtotalUsd || 0, s.subtotalIdr || 0);
 
-    if (s.volumeDiscount > 0) {
+    if ((s.volumeDiscountUsd || 0) > 0 || (s.volumeDiscountIdr || 0) > 0) {
       document.getElementById('pay-discount-row').classList.remove('hidden');
-      document.getElementById('pay-discount').textContent = '-' + fmt(s.volumeDiscount);
+      document.getElementById('pay-discount').textContent = '-' + fmtDual(s.volumeDiscountUsd || 0, s.volumeDiscountIdr || 0);
     }
-    if (s.promoDiscount > 0) {
+    if ((s.promoDiscount || 0) > 0) {
       document.getElementById('pay-promo-row').classList.remove('hidden');
       document.getElementById('pay-promo-label').textContent = s.promoCode ? 'promo (' + s.promoCode + ')' : 'promo';
-      document.getElementById('pay-promo-discount').textContent = '-' + fmt(s.promoDiscount);
+      document.getElementById('pay-promo-discount').textContent = '-$' + Number(s.promoDiscount).toFixed(2);
     }
 
-    document.getElementById('pay-shipping').textContent = (s.shipping > 0) ? fmt(s.shipping) : 'free';
-    document.getElementById('pay-total').textContent = fmt(s.total || data.order.total || 0);
+    document.getElementById('pay-shipping').textContent = fmtDual(s.shippingUsd || 0, s.shippingIdr || 0);
+    document.getElementById('pay-total').textContent = fmtDual(s.totalUsd || 0, s.totalIdr || 0);
 
     if (data.shipping) {
       document.getElementById('pay-ship-name').textContent = data.shipping.name || '';
