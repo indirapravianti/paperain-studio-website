@@ -149,8 +149,7 @@ import Layout from '../layouts/Layout.astro';
     const user = getUser();
 
     var appliedPromo = null;
-    var SHIPPING_FEE_USD = 3;
-    var SHIPPING_FEE_IDR = 48000;
+    var SHIPPING_FEE = 3;
 
     if (!user) {
       document.getElementById('auth-notice').classList.remove('hidden');
@@ -175,28 +174,8 @@ import Layout from '../layouts/Layout.astro';
       } catch {}
     }
 
-    var currency = detectCurrency();
-
-    function getItemPrice(item) {
-      if (currency === 'IDR') {
-        if (item.category && IDR_CATEGORY_PRICES[item.category]) return IDR_CATEGORY_PRICES[item.category];
-        return IDR_PRICES[item.price] || Math.round(item.price * 16000);
-      }
-      return item.price;
-    }
-
-    function fmtDual(usd, idr) {
-      return '$' + Number(usd).toFixed(2) + ' / Rp' + Math.round(idr).toLocaleString('id-ID');
-    }
-
-    function fmtTotal(val) {
-      if (currency === 'IDR') return 'Rp' + Math.round(val).toLocaleString('id-ID');
-      return '$' + val.toFixed(2);
-    }
-
-    function getShippingFee() {
-      if (cart.length === 0) return 0;
-      return currency === 'IDR' ? SHIPPING_FEE_IDR : SHIPPING_FEE_USD;
+    function fmt(val) {
+      return '$' + Number(val).toFixed(2);
     }
 
     var itemSubtotal = 0;
@@ -206,20 +185,17 @@ import Layout from '../layouts/Layout.astro';
       document.getElementById('submit-btn').classList.add('opacity-50', 'cursor-not-allowed');
     } else {
       container.innerHTML = cart.map(item => {
-        const p = getItemPrice(item);
-        const idr = getIdrEquivalent(item.price, item.category);
-        itemSubtotal += p * item.qty;
+        itemSubtotal += item.price * item.qty;
         return `
           <div class="flex justify-between text-sm">
             <span class="text-gray-600">${item.title} × ${item.qty}</span>
-            <span>${fmtDual(item.price * item.qty, idr * item.qty)}</span>
+            <span>${fmt(item.price * item.qty)}</span>
           </div>`;
       }).join('');
     }
 
     function getVolumeDiscount() {
-      var discountThreshold = currency === 'IDR' ? 500000 : 50;
-      return itemSubtotal >= discountThreshold ? itemSubtotal * 0.2 : 0;
+      return itemSubtotal >= 50 ? itemSubtotal * 0.2 : 0;
     }
 
     function getPromoDiscount() {
@@ -229,16 +205,13 @@ import Layout from '../layouts/Layout.astro';
     function updateTotals() {
       var volumeDiscount = getVolumeDiscount();
       var promoDiscount = getPromoDiscount();
-      var shipping = getShippingFee();
 
-      var subtotalUsd = cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
-      var subtotalIdr = cart.reduce(function(s, i) { return s + getIdrEquivalent(i.price, i.category) * i.qty; }, 0);
-      var volDiscUsd = subtotalUsd >= 50 ? subtotalUsd * 0.2 : 0;
-      var volDiscIdr = subtotalIdr >= 500000 ? subtotalIdr * 0.2 : 0;
+      var subtotal = cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
+      var volDisc = subtotal >= 50 ? subtotal * 0.2 : 0;
 
-      if (volDiscUsd > 0 || volDiscIdr > 0) {
+      if (volDisc > 0) {
         discountRow.classList.remove('hidden');
-        discountEl.textContent = '-' + fmtDual(volDiscUsd, volDiscIdr);
+        discountEl.textContent = '-' + fmt(volDisc);
       } else {
         discountRow.classList.add('hidden');
       }
@@ -246,19 +219,18 @@ import Layout from '../layouts/Layout.astro';
       if (promoDiscount > 0 && appliedPromo) {
         promoRow.classList.remove('hidden');
         promoLabel.textContent = 'promo (' + appliedPromo.code + ')';
-        promoDiscountEl.textContent = '-' + fmtTotal(promoDiscount);
+        promoDiscountEl.textContent = '-' + fmt(promoDiscount);
       } else {
         promoRow.classList.add('hidden');
       }
 
       if (cart.length > 0) {
-        shippingEl.textContent = fmtDual(SHIPPING_FEE_USD, SHIPPING_FEE_IDR);
-        var totalUsd = subtotalUsd - volDiscUsd - (currency === 'USD' ? promoDiscount : 0) + SHIPPING_FEE_USD;
-        var totalIdr = subtotalIdr - volDiscIdr - (currency === 'IDR' ? promoDiscount : 0) + SHIPPING_FEE_IDR;
-        totalEl.textContent = fmtDual(totalUsd, totalIdr);
+        shippingEl.textContent = fmt(SHIPPING_FEE);
+        var total = subtotal - volDisc - promoDiscount + SHIPPING_FEE;
+        totalEl.textContent = fmt(total);
       } else {
         shippingEl.textContent = '—';
-        totalEl.textContent = fmtDual(0, 0);
+        totalEl.textContent = fmt(0);
       }
     }
 
@@ -297,10 +269,6 @@ import Layout from '../layouts/Layout.astro';
 
     updateTotals();
 
-    if (currency === 'IDR') {
-      document.getElementById('country').value = 'ID';
-    }
-
     document.getElementById('checkout-form').addEventListener('submit', function(e) {
       e.preventDefault();
       errorEl.classList.add('hidden');
@@ -319,14 +287,10 @@ import Layout from '../layouts/Layout.astro';
 
       var volumeDiscount = getVolumeDiscount();
       var promoDiscount = getPromoDiscount();
-      var shipping = getShippingFee();
 
-      var subtotalUsd = cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
-      var subtotalIdr = cart.reduce(function(s, i) { return s + getIdrEquivalent(i.price, i.category) * i.qty; }, 0);
-      var volDiscUsd = subtotalUsd >= 50 ? subtotalUsd * 0.2 : 0;
-      var volDiscIdr = subtotalIdr >= 500000 ? subtotalIdr * 0.2 : 0;
-      var totalUsd = subtotalUsd - volDiscUsd + SHIPPING_FEE_USD;
-      var totalIdr = subtotalIdr - volDiscIdr + SHIPPING_FEE_IDR;
+      var subtotal = cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
+      var volDisc = subtotal >= 50 ? subtotal * 0.2 : 0;
+      var total = subtotal - volDisc - promoDiscount + SHIPPING_FEE;
 
       var localOrderId = 'ORD-' + Date.now().toString(36).toUpperCase();
 
@@ -335,23 +299,21 @@ import Layout from '../layouts/Layout.astro';
           order: { id: localOrderId, display_id: localOrderId },
           items: cart.map(function(item) {
             return {
+              id: item.id,
               title: item.title,
               qty: item.qty,
-              priceUsd: item.price,
-              priceIdr: getIdrEquivalent(item.price, item.category),
+              price: item.price,
+              image: item.image,
+              category: item.category,
             };
           }),
           summary: {
-            subtotalUsd: subtotalUsd,
-            subtotalIdr: subtotalIdr,
-            volumeDiscountUsd: volDiscUsd,
-            volumeDiscountIdr: volDiscIdr,
+            subtotal: subtotal,
+            volumeDiscount: volDisc,
             promoDiscount: promoDiscount,
             promoCode: appliedPromo ? appliedPromo.code : null,
-            shippingUsd: SHIPPING_FEE_USD,
-            shippingIdr: SHIPPING_FEE_IDR,
-            totalUsd: totalUsd,
-            totalIdr: totalIdr,
+            shipping: SHIPPING_FEE,
+            total: total,
           },
           shipping: {
             name: document.getElementById('name').value,
@@ -361,7 +323,7 @@ import Layout from '../layouts/Layout.astro';
             country: countryCode,
           },
           notes: document.getElementById('notes').value || null,
-          currency: currency,
+          currency: 'USD',
         }));
       } catch (storageErr) {
         errorEl.textContent = 'could not save order data. please try again.';

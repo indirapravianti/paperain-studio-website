@@ -65,91 +65,8 @@ const { title = 'paperain studio' } = Astro.props;
     </div>
 
     <script is:inline>
-      // Locale & pricing utilities
-      var PRICING = {
-        USD: { symbol: '$', rate: 1 },
-        IDR: { symbol: 'Rp', rate: 1 }
-      };
-
-      // IDR price map keyed by category
-      var IDR_CATEGORY_PRICES = {
-        'sticker sheet': 75000,
-        'keychain': 110000,
-        'griptok': 145000,
-        'phonestrap': 125000,
-        'postcard': 55000,
-        'artprint': 55000,
-        'greeting card': 85000
-      };
-
-      // Fallback USD->IDR map for cart items (which don't carry category)
-      var IDR_PRICES = {
-        3.00: 55000,
-        3.50: 65000,
-        4.00: 75000,
-        4.50: 85000,
-        6.00: 110000,
-        7.00: 125000,
-        8.00: 145000
-      };
-
-      function getUserCurrency() {
-        try {
-          var saved = localStorage.getItem('paperain-currency');
-          if (saved) return saved;
-        } catch(e) {}
-        return null;
-      }
-
-      function setUserCurrency(currency) {
-        try { localStorage.setItem('paperain-currency', currency); } catch(e) {}
-      }
-
-      function detectCurrency() {
-        var saved = getUserCurrency();
-        if (saved) return saved;
-        
-        try {
-          var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-          var lang = navigator.language || '';
-          if (tz.indexOf('Asia/Jakarta') !== -1 || tz.indexOf('Asia/Makassar') !== -1 || tz.indexOf('Asia/Jayapura') !== -1 || lang.indexOf('id') !== -1) {
-            return 'IDR';
-          }
-        } catch(e) {}
-        return 'USD';
-      }
-
-      function getIdrEquivalent(usdPrice, category) {
-        if (category && IDR_CATEGORY_PRICES[category]) {
-          return IDR_CATEGORY_PRICES[category];
-        }
-        return IDR_PRICES[usdPrice] || Math.round(usdPrice * 16000);
-      }
-
-      function formatPrice(usdPrice, currency, category) {
-        currency = currency || detectCurrency();
-        if (currency === 'IDR') {
-          var idrPrice = getIdrEquivalent(usdPrice, category);
-          return 'Rp' + idrPrice.toLocaleString('id-ID');
-        }
-        return '$' + usdPrice.toFixed(2);
-      }
-
-      function formatDualPrice(usdPrice, category) {
-        var idrPrice = getIdrEquivalent(usdPrice, category);
-        return '$' + usdPrice.toFixed(2) + ' / Rp' + idrPrice.toLocaleString('id-ID');
-      }
-
-      function updateAllPrices() {
-        document.querySelectorAll('[data-price-usd]').forEach(function(el) {
-          var usd = parseFloat(el.dataset.priceUsd);
-          var cat = el.dataset.priceCategory || null;
-          var idr = getIdrEquivalent(usd, cat);
-          var idrStr = 'Rp' + idr.toLocaleString('id-ID');
-          if (el.tagName === 'P' || el.tagName === 'SPAN') {
-            el.textContent = '$' + usd.toFixed(2) + ' / ' + idrStr;
-          }
-        });
+      function formatPrice(usdPrice) {
+        return '$' + Number(usdPrice).toFixed(2);
       }
 
       function getApiAuthHeader() {
@@ -241,38 +158,33 @@ const { title = 'paperain studio' } = Astro.props;
 
         footer.classList.remove('hidden');
 
-        let subtotalUsd = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-        let subtotalIdr = cart.reduce((sum, item) => sum + getIdrEquivalent(item.price, item.category) * item.qty, 0);
+        let subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+        let discount = subtotal >= 50 ? subtotal * 0.2 : 0;
+        const total = subtotal - discount;
 
-        let discountUsd = subtotalUsd >= 50 ? subtotalUsd * 0.2 : 0;
-        let discountIdr = subtotalIdr >= 500000 ? subtotalIdr * 0.2 : 0;
-        const totalUsd = subtotalUsd - discountUsd;
-        const totalIdr = subtotalIdr - discountIdr;
-
-        if (discountUsd > 0) {
+        if (discount > 0) {
           discountEl.classList.remove('hidden');
           discountEl.className = 'text-sm text-green-600 mb-2';
-          discountEl.textContent = '20% discount applied! You save $' + discountUsd.toFixed(2) + ' / Rp' + Math.round(discountIdr).toLocaleString('id-ID');
+          discountEl.textContent = '20% discount applied! You save $' + discount.toFixed(2);
         } else {
-          var remainingUsd = 50 - subtotalUsd;
-          if (remainingUsd > 0 && remainingUsd <= 20) {
+          var remaining = 50 - subtotal;
+          if (remaining > 0 && remaining <= 20) {
             discountEl.classList.remove('hidden');
             discountEl.className = 'text-sm text-amber-600 mb-2';
-            discountEl.textContent = 'Add $' + remainingUsd.toFixed(2) + ' more to get 20% off!';
+            discountEl.textContent = 'Add $' + remaining.toFixed(2) + ' more to get 20% off!';
           } else {
             discountEl.classList.add('hidden');
           }
         }
 
-        totalEl.textContent = '$' + totalUsd.toFixed(2) + ' / Rp' + Math.round(totalIdr).toLocaleString('id-ID');
+        totalEl.textContent = '$' + total.toFixed(2);
         container.innerHTML = cart.map(item => {
-          var idr = getIdrEquivalent(item.price, item.category);
           return `
           <div class="flex gap-4 py-4 border-b border-gray-50">
             <img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded-lg" />
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium truncate">${item.title}</p>
-              <p class="text-sm text-gray-500">$${item.price.toFixed(2)} / Rp${idr.toLocaleString('id-ID')}</p>
+              <p class="text-sm text-gray-500">$${item.price.toFixed(2)}</p>
               <div class="flex items-center gap-2 mt-1">
                 <button onclick="updateQty('${item.id}', -1)" class="w-6 h-6 rounded border border-gray-200 text-xs hover:bg-gray-50">−</button>
                 <span class="text-sm">${item.qty}</span>
@@ -344,7 +256,6 @@ const { title = 'paperain studio' } = Astro.props;
       document.addEventListener('DOMContentLoaded', function() {
         checkAuth();
         updateCartCount();
-        updateAllPrices();
       });
     </script>
   </body>

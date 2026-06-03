@@ -195,10 +195,7 @@ import Layout from '../../layouts/Layout.astro';
           cancelled: 'bg-red-100 text-red-700',
         };
 
-        const fmt = (val) => {
-          if (order.currency === 'IDR') return 'Rp' + Math.round(Number(val)).toLocaleString('id-ID');
-          return '$' + Number(val).toFixed(2);
-        };
+        const fmt = (val) => '$' + Number(val).toFixed(2);
 
         // Header
         document.getElementById('od-id').textContent = order.display_id || ('order #' + order.id.slice(0, 8));

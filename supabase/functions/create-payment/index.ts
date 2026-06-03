@@ -12,10 +12,16 @@ const SNAP_API_URL =
     ? "https://app.midtrans.com/snap/v1/transactions"
     : "https://app.sandbox.midtrans.com/snap/v1/transactions";
 
+// Midtrans processes in IDR; convert USD prices for the API call
+const USD_TO_IDR = 16000;
+
 type CreatePaymentBody = {
   order_id: string;
-  payment_method?: string;
 };
+
+function toIdr(usdAmount: number): number {
+  return Math.round(usdAmount * USD_TO_IDR);
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -53,13 +59,13 @@ serve(async (req) => {
       return jsonResponse({ error: "order is not in pending status" }, 400);
     }
 
-    const grossAmount = Math.round(Number(order.total));
+    const isUsd = order.currency === "USD";
 
     const itemDetails = (order.order_items || []).map(
       (item: { title: string; price: number; quantity: number; product_id: string }) => ({
         id: item.product_id,
         name: item.title.substring(0, 50),
-        price: Math.round(Number(item.price)),
+        price: isUsd ? toIdr(Number(item.price)) : Math.round(Number(item.price)),
         quantity: item.quantity,
       }),
     );
@@ -69,7 +75,7 @@ serve(async (req) => {
       itemDetails.push({
         id: "VOLUME-DISC",
         name: "Volume Discount (20%)",
-        price: -Math.round(volumeDiscount),
+        price: isUsd ? -toIdr(volumeDiscount) : -Math.round(volumeDiscount),
         quantity: 1,
       });
     }
@@ -78,7 +84,7 @@ serve(async (req) => {
       itemDetails.push({
         id: "PROMO-DISC",
         name: "Promo: " + (order.promo_code || "discount"),
-        price: -Math.round(Number(order.promo_discount)),
+        price: isUsd ? -toIdr(Number(order.promo_discount)) : -Math.round(Number(order.promo_discount)),
         quantity: 1,
       });
     }
@@ -87,10 +93,16 @@ serve(async (req) => {
       itemDetails.push({
         id: "SHIPPING",
         name: "Shipping Fee",
-        price: Math.round(Number(order.shipping_fee)),
+        price: isUsd ? toIdr(Number(order.shipping_fee)) : Math.round(Number(order.shipping_fee)),
         quantity: 1,
       });
     }
+
+    const grossAmount = itemDetails.reduce(
+      (sum: number, item: { price: number; quantity: number }) =>
+        sum + item.price * item.quantity,
+      0,
+    );
 
     const midtransPayload = {
       transaction_details: {
@@ -98,6 +110,10 @@ serve(async (req) => {
         gross_amount: grossAmount,
       },
       item_details: itemDetails,
+      credit_card: {
+        secure: true,
+      },
+      enabled_payments: ["credit_card"],
       customer_details: {
         first_name: order.shipping_name,
         email: order.shipping_email,

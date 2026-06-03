@@ -243,10 +243,7 @@ import Layout from '../layouts/Layout.astro';
             year: 'numeric', month: 'short', day: 'numeric'
           });
 
-          const formatAmt = (val) => {
-            if (order.currency === 'IDR') return 'Rp' + Math.round(val).toLocaleString('id-ID');
-            return '$' + Number(val).toFixed(2);
-          };
+          const formatAmt = (val) => '$' + Number(val).toFixed(2);
 
           const itemCount = (order.order_items || []).reduce((s, i) => s + i.quantity, 0);
           const firstItems = (order.order_items || []).slice(0, 3);

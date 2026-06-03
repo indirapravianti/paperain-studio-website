@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="payment">
   <section class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+    <!-- Error state: no order data -->
     <div id="payment-error" class="hidden text-center py-20">
       <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
         <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,9 +18,10 @@ import Layout from '../layouts/Layout.astro';
       </a>
     </div>
 
+    <!-- Payment content -->
     <div id="payment-content" class="hidden">
       <div class="flex items-center gap-2 mb-8">
-        <a href="/" class="text-gray-400 hover:text-primary transition-colors">
+        <a href="/checkout" class="text-gray-400 hover:text-primary transition-colors">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
@@ -28,6 +30,7 @@ import Layout from '../layouts/Layout.astro';
       </div>
 
       <div class="grid md:grid-cols-5 gap-8">
+        <!-- Left column: payment method -->
         <div class="md:col-span-3">
           <div class="bg-pastel-blue/15 border border-pastel-blue/30 rounded-lg p-4 mb-6">
             <div class="flex items-center justify-between">
@@ -35,24 +38,16 @@ import Layout from '../layouts/Layout.astro';
                 <p class="text-xs text-gray-400">order</p>
                 <p id="pay-order-id" class="text-sm font-medium"></p>
               </div>
-              <span class="text-xs px-3 py-1.5 rounded-full font-medium bg-yellow-100 text-yellow-700">awaiting payment</span>
+              <span id="pay-status-badge" class="text-xs px-3 py-1.5 rounded-full font-medium bg-yellow-100 text-yellow-700">awaiting payment</span>
             </div>
           </div>
 
-          <div class="bg-buttermilk/40 border border-buttermilk rounded-lg p-4 mb-6">
-            <p class="text-sm text-gray-600">
-              <span class="font-medium">payment gateway coming soon.</span>
-              we're waiting for our payment processor to approve our application. your order has been saved — we'll email you payment instructions shortly.
-            </p>
-          </div>
-
+          <!-- Payment method: credit/debit card -->
           <div class="mb-6">
-            <h2 class="font-medium mb-4">select payment method</h2>
-            <p class="text-xs text-gray-400 mb-3">preview only — payment is not active yet</p>
-
-            <div class="space-y-3 opacity-60 pointer-events-none" id="payment-methods">
-              <label class="flex items-center gap-4 border border-gray-200 rounded-xl p-4 has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                <input type="radio" name="payment-method" value="credit_card" class="accent-primary w-4 h-4" checked disabled />
+            <h2 class="font-medium mb-4">payment method</h2>
+            <div class="space-y-3" id="payment-methods">
+              <label class="flex items-center gap-4 border border-primary bg-primary/5 rounded-xl p-4">
+                <input type="radio" name="payment-method" value="credit_card" class="accent-primary w-4 h-4" checked />
                 <div class="flex items-center gap-3 flex-1">
                   <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,67 +56,28 @@ import Layout from '../layouts/Layout.astro';
                   </div>
                   <div>
                     <p class="text-sm font-medium">credit / debit card</p>
-                    <p class="text-xs text-gray-400">visa, mastercard, jcb</p>
-                  </div>
-                </div>
-              </label>
-
-              <label class="flex items-center gap-4 border border-gray-200 rounded-xl p-4">
-                <input type="radio" name="payment-method" value="bank_transfer" class="accent-primary w-4 h-4" disabled />
-                <div class="flex items-center gap-3 flex-1">
-                  <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="text-sm font-medium">bank transfer</p>
-                    <p class="text-xs text-gray-400">bca, bni, bri, mandiri, permata</p>
-                  </div>
-                </div>
-              </label>
-
-              <label class="flex items-center gap-4 border border-gray-200 rounded-xl p-4">
-                <input type="radio" name="payment-method" value="e_wallet" class="accent-primary w-4 h-4" disabled />
-                <div class="flex items-center gap-3 flex-1">
-                  <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="text-sm font-medium">e-wallet</p>
-                    <p class="text-xs text-gray-400">gopay, shopeepay, dana, ovo</p>
-                  </div>
-                </div>
-              </label>
-
-              <label class="flex items-center gap-4 border border-gray-200 rounded-xl p-4">
-                <input type="radio" name="payment-method" value="qris" class="accent-primary w-4 h-4" disabled />
-                <div class="flex items-center gap-3 flex-1">
-                  <div class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="text-sm font-medium">qris</p>
-                    <p class="text-xs text-gray-400">scan with any e-wallet or banking app</p>
+                    <p class="text-xs text-gray-400">visa, mastercard, jcb — powered by midtrans</p>
                   </div>
                 </div>
               </label>
             </div>
           </div>
 
-          <button id="pay-btn" disabled
-            class="w-full bg-primary/50 text-white py-3.5 rounded-lg text-sm font-medium cursor-not-allowed">
-            pay now — coming soon
+          <div id="pay-error-msg" class="hidden text-sm text-red-500 bg-red-50 border border-red-100 rounded-lg p-3 mb-4"></div>
+
+          <button id="pay-btn"
+            class="w-full bg-primary text-white py-3.5 rounded-lg text-sm font-medium hover:bg-primary/80 transition-colors">
+            pay now
           </button>
           <p class="text-xs text-gray-400 text-center mt-3">
             secured by <span class="font-medium text-gray-500">midtrans</span> payment gateway
           </p>
+          <p class="text-xs text-gray-400 text-center mt-1">
+            payment is processed in IDR equivalent via midtrans
+          </p>
         </div>
 
+        <!-- Right column: order summary -->
         <div class="md:col-span-2">
           <div class="bg-gray-50 rounded-xl p-6 sticky top-24">
             <h2 class="font-medium mb-4">order summary</h2>
@@ -161,70 +117,226 @@ import Layout from '../layouts/Layout.astro';
       </div>
 
       <div class="mt-8 text-center">
-        <a href="/" class="inline-block text-sm border border-gray-200 rounded-full px-6 py-2 text-gray-600 hover:border-gray-400 transition-colors">
+        <a href="/products" class="inline-block text-sm border border-gray-200 rounded-full px-6 py-2 text-gray-600 hover:border-gray-400 transition-colors">
           continue shopping
         </a>
       </div>
+    </div>
+
+    <!-- Payment success state -->
+    <div id="payment-success" class="hidden text-center py-20">
+      <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <h2 class="text-2xl font-semibold mb-2">payment successful!</h2>
+      <p class="text-gray-500 text-sm mb-2">thank you for your order.</p>
+      <p class="text-gray-400 text-xs mb-8">order <span id="success-order-id" class="font-medium text-gray-600"></span></p>
+      <p class="text-gray-500 text-sm mb-8">we'll send a confirmation email shortly. you can track your order from your account page.</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/products" class="inline-block text-sm border border-gray-200 rounded-full px-6 py-2 text-gray-600 hover:border-gray-400 transition-colors">
+          continue shopping
+        </a>
+        <a href="/account" class="inline-block text-sm bg-primary text-white rounded-full px-6 py-2 hover:bg-primary/80 transition-colors">
+          view my orders
+        </a>
+      </div>
+    </div>
+
+    <!-- Payment pending state -->
+    <div id="payment-pending" class="hidden text-center py-20">
+      <div class="w-20 h-20 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg class="w-10 h-10 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h2 class="text-2xl font-semibold mb-2">payment pending</h2>
+      <p class="text-gray-500 text-sm mb-2">your payment is being processed.</p>
+      <p class="text-gray-400 text-xs mb-8">order <span id="pending-order-id" class="font-medium text-gray-600"></span></p>
+      <p class="text-gray-500 text-sm mb-8">we'll update you via email once the payment is confirmed.</p>
+      <a href="/products" class="inline-block text-sm border border-gray-200 rounded-full px-6 py-2 text-gray-600 hover:border-gray-400 transition-colors">
+        continue shopping
+      </a>
     </div>
   </section>
 </Layout>
 
 <script is:inline>
   (function() {
-    var params = new URLSearchParams(window.location.search);
-    var orderId = params.get('id');
+    var SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
+    var SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content;
 
     var data = null;
     try {
       data = JSON.parse(sessionStorage.getItem('paperain-pending-payment'));
     } catch {}
 
-    if (!data) {
+    if (!data || !data.items || !data.items.length) {
       document.getElementById('payment-error').classList.remove('hidden');
       return;
     }
 
-    if (orderId && data.order && data.order.id !== orderId) {
-      document.getElementById('payment-error').classList.remove('hidden');
-      return;
+    function fmt(val) {
+      return '$' + Number(val).toFixed(2);
     }
 
-    function fmtDual(usd, idr) {
-      return '$' + Number(usd).toFixed(2) + ' / Rp' + Math.round(idr).toLocaleString('id-ID');
-    }
-
+    // Show order summary
     document.getElementById('payment-content').classList.remove('hidden');
     document.getElementById('pay-order-id').textContent = data.order.display_id || data.order.id || '';
 
     var itemsEl = document.getElementById('pay-items');
     itemsEl.innerHTML = (data.items || []).map(function(item) {
-      var usd = (item.priceUsd || item.price || 0) * item.qty;
-      var idr = (item.priceIdr || 0) * item.qty;
+      var lineTotal = (item.price || 0) * item.qty;
       return '<div class="flex justify-between text-sm">' +
         '<span class="text-gray-600">' + item.title + ' &times; ' + item.qty + '</span>' +
-        '<span>' + fmtDual(usd, idr) + '</span></div>';
+        '<span>' + fmt(lineTotal) + '</span></div>';
     }).join('') || '<p class="text-sm text-gray-400">no items</p>';
 
     var s = data.summary || {};
-    document.getElementById('pay-subtotal').textContent = fmtDual(s.subtotalUsd || 0, s.subtotalIdr || 0);
+    document.getElementById('pay-subtotal').textContent = fmt(s.subtotal || 0);
 
-    if ((s.volumeDiscountUsd || 0) > 0 || (s.volumeDiscountIdr || 0) > 0) {
+    if ((s.volumeDiscount || 0) > 0) {
       document.getElementById('pay-discount-row').classList.remove('hidden');
-      document.getElementById('pay-discount').textContent = '-' + fmtDual(s.volumeDiscountUsd || 0, s.volumeDiscountIdr || 0);
+      document.getElementById('pay-discount').textContent = '-' + fmt(s.volumeDiscount);
     }
     if ((s.promoDiscount || 0) > 0) {
       document.getElementById('pay-promo-row').classList.remove('hidden');
       document.getElementById('pay-promo-label').textContent = s.promoCode ? 'promo (' + s.promoCode + ')' : 'promo';
-      document.getElementById('pay-promo-discount').textContent = '-$' + Number(s.promoDiscount).toFixed(2);
+      document.getElementById('pay-promo-discount').textContent = '-' + fmt(s.promoDiscount);
     }
 
-    document.getElementById('pay-shipping').textContent = fmtDual(s.shippingUsd || 0, s.shippingIdr || 0);
-    document.getElementById('pay-total').textContent = fmtDual(s.totalUsd || 0, s.totalIdr || 0);
+    document.getElementById('pay-shipping').textContent = fmt(s.shipping || 0);
+    document.getElementById('pay-total').textContent = fmt(s.total || 0);
 
     if (data.shipping) {
       document.getElementById('pay-ship-name').textContent = data.shipping.name || '';
       document.getElementById('pay-ship-email').textContent = data.shipping.email || '';
       document.getElementById('pay-ship-address').textContent = data.shipping.address || '';
     }
+
+    // Payment logic
+    var payBtn = document.getElementById('pay-btn');
+    var errorMsg = document.getElementById('pay-error-msg');
+    var isProcessing = false;
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.remove('hidden');
+    }
+
+    function hideError() {
+      errorMsg.classList.add('hidden');
+    }
+
+    function showSuccess(orderId) {
+      document.getElementById('payment-content').classList.add('hidden');
+      document.getElementById('payment-success').classList.remove('hidden');
+      document.getElementById('success-order-id').textContent = orderId;
+      sessionStorage.removeItem('paperain-pending-payment');
+    }
+
+    function showPending(orderId) {
+      document.getElementById('payment-content').classList.add('hidden');
+      document.getElementById('payment-pending').classList.remove('hidden');
+      document.getElementById('pending-order-id').textContent = orderId;
+      sessionStorage.removeItem('paperain-pending-payment');
+    }
+
+    async function callApi(endpoint, payload) {
+      var res = await fetch(SUPABASE_URL + '/functions/v1/' + endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+        },
+        body: JSON.stringify(payload),
+      });
+      var json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'API error');
+      return json;
+    }
+
+    payBtn.addEventListener('click', async function() {
+      if (isProcessing) return;
+      isProcessing = true;
+      hideError();
+      payBtn.textContent = 'processing...';
+      payBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+      try {
+        // Step 1: Place order in database
+        var user = null;
+        try { user = JSON.parse(localStorage.getItem('sb-user')); } catch {}
+
+        var orderPayload = {
+          items: data.items.map(function(item) {
+            return { id: item.id, title: item.title, qty: item.qty, image: item.image || '' };
+          }),
+          currency: 'USD',
+          promo_code: data.summary.promoCode || null,
+          shipping_name: data.shipping.name,
+          shipping_email: data.shipping.email,
+          shipping_phone: data.shipping.phone,
+          shipping_address: data.shipping.address,
+          shipping_country: data.shipping.country || 'OTHER',
+          notes: data.notes || null,
+          customer_id: user ? user.id : null,
+        };
+
+        var orderResult = await callApi('place-order', orderPayload);
+        var order = orderResult.order;
+
+        if (!order || !order.id) {
+          throw new Error('failed to create order');
+        }
+
+        // Update display ID
+        var displayId = order.display_id || order.id.slice(0, 8);
+        document.getElementById('pay-order-id').textContent = displayId;
+
+        // Step 2: Create payment token
+        var paymentResult = await callApi('create-payment', { order_id: order.id });
+
+        if (!paymentResult.snap_token) {
+          throw new Error('failed to create payment token');
+        }
+
+        // Step 3: Open Midtrans Snap popup
+        if (typeof window.snap === 'undefined') {
+          throw new Error('payment gateway is not loaded. please refresh and try again.');
+        }
+
+        window.snap.pay(paymentResult.snap_token, {
+          onSuccess: function(result) {
+            console.log('Payment success:', result);
+            showSuccess(displayId);
+          },
+          onPending: function(result) {
+            console.log('Payment pending:', result);
+            showPending(displayId);
+          },
+          onError: function(result) {
+            console.error('Payment error:', result);
+            showError('payment was declined. please try again or use a different card.');
+            payBtn.textContent = 'try again';
+            payBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            isProcessing = false;
+          },
+          onClose: function() {
+            payBtn.textContent = 'pay now';
+            payBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            isProcessing = false;
+          },
+        });
+
+      } catch (err) {
+        console.error('Payment flow error:', err);
+        showError(err.message || 'something went wrong. please try again.');
+        payBtn.textContent = 'pay now';
+        payBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+        isProcessing = false;
+      }
+    });
   })();
 </script>
