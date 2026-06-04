@@ -92,10 +92,6 @@ import Layout from '../layouts/Layout.astro';
                 <span>discount (20%)</span>
                 <span id="pay-discount"></span>
               </div>
-              <div id="pay-promo-row" class="flex justify-between text-sm text-green-600 hidden">
-                <span id="pay-promo-label">promo</span>
-                <span id="pay-promo-discount"></span>
-              </div>
               <div class="flex justify-between text-sm">
                 <span class="text-gray-500">shipping</span>
                 <span id="pay-shipping" class="text-gray-600"></span>
@@ -200,12 +196,6 @@ import Layout from '../layouts/Layout.astro';
       document.getElementById('pay-discount-row').classList.remove('hidden');
       document.getElementById('pay-discount').textContent = '-' + fmt(s.volumeDiscount);
     }
-    if ((s.promoDiscount || 0) > 0) {
-      document.getElementById('pay-promo-row').classList.remove('hidden');
-      document.getElementById('pay-promo-label').textContent = s.promoCode ? 'promo (' + s.promoCode + ')' : 'promo';
-      document.getElementById('pay-promo-discount').textContent = '-' + fmt(s.promoDiscount);
-    }
-
     document.getElementById('pay-shipping').textContent = fmt(s.shipping || 0);
     document.getElementById('pay-total').textContent = fmt(s.total || 0);
 
@@ -243,6 +233,23 @@ import Layout from '../layouts/Layout.astro';
       sessionStorage.removeItem('paperain-pending-payment');
     }
 
+    function parseApiError(text, json, status) {
+      if (text && text.indexOf('<!DOCTYPE') !== -1) {
+        if (status === 502) {
+          return 'payment server error (502). wait a minute, then try again. if it persists, check Vercel deployment logs.';
+        }
+        return 'payment server error. please try again in a few minutes.';
+      }
+      var msg = (json && (json.error || json.message)) || ('request failed (' + status + ')');
+      if (json && json.detail) {
+        var d = json.detail;
+        if (typeof d === 'string') msg += ' — ' + d;
+        else if (d.error_messages) msg = d.error_messages.join(', ');
+        else if (d.status_message) msg = d.status_message;
+      }
+      return msg;
+    }
+
     async function callApi(endpoint, payload) {
       var url = '/api/' + endpoint;
       try {
@@ -253,17 +260,15 @@ import Layout from '../layouts/Layout.astro';
         });
         var text = await res.text();
         var json = {};
-        try { json = text ? JSON.parse(text) : {}; } catch { json = { error: text || 'invalid response' }; }
+        try { json = text ? JSON.parse(text) : {}; } catch { json = {}; }
         if (!res.ok) {
-          var msg = json.error || json.message || ('request failed (' + res.status + ')');
-          if (json.detail) msg += ' (' + json.detail + ')';
-          throw new Error(msg);
+          throw new Error(parseApiError(text, json, res.status));
         }
         return json;
       } catch (e) {
         if (e && e.message === 'Failed to fetch') {
           throw new Error(
-            'could not reach the payment server. use the live site (www.paperainstudio.com), not local preview, and redeploy Vercel after env vars change.'
+            'could not reach the payment server. use www.paperainstudio.com and redeploy Vercel after env var changes.'
           );
         }
         throw e;
@@ -290,7 +295,6 @@ import Layout from '../layouts/Layout.astro';
             return { id: item.id, title: item.title, qty: item.qty, image: item.image || '' };
           }),
           currency: 'USD',
-          promo_code: data.summary.promoCode || null,
           shipping_name: data.shipping.name,
           shipping_email: data.shipping.email,
           shipping_phone: data.shipping.phone,

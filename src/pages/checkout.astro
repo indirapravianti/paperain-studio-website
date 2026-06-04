@@ -85,28 +85,10 @@ import Layout from '../layouts/Layout.astro';
           <h2 class="font-medium mb-4">order summary</h2>
           <div id="checkout-items" class="space-y-3 mb-4"></div>
 
-          <div class="border-t border-gray-200 pt-4 mb-4">
-            <label for="promo-code" class="block text-sm font-medium mb-1.5">promo code</label>
-            <div class="flex gap-2">
-              <input type="text" id="promo-code" autocomplete="off"
-                class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors uppercase"
-                placeholder="enter code" />
-              <button type="button" id="promo-apply-btn"
-                class="shrink-0 border border-gray-200 rounded-lg px-4 py-2 text-sm hover:border-primary hover:text-primary transition-colors">
-                apply
-              </button>
-            </div>
-            <p id="promo-message" class="text-xs mt-1.5 hidden"></p>
-          </div>
-
           <div class="border-t border-gray-200 pt-4 space-y-2">
             <div id="checkout-discount-row" class="flex justify-between text-sm text-green-600 hidden">
               <span>discount (20%)</span>
               <span id="checkout-discount">-$0.00</span>
-            </div>
-            <div id="checkout-promo-row" class="flex justify-between text-sm text-green-600 hidden">
-              <span id="checkout-promo-label">promo</span>
-              <span id="checkout-promo-discount">-$0.00</span>
             </div>
             <div class="flex justify-between text-sm">
               <span class="text-gray-500">shipping</span>
@@ -138,17 +120,10 @@ import Layout from '../layouts/Layout.astro';
     const totalEl = document.getElementById('checkout-total');
     const discountRow = document.getElementById('checkout-discount-row');
     const discountEl = document.getElementById('checkout-discount');
-    const promoRow = document.getElementById('checkout-promo-row');
-    const promoLabel = document.getElementById('checkout-promo-label');
-    const promoDiscountEl = document.getElementById('checkout-promo-discount');
-    const promoMessageEl = document.getElementById('promo-message');
-    const promoCodeInput = document.getElementById('promo-code');
-    const promoApplyBtn = document.getElementById('promo-apply-btn');
     const shippingEl = document.getElementById('checkout-shipping');
     const errorEl = document.getElementById('checkout-error');
     const user = getUser();
 
-    var appliedPromo = null;
     var SHIPPING_FEE = 3;
 
     if (!user) {
@@ -194,18 +169,7 @@ import Layout from '../layouts/Layout.astro';
       }).join('');
     }
 
-    function getVolumeDiscount() {
-      return itemSubtotal >= 50 ? itemSubtotal * 0.2 : 0;
-    }
-
-    function getPromoDiscount() {
-      return appliedPromo ? appliedPromo.discount_amount : 0;
-    }
-
     function updateTotals() {
-      var volumeDiscount = getVolumeDiscount();
-      var promoDiscount = getPromoDiscount();
-
       var subtotal = cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
       var volDisc = subtotal >= 50 ? subtotal * 0.2 : 0;
 
@@ -216,56 +180,14 @@ import Layout from '../layouts/Layout.astro';
         discountRow.classList.add('hidden');
       }
 
-      if (promoDiscount > 0 && appliedPromo) {
-        promoRow.classList.remove('hidden');
-        promoLabel.textContent = 'promo (' + appliedPromo.code + ')';
-        promoDiscountEl.textContent = '-' + fmt(promoDiscount);
-      } else {
-        promoRow.classList.add('hidden');
-      }
-
       if (cart.length > 0) {
         shippingEl.textContent = fmt(SHIPPING_FEE);
-        var total = subtotal - volDisc - promoDiscount + SHIPPING_FEE;
-        totalEl.textContent = fmt(total);
+        totalEl.textContent = fmt(subtotal - volDisc + SHIPPING_FEE);
       } else {
         shippingEl.textContent = '—';
         totalEl.textContent = fmt(0);
       }
     }
-
-    function setPromoMessage(text, isError) {
-      if (!text) {
-        promoMessageEl.classList.add('hidden');
-        promoMessageEl.textContent = '';
-        return;
-      }
-      promoMessageEl.textContent = text;
-      promoMessageEl.classList.remove('hidden');
-      promoMessageEl.className = 'text-xs mt-1.5 ' + (isError ? 'text-red-500' : 'text-green-600');
-    }
-
-    async function applyPromoCode() {
-      var code = promoCodeInput.value.trim();
-      if (!code) {
-        appliedPromo = null;
-        setPromoMessage('enter a promo code', true);
-        updateTotals();
-        return;
-      }
-
-      appliedPromo = null;
-      setPromoMessage('promo codes are coming soon!', true);
-      updateTotals();
-    }
-
-    promoApplyBtn.addEventListener('click', applyPromoCode);
-    promoCodeInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        applyPromoCode();
-      }
-    });
 
     updateTotals();
 
@@ -285,12 +207,9 @@ import Layout from '../layouts/Layout.astro';
         return;
       }
 
-      var volumeDiscount = getVolumeDiscount();
-      var promoDiscount = getPromoDiscount();
-
       var subtotal = cart.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
       var volDisc = subtotal >= 50 ? subtotal * 0.2 : 0;
-      var total = subtotal - volDisc - promoDiscount + SHIPPING_FEE;
+      var total = subtotal - volDisc + SHIPPING_FEE;
 
       var localOrderId = 'ORD-' + Date.now().toString(36).toUpperCase();
 
@@ -310,8 +229,6 @@ import Layout from '../layouts/Layout.astro';
           summary: {
             subtotal: subtotal,
             volumeDiscount: volDisc,
-            promoDiscount: promoDiscount,
-            promoCode: appliedPromo ? appliedPromo.code : null,
             shipping: SHIPPING_FEE,
             total: total,
           },
