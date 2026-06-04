@@ -241,11 +241,8 @@ import Layout from '../layouts/Layout.astro';
         return 'payment server error. please try again in a few minutes.';
       }
       var msg = (json && (json.error || json.message)) || ('request failed (' + status + ')');
-      if (json && json.detail) {
-        var d = json.detail;
-        if (typeof d === 'string') msg += ' — ' + d;
-        else if (d.error_messages) msg = d.error_messages.join(', ');
-        else if (d.status_message) msg = d.status_message;
+      if (json && json.detail && json.detail.error_messages) {
+        msg = json.detail.error_messages.join(', ');
       }
       return msg;
     }
