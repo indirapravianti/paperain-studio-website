@@ -63,17 +63,40 @@ import Layout from '../layouts/Layout.astro';
             </div>
           </div>
 
+          <!-- International currency disclosure -->
+          <div class="mb-6 bg-buttermilk/40 border border-buttermilk rounded-xl p-4">
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 shrink-0 bg-pastel-blue/30 rounded-lg flex items-center justify-center mt-0.5">
+                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-primary mb-1">international card payment</p>
+                <p class="text-xs text-gray-600 leading-relaxed mb-3">
+                  prices on this site are shown in USD. your payment is processed by Midtrans in
+                  <strong class="font-medium text-primary">Indonesian Rupiah (IDR)</strong>.
+                  your bank will convert the charge using its exchange rate at the time of payment — the final amount on your statement may differ slightly from the estimate below.
+                </p>
+                <p id="pay-idr-estimate" class="text-xs text-primary/80 bg-white/60 rounded-lg px-3 py-2 mb-3 font-medium"></p>
+                <label class="flex items-start gap-3 cursor-pointer group">
+                  <input type="checkbox" id="currency-ack" class="mt-0.5 accent-primary w-4 h-4 shrink-0 rounded border-gray-300" />
+                  <span class="text-xs text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors">
+                    i understand my card will be charged in IDR at my bank's prevailing exchange rate, and the USD total shown is an estimate only.
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+
           <div id="pay-error-msg" class="hidden text-sm text-red-500 bg-red-50 border border-red-100 rounded-lg p-3 mb-4"></div>
 
-          <button id="pay-btn"
-            class="w-full bg-primary text-white py-3.5 rounded-lg text-sm font-medium hover:bg-primary/80 transition-colors">
+          <button id="pay-btn" disabled
+            class="w-full bg-primary text-white py-3.5 rounded-lg text-sm font-medium hover:bg-primary/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-primary">
             pay now
           </button>
           <p class="text-xs text-gray-400 text-center mt-3">
             secured by <span class="font-medium text-gray-500">midtrans</span> payment gateway
-          </p>
-          <p class="text-xs text-gray-400 text-center mt-1">
-            payment is processed in IDR equivalent via midtrans
           </p>
         </div>
 
@@ -173,8 +196,14 @@ import Layout from '../layouts/Layout.astro';
       return;
     }
 
+    var USD_TO_IDR = 16000;
+
     function fmt(val) {
       return '$' + Number(val).toFixed(2);
+    }
+
+    function fmtIdr(usd) {
+      return 'Rp' + Math.round(Number(usd) * USD_TO_IDR).toLocaleString('id-ID');
     }
 
     // Show order summary
@@ -199,6 +228,11 @@ import Layout from '../layouts/Layout.astro';
     document.getElementById('pay-shipping').textContent = fmt(s.shipping || 0);
     document.getElementById('pay-total').textContent = fmt(s.total || 0);
 
+    var idrEstimateEl = document.getElementById('pay-idr-estimate');
+    if (idrEstimateEl && s.total) {
+      idrEstimateEl.textContent = 'estimated charge: ≈ ' + fmtIdr(s.total) + ' IDR (via Midtrans)';
+    }
+
     if (data.shipping) {
       document.getElementById('pay-ship-name').textContent = data.shipping.name || '';
       document.getElementById('pay-ship-email').textContent = data.shipping.email || '';
@@ -207,8 +241,13 @@ import Layout from '../layouts/Layout.astro';
 
     // Payment logic
     var payBtn = document.getElementById('pay-btn');
+    var currencyAck = document.getElementById('currency-ack');
     var errorMsg = document.getElementById('pay-error-msg');
     var isProcessing = false;
+
+    currencyAck.addEventListener('change', function() {
+      payBtn.disabled = !currencyAck.checked;
+    });
 
     function showError(msg) {
       errorMsg.textContent = msg;
@@ -274,6 +313,10 @@ import Layout from '../layouts/Layout.astro';
 
     payBtn.addEventListener('click', async function() {
       if (isProcessing) return;
+      if (!currencyAck.checked) {
+        showError('please confirm the international payment notice before continuing.');
+        return;
+      }
       isProcessing = true;
       hideError();
       payBtn.textContent = 'processing...';

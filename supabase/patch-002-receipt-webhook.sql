@@ -1,28 +1,32 @@
 -- ============================================================
--- Patch 002: Database webhook for order receipt emails
--- Run this in Supabase Dashboard > SQL Editor
+-- Patch 002: Database webhook for order confirmation emails
+-- Run this in Supabase Dashboard > SQL Editor (patch 006 first)
 -- ============================================================
--- This creates a database webhook that calls the send-receipt
--- Edge Function every time a new order is inserted.
 --
--- IMPORTANT: After running this SQL, you also need to set up
--- the webhook in the Supabase Dashboard manually:
+-- BEST PRACTICE: Send confirmation email AFTER payment is confirmed,
+-- not when the order is first created (pending payment).
+--
+-- Primary path (recommended): Vercel /api/midtrans-notification sends
+-- email via Resend when Midtrans reports settlement/capture.
+--
+-- Optional backup: Supabase Database Webhook on orders UPDATE:
 --
 -- 1. Go to Database > Webhooks
--- 2. Create a new webhook:
+-- 2. Create or update webhook:
 --    - Name: send-receipt
 --    - Table: orders
---    - Events: INSERT
+--    - Events: UPDATE  (not INSERT)
 --    - Type: Supabase Edge Function
 --    - Edge Function: send-receipt
---    - HTTP Headers: (none needed, Supabase handles auth automatically)
+--    - Filter: status = confirmed (if your dashboard supports it)
 --
--- The Edge Function needs these secrets (set via CLI or Dashboard):
---   - RESEND_API_KEY
---   - SITE_URL (your deployed website URL)
---   - FROM_EMAIL (optional, defaults to orders@paperainstudio.com)
+-- Edge Function secrets (Supabase Dashboard > Edge Functions > send-receipt):
+--   RESEND_API_KEY     — from resend.com (verify paperainstudio.com domain)
+--   SITE_URL           — https://www.paperainstudio.com
+--   FROM_EMAIL         — orders@paperainstudio.com (must match verified domain)
+--
+-- Vercel env vars (same values, redeploy after adding):
+--   RESEND_API_KEY
+--   SITE_URL
+--   FROM_EMAIL
 -- ============================================================
-
--- No SQL changes needed for the webhook itself.
--- The webhook is configured via the Supabase Dashboard UI.
--- This file is kept as documentation for the setup process.

@@ -75,15 +75,24 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Look up order by display_id (which is what we sent to Midtrans)
-    const { data: order } = await supabase
+    const { data: orderById } = await supabase
       .from("orders")
       .select("id, status")
-      .eq("display_id", order_id)
+      .eq("id", order_id)
       .maybeSingle();
 
+    let order = orderById;
     if (!order) {
-      console.error("Order not found for display_id:", order_id);
+      const { data: orderByDisplay } = await supabase
+        .from("orders")
+        .select("id, status")
+        .eq("display_id", order_id)
+        .maybeSingle();
+      order = orderByDisplay;
+    }
+
+    if (!order) {
+      console.error("Order not found for Midtrans order_id:", order_id);
       return jsonResponse({ error: "order not found" }, 404);
     }
 
@@ -107,6 +116,25 @@ serve(async (req) => {
       console.log(
         `Order ${order_id} updated: ${order.status} → ${newStatus}`,
       );
+    }
+
+    if (newStatus === "confirmed") {
+      const { data: fullOrder } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("id", order.id)
+        .single();
+
+      if (fullOrder) {
+        fetch(`${SUPABASE_URL}/functions/v1/send-receipt`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ record: fullOrder }),
+        }).catch((err) => console.error("send-receipt invoke failed:", err));
+      }
     }
 
     return jsonResponse({ message: "ok" });
