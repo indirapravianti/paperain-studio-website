@@ -5,7 +5,10 @@ import { corsHeaders, jsonResponse } from "../_shared/cors.ts";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const MIDTRANS_SERVER_KEY = Deno.env.get("MIDTRANS_SERVER_KEY") || "";
-const MIDTRANS_ENV = Deno.env.get("MIDTRANS_ENV") || "sandbox";
+const MIDTRANS_ENV =
+  Deno.env.get("MIDTRANS_ENV") ||
+  Deno.env.get("PUBLIC_MIDTRANS_ENV") ||
+  "sandbox";
 
 const SNAP_API_URL =
   MIDTRANS_ENV === "production"

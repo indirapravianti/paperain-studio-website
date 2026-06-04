@@ -158,14 +158,12 @@ serve(async (req) => {
     const totalDiscount = volumeDiscount + promoDiscount;
     const total = subtotal - totalDiscount + shippingFee;
 
-    const orderData = {
+    const orderData: Record<string, unknown> = {
       customer_id: resolvedCustomerId,
       status: "pending",
       currency,
       subtotal: roundMoney(subtotal, currency),
       discount: roundMoney(totalDiscount, currency),
-      promo_code: appliedPromoCode,
-      promo_discount: roundMoney(promoDiscount, currency),
       shipping_fee: roundMoney(shippingFee, currency),
       total: roundMoney(total, currency),
       shipping_name,
@@ -175,6 +173,11 @@ serve(async (req) => {
       shipping_country,
       notes: notes || null,
     };
+
+    if (appliedPromoCode) {
+      orderData.promo_code = appliedPromoCode;
+      orderData.promo_discount = roundMoney(promoDiscount, currency);
+    }
 
     const { data: order, error: orderError } = await supabase
       .from("orders")

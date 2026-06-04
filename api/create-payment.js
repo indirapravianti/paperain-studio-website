@@ -1,4 +1,4 @@
-import { applyCors, sendJson } from '../lib/api/cors.js';
+import { applyCors, parseRequestBody, sendJson } from '../lib/api/cors.js';
 import { handleCreatePayment } from '../lib/api/create-payment-handler.js';
 
 export default async function handler(req, res) {
@@ -12,11 +12,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const result = await handleCreatePayment(req.body);
+    const result = await handleCreatePayment(parseRequestBody(req));
     return sendJson(res, result.body, result.status);
   } catch (err) {
     console.error('api/create-payment error:', err);
     const message = err instanceof Error ? err.message : 'server error';
-    return sendJson(res, { error: message }, 500);
+    const status = message === 'invalid JSON body' ? 400 : 500;
+    return sendJson(res, { error: message }, status);
   }
 }

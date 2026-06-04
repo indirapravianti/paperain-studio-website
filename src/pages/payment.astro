@@ -244,40 +244,30 @@ import Layout from '../layouts/Layout.astro';
     }
 
     async function callApi(endpoint, payload) {
-      var urls = ['/api/' + endpoint];
-      if (SUPABASE_URL && SUPABASE_KEY) {
-        urls.push(SUPABASE_URL + '/functions/v1/' + endpoint);
-      }
-
-      var lastErr = null;
-      for (var i = 0; i < urls.length; i++) {
-        try {
-          var headers = { 'Content-Type': 'application/json' };
-          if (urls[i].indexOf('/functions/v1/') !== -1) {
-            headers['Authorization'] = 'Bearer ' + SUPABASE_KEY;
-            headers['apikey'] = SUPABASE_KEY;
-          }
-          var res = await fetch(urls[i], {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(payload),
-          });
-          var text = await res.text();
-          var json = {};
-          try { json = text ? JSON.parse(text) : {}; } catch { json = { error: text || 'invalid response' }; }
-          if (!res.ok) {
-            lastErr = new Error(json.error || json.message || ('request failed (' + res.status + ')'));
-            continue;
-          }
-          return json;
-        } catch (e) {
-          lastErr = e;
+      var url = '/api/' + endpoint;
+      try {
+        var res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        var text = await res.text();
+        var json = {};
+        try { json = text ? JSON.parse(text) : {}; } catch { json = { error: text || 'invalid response' }; }
+        if (!res.ok) {
+          var msg = json.error || json.message || ('request failed (' + res.status + ')');
+          if (json.detail) msg += ' (' + json.detail + ')';
+          throw new Error(msg);
         }
+        return json;
+      } catch (e) {
+        if (e && e.message === 'Failed to fetch') {
+          throw new Error(
+            'could not reach the payment server. use the live site (www.paperainstudio.com), not local preview, and redeploy Vercel after env vars change.'
+          );
+        }
+        throw e;
       }
-      if (lastErr && lastErr.message === 'Failed to fetch') {
-        throw new Error('could not reach the payment server. check that the site is deployed on Vercel with API routes enabled.');
-      }
-      throw lastErr || new Error('payment request failed');
     }
 
     payBtn.addEventListener('click', async function() {
