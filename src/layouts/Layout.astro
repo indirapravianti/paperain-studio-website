@@ -4,6 +4,7 @@ import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import InstagramTicker from '../components/InstagramTicker.astro';
+import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 
 interface Props {
   title?: string;
@@ -26,6 +27,7 @@ const { title = 'paperain studio' } = Astro.props;
     <meta name="supabase-key" content={import.meta.env.PUBLIC_SUPABASE_ANON_KEY || ''} />
     <meta name="midtrans-client-key" content={import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY || ''} />
     <title>{title} | paperain studio</title>
+    <GoogleAnalytics />
     {import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY && (
       <script
         type="text/javascript"
