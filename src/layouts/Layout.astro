@@ -26,6 +26,9 @@ const { title = 'paperain studio' } = Astro.props;
     <meta name="supabase-url" content={import.meta.env.PUBLIC_SUPABASE_URL || ''} />
     <meta name="supabase-key" content={import.meta.env.PUBLIC_SUPABASE_ANON_KEY || ''} />
     <meta name="midtrans-client-key" content={import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY || ''} />
+    <meta name="site-url" content={import.meta.env.PUBLIC_SITE_URL || 'https://www.paperainstudio.com'} />
+    <link rel="alternate" hreflang="en" href={`${import.meta.env.PUBLIC_SITE_URL || 'https://www.paperainstudio.com'}/`} />
+    <link rel="alternate" hreflang="id" href={`${import.meta.env.PUBLIC_SITE_URL || 'https://www.paperainstudio.com'}/id/`} />
     <title>{title} | paperain studio</title>
     <GoogleAnalytics />
     {import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY && (
@@ -62,13 +65,74 @@ const { title = 'paperain studio' } = Astro.props;
           <span class="font-medium">Total</span>
           <span id="cart-total" class="text-lg font-semibold">$0.00</span>
         </div>
-        <a href="/checkout" class="block w-full bg-burgundy text-white text-center py-3 rounded-lg hover:bg-burgundy/80 transition-colors">Checkout</a>
+        <a href="/checkout" id="cart-checkout-link" class="block w-full bg-burgundy text-white text-center py-3 rounded-lg hover:bg-burgundy/80 transition-colors market-aware-link" data-href="/checkout">Checkout</a>
       </div>
     </div>
 
     <script is:inline>
-      function formatPrice(usdPrice) {
-        return '$' + Number(usdPrice).toFixed(2);
+      var IDR_PLACEHOLDER = 50000;
+      var SHIPPING_USD = 3;
+      var SHIPPING_IDR = 48000;
+      var DISCOUNT_THRESHOLD_USD = 50;
+      var DISCOUNT_THRESHOLD_IDR = 500000;
+      var DISCOUNT_RATE = 0.2;
+      var USD_TO_IDR = 16000;
+
+      function getMarket() {
+        var match = document.cookie.match(/(?:^|;\s*)paperain-market=([^;]+)/);
+        if (match) return match[1];
+        return window.location.pathname === '/id' || window.location.pathname.startsWith('/id/') ? 'id' : 'intl';
+      }
+
+      function getCurrency() {
+        return getMarket() === 'id' ? 'IDR' : 'USD';
+      }
+
+      function stripMarketPrefix(path) {
+        if (path === '/id') return '/';
+        if (path.startsWith('/id/')) return path.slice(3) || '/';
+        return path;
+      }
+
+      function marketPath(path) {
+        var base = stripMarketPrefix(path);
+        if (getMarket() === 'id') return base === '/' ? '/id' : '/id' + base;
+        return base;
+      }
+
+      function formatPrice(amount, currency) {
+        currency = currency || getCurrency();
+        if (currency === 'IDR') return 'Rp' + Math.round(Number(amount)).toLocaleString('id-ID');
+        return '$' + Number(amount).toFixed(2);
+      }
+
+      function getDisplayPrice(usd, idr) {
+        return getCurrency() === 'IDR' ? (idr != null ? idr : IDR_PLACEHOLDER) : Number(usd);
+      }
+
+      function getShippingFee(currency) {
+        return (currency || getCurrency()) === 'IDR' ? SHIPPING_IDR : SHIPPING_USD;
+      }
+
+      function getVolumeDiscount(subtotal, currency) {
+        currency = currency || getCurrency();
+        var threshold = currency === 'IDR' ? DISCOUNT_THRESHOLD_IDR : DISCOUNT_THRESHOLD_USD;
+        return subtotal >= threshold ? subtotal * DISCOUNT_RATE : 0;
+      }
+
+      function applyMarketLinks() {
+        document.querySelectorAll('.market-aware-link').forEach(function(el) {
+          var href = el.getAttribute('data-href') || el.getAttribute('href');
+          if (href) el.setAttribute('href', marketPath(href));
+        });
+      }
+
+      function applyMarketPrices() {
+        document.querySelectorAll('.market-price').forEach(function(el) {
+          var usd = parseFloat(el.getAttribute('data-usd') || '0');
+          var idr = parseFloat(el.getAttribute('data-idr') || String(IDR_PLACEHOLDER));
+          el.textContent = formatPrice(getDisplayPrice(usd, idr));
+        });
       }
 
       function getApiAuthHeader() {
@@ -93,11 +157,23 @@ const { title = 'paperain studio' } = Astro.props;
 
       function addToCart(product) {
         const cart = getCart();
-        const existing = cart.find(item => item.id === product.id);
+        const currency = getCurrency();
+        const price = getDisplayPrice(product.priceUsd || product.price, product.priceIdr);
+        const existing = cart.find(item => item.id === product.id && item.currency === currency);
         if (existing) {
-          existing.qty += 1;
+          existing.qty += product.qty || 1;
         } else {
-          cart.push({ ...product, qty: 1 });
+          cart.push({
+            id: product.id,
+            title: product.title,
+            price: price,
+            priceUsd: product.priceUsd || product.price,
+            priceIdr: product.priceIdr || IDR_PLACEHOLDER,
+            image: product.image,
+            category: product.category,
+            currency: currency,
+            qty: product.qty || 1,
+          });
         }
         saveCart(cart);
         toggleCart(true);
@@ -146,11 +222,12 @@ const { title = 'paperain studio' } = Astro.props;
       }
 
       function updateCartUI() {
-        const cart = getCart();
+        const cart = getCart().filter(function(item) { return item.currency === getCurrency(); });
         const container = document.getElementById('cart-items');
         const footer = document.getElementById('cart-footer');
         const totalEl = document.getElementById('cart-total');
         const discountEl = document.getElementById('cart-discount');
+        const currency = getCurrency();
 
         if (cart.length === 0) {
           container.innerHTML = '<p class="text-gray-400 text-center py-12">Your cart is empty</p>';
@@ -161,32 +238,33 @@ const { title = 'paperain studio' } = Astro.props;
         footer.classList.remove('hidden');
 
         let subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-        let discount = subtotal >= 50 ? subtotal * 0.2 : 0;
+        let discount = getVolumeDiscount(subtotal, currency);
         const total = subtotal - discount;
 
         if (discount > 0) {
           discountEl.classList.remove('hidden');
           discountEl.className = 'text-sm text-green-600 mb-2';
-          discountEl.textContent = '20% discount applied! You save $' + discount.toFixed(2);
+          discountEl.textContent = '20% discount applied! You save ' + formatPrice(discount, currency);
         } else {
-          var remaining = 50 - subtotal;
-          if (remaining > 0 && remaining <= 20) {
+          var threshold = currency === 'IDR' ? DISCOUNT_THRESHOLD_IDR : DISCOUNT_THRESHOLD_USD;
+          var remaining = threshold - subtotal;
+          if (remaining > 0 && remaining <= (currency === 'IDR' ? 200000 : 20)) {
             discountEl.classList.remove('hidden');
             discountEl.className = 'text-sm text-amber-600 mb-2';
-            discountEl.textContent = 'Add $' + remaining.toFixed(2) + ' more to get 20% off!';
+            discountEl.textContent = 'Add ' + formatPrice(remaining, currency) + ' more to get 20% off!';
           } else {
             discountEl.classList.add('hidden');
           }
         }
 
-        totalEl.textContent = '$' + total.toFixed(2);
+        totalEl.textContent = formatPrice(total, currency);
         container.innerHTML = cart.map(item => {
           return `
           <div class="flex gap-4 py-4 border-b border-gray-50">
             <img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded-lg" />
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium truncate">${item.title}</p>
-              <p class="text-sm text-gray-500">$${item.price.toFixed(2)}</p>
+              <p class="text-sm text-gray-500">${formatPrice(item.price, currency)}</p>
               <div class="flex items-center gap-2 mt-1">
                 <button onclick="updateQty('${item.id}', -1)" class="w-6 h-6 rounded border border-gray-200 text-xs hover:bg-gray-50">−</button>
                 <span class="text-sm">${item.qty}</span>
@@ -256,6 +334,8 @@ const { title = 'paperain studio' } = Astro.props;
       }
 
       document.addEventListener('DOMContentLoaded', function() {
+        applyMarketLinks();
+        applyMarketPrices();
         checkAuth();
         updateCartCount();
       });

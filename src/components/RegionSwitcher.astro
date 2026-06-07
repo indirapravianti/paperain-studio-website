@@ -1,0 +1,99 @@
+---
+---
+
+<div class="relative" id="region-switcher">
+  <button
+    type="button"
+    id="region-switcher-btn"
+    class="hidden sm:flex items-center gap-1.5 text-xs border border-gray-200 rounded-full px-3 py-1.5 text-gray-600 hover:border-gray-300 hover:text-primary transition-colors"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+  >
+    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span id="region-switcher-label">international</span>
+    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
+  <div
+    id="region-switcher-menu"
+    class="hidden absolute right-0 top-full pt-2 z-50"
+    role="listbox"
+  >
+    <div class="bg-white rounded-lg shadow-lg border border-gray-100 py-1 min-w-[180px]">
+      <button
+        type="button"
+        class="region-option w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-primary"
+        data-market="intl"
+      >
+        international (USD)
+      </button>
+      <button
+        type="button"
+        class="region-option w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-primary"
+        data-market="id"
+      >
+        indonesia (IDR)
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    function getMarket() {
+      var match = document.cookie.match(/(?:^|;\s*)paperain-market=([^;]+)/);
+      if (match) return match[1];
+      return window.location.pathname === '/id' || window.location.pathname.startsWith('/id/') ? 'id' : 'intl';
+    }
+
+    function stripPrefix(path) {
+      if (path === '/id') return '/';
+      if (path.startsWith('/id/')) return path.slice(3) || '/';
+      return path;
+    }
+
+    function addPrefix(path, market) {
+      var base = stripPrefix(path);
+      if (market === 'id') return base === '/' ? '/id' : '/id' + base;
+      return base;
+    }
+
+    var btn = document.getElementById('region-switcher-btn');
+    var menu = document.getElementById('region-switcher-menu');
+    var label = document.getElementById('region-switcher-label');
+    if (!btn || !menu) return;
+
+    btn.classList.remove('hidden');
+
+    function syncLabel() {
+      var market = getMarket();
+      label.textContent = market === 'id' ? 'indonesia (IDR)' : 'international (USD)';
+    }
+
+    syncLabel();
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      menu.classList.toggle('hidden');
+      btn.setAttribute('aria-expanded', menu.classList.contains('hidden') ? 'false' : 'true');
+    });
+
+    document.addEventListener('click', function() {
+      menu.classList.add('hidden');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+
+    menu.querySelectorAll('.region-option').forEach(function(opt) {
+      opt.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var target = opt.getAttribute('data-market');
+        var dest = addPrefix(window.location.pathname, target);
+        var qs = window.location.search.replace(/([?&])market=[^&]*&?/g, '$1').replace(/[?&]$/, '');
+        window.location.href = dest + qs + (qs ? '&' : '?') + 'market=' + target;
+      });
+    });
+  })();
+</script>

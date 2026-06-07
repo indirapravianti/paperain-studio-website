@@ -12,12 +12,17 @@ import Layout from '../../layouts/Layout.astro';
     <form id="signin-form" class="space-y-4">
       <div>
         <label for="email" class="block text-sm font-medium mb-1.5">email</label>
-        <input type="email" id="email" required
+        <input type="email" id="email" required autocomplete="email"
           class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
       </div>
       <div>
-        <label for="password" class="block text-sm font-medium mb-1.5">password</label>
-        <input type="password" id="password" required minlength="6"
+        <div class="flex items-center justify-between mb-1.5">
+          <label for="password" class="block text-sm font-medium">password</label>
+          <a href="/auth/forgot-password" class="market-aware-link text-xs text-primary hover:underline" data-href="/auth/forgot-password">
+            forgot password?
+          </a>
+        </div>
+        <input type="password" id="password" required minlength="6" autocomplete="current-password"
           class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
       </div>
 
@@ -30,7 +35,8 @@ import Layout from '../../layouts/Layout.astro';
     </form>
 
     <p class="text-sm text-center text-gray-500 mt-6">
-      account registration is coming soon!
+      don't have an account?
+      <a href="/auth/signup" class="market-aware-link text-primary hover:underline" data-href="/auth/signup">create one</a>
     </p>
   </section>
 </Layout>
@@ -74,14 +80,19 @@ import Layout from '../../layouts/Layout.astro';
           } else if (res.status === 429) {
             throw new Error('too many attempts. please wait a moment and try again.');
           }
-          throw new Error('something went wrong. please try again later.');
+          throw new Error(data.msg || data.error_description || 'something went wrong. please try again later.');
         }
 
         localStorage.setItem('sb-access-token', data.access_token);
         localStorage.setItem('sb-refresh-token', data.refresh_token);
         localStorage.setItem('sb-user', JSON.stringify(data.user));
 
-        window.location.href = '/account';
+        var dest = typeof marketPath === 'function' ? marketPath('/account') : '/account';
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('redirect')) {
+          dest = params.get('redirect');
+        }
+        window.location.href = dest;
       } catch (err) {
         errorEl.textContent = err.message;
         errorEl.classList.remove('hidden');

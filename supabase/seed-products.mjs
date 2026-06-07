@@ -30,6 +30,7 @@ async function seed() {
     id: p.id,
     title: p.title,
     price: p.price,
+    price_idr: p.priceIdr ?? 50000,
     category: p.category,
     image: p.image,
     description: p.description || null,
@@ -37,6 +38,9 @@ async function seed() {
     is_favorite: p.isFavorite || false,
     is_active: p.isActive ?? true,
     images: p.images || null,
+    track_inventory: p.trackInventory ?? false,
+    stock_quantity: p.stockQuantity ?? null,
+    stock_status: p.stockStatus ?? 'in_stock',
   }));
 
   const { error: prodError } = await supabase

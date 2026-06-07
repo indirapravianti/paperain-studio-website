@@ -6,12 +6,13 @@ interface Props {
   image: string;
   isNew?: boolean;
   category?: string;
+  priceIdr?: number;
 }
 
-const { id, title, price, image, isNew, category } = Astro.props;
+const { id, title, price, image, isNew, category, priceIdr = 50000 } = Astro.props;
 ---
 
-<a href={`/product/${id}`} class="group block">
+<a href={`/product/${id}`} class="group block market-aware-link" data-href={`/product/${id}`}>
   <div class="relative aspect-square overflow-hidden rounded-xl bg-gray-50">
     <img
       src={image}
@@ -24,9 +25,36 @@ const { id, title, price, image, isNew, category } = Astro.props;
         New
       </span>
     )}
+    <span class="stock-badge hidden absolute top-3 right-3 text-[10px] uppercase tracking-wider font-medium px-2.5 py-1 rounded-full" data-product-id={id}></span>
   </div>
   <div class="mt-3 px-0.5">
     <h3 class="text-sm font-medium text-gray-800 group-hover:text-primary transition-colors line-clamp-2">{title}</h3>
-    <p class="text-sm text-gray-500 mt-1">${price.toFixed(2)}</p>
+    <p class="market-price text-sm text-gray-500 mt-1" data-usd={price} data-idr={priceIdr}>${price.toFixed(2)}</p>
   </div>
 </a>
+
+<script is:inline define:vars={{ productId: id }}>
+  (function() {
+    document.addEventListener('DOMContentLoaded', function() {
+      fetch('/api/stock?ids=' + encodeURIComponent(productId))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var info = data.stock && data.stock[productId];
+          if (!info) return;
+          var badge = document.querySelector('.stock-badge[data-product-id="' + productId + '"]');
+          if (!badge) return;
+          if (info.status === 'restocking') {
+            badge.textContent = 'restocking';
+            badge.className = 'stock-badge absolute top-3 right-3 text-[10px] uppercase tracking-wider font-medium px-2.5 py-1 rounded-full bg-amber-100 text-amber-700';
+          } else if (!info.purchasable) {
+            badge.textContent = 'sold out';
+            badge.className = 'stock-badge absolute top-3 right-3 text-[10px] uppercase tracking-wider font-medium px-2.5 py-1 rounded-full bg-gray-200 text-gray-600';
+          } else if (info.available != null && info.available <= 3) {
+            badge.textContent = info.available + ' left';
+            badge.className = 'stock-badge absolute top-3 right-3 text-[10px] uppercase tracking-wider font-medium px-2.5 py-1 rounded-full bg-orange-100 text-orange-700';
+          }
+        })
+        .catch(function() {});
+    });
+  })();
+</script>

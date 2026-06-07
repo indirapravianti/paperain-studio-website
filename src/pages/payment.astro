@@ -63,8 +63,8 @@ import Layout from '../layouts/Layout.astro';
             </div>
           </div>
 
-          <!-- International currency disclosure -->
-          <div class="mb-6 bg-buttermilk/40 border border-buttermilk rounded-xl p-4">
+          <!-- International currency disclosure (USD store only) -->
+          <div id="intl-currency-notice" class="mb-6 bg-buttermilk/40 border border-buttermilk rounded-xl p-4">
             <div class="flex items-start gap-3">
               <div class="w-9 h-9 shrink-0 bg-pastel-blue/30 rounded-lg flex items-center justify-center mt-0.5">
                 <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -197,13 +197,28 @@ import Layout from '../layouts/Layout.astro';
     }
 
     var USD_TO_IDR = 16000;
+    var currency = data.currency || 'USD';
+    var isIdrStore = currency === 'IDR';
 
     function fmt(val) {
+      if (typeof formatPrice === 'function') return formatPrice(val, currency);
+      if (isIdrStore) return 'Rp' + Math.round(Number(val)).toLocaleString('id-ID');
       return '$' + Number(val).toFixed(2);
     }
 
     function fmtIdr(usd) {
       return 'Rp' + Math.round(Number(usd) * USD_TO_IDR).toLocaleString('id-ID');
+    }
+
+    if (isIdrStore) {
+      var intlNotice = document.getElementById('intl-currency-notice');
+      if (intlNotice) intlNotice.classList.add('hidden');
+      var payBtn = document.getElementById('pay-btn');
+      var currencyAck = document.getElementById('currency-ack');
+      if (payBtn && currencyAck) {
+        currencyAck.checked = true;
+        payBtn.disabled = false;
+      }
     }
 
     // Show order summary
@@ -229,8 +244,10 @@ import Layout from '../layouts/Layout.astro';
     document.getElementById('pay-total').textContent = fmt(s.total || 0);
 
     var idrEstimateEl = document.getElementById('pay-idr-estimate');
-    if (idrEstimateEl && s.total) {
+    if (idrEstimateEl && s.total && !isIdrStore) {
       idrEstimateEl.textContent = 'estimated charge: ≈ ' + fmtIdr(s.total) + ' IDR (via Midtrans)';
+    } else if (idrEstimateEl && isIdrStore) {
+      idrEstimateEl.textContent = 'you will be charged ' + fmt(s.total) + ' via Midtrans.';
     }
 
     if (data.shipping) {
@@ -313,7 +330,7 @@ import Layout from '../layouts/Layout.astro';
 
     payBtn.addEventListener('click', async function() {
       if (isProcessing) return;
-      if (!currencyAck.checked) {
+      if (!isIdrStore && !currencyAck.checked) {
         showError('please confirm the international payment notice before continuing.');
         return;
       }
@@ -334,7 +351,7 @@ import Layout from '../layouts/Layout.astro';
             }
             return { id: item.id, title: item.title, qty: item.qty, image: item.image || '' };
           }),
-          currency: 'USD',
+          currency: currency,
           shipping_name: data.shipping.name,
           shipping_email: data.shipping.email,
           shipping_phone: data.shipping.phone,

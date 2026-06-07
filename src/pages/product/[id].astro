@@ -73,7 +73,8 @@ const hasMultipleImages = productImages.length > 1;
         </span>
         <h1 class="text-2xl sm:text-3xl font-semibold mb-3">{product.title}</h1>
         <div class="mb-6">
-          <p class="text-2xl font-medium text-gray-800">${product.price.toFixed(2)}</p>
+          <p class="text-2xl font-medium text-gray-800 market-price" data-usd={product.price} data-idr={50000}>${product.price.toFixed(2)}</p>
+          <p id="stock-status" class="text-sm mt-2 hidden"></p>
         </div>
 
         {product.description ? (
@@ -113,18 +114,18 @@ const hasMultipleImages = productImages.length > 1;
           </div>
           <button
             id="add-to-cart-btn"
-            class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-primary/80 transition-colors text-sm font-medium"
+            class="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-primary/80 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Add to Cart
           </button>
         </div>
 
         <div class="border-t border-gray-100 pt-6">
-          <div class="flex items-center gap-2 text-sm text-gray-500">
+          <div class="flex items-center gap-2 text-sm text-gray-500" id="volume-discount-hint">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
             </svg>
-            Spend $50+ to get 20% off!
+            <span>Spend $50+ to get 20% off!</span>
           </div>
         </div>
       </div>
@@ -144,13 +145,58 @@ const hasMultipleImages = productImages.length > 1;
   </section>
 </Layout>
 
-<script is:inline define:vars={{ productData: JSON.stringify({ id: product.id, title: product.title, price: product.price, image: product.image, category: product.category, variants: product.variants || [] }) }}>
+<script is:inline define:vars={{ productData: JSON.stringify({ id: product.id, title: product.title, price: product.price, priceIdr: 50000, image: product.image, category: product.category, variants: product.variants || [] }) }}>
   (function() {
     const product = JSON.parse(productData);
     let qty = 1;
     let selectedVariant = product.variants.length > 0 ? product.variants[0] : null;
+    let stockInfo = null;
     const qtyEl = document.getElementById('qty-value');
     const productImage = document.getElementById('product-image');
+    const addBtn = document.getElementById('add-to-cart-btn');
+    const stockEl = document.getElementById('stock-status');
+
+    function updateVolumeHint() {
+      var hint = document.getElementById('volume-discount-hint');
+      if (!hint) return;
+      if (typeof getCurrency === 'function' && getCurrency() === 'IDR') {
+        hint.querySelector('span').textContent = 'Spend Rp500.000+ to get 20% off!';
+      }
+    }
+
+    function applyStockUI() {
+      if (!stockInfo) return;
+      stockEl.classList.remove('hidden');
+      if (stockInfo.status === 'restocking') {
+        stockEl.textContent = 'currently restocking — check back soon';
+        stockEl.className = 'text-sm mt-2 text-amber-600';
+        addBtn.disabled = true;
+        addBtn.textContent = 'restocking';
+      } else if (!stockInfo.purchasable) {
+        stockEl.textContent = 'out of stock';
+        stockEl.className = 'text-sm mt-2 text-red-500';
+        addBtn.disabled = true;
+        addBtn.textContent = 'out of stock';
+      } else if (stockInfo.available != null && stockInfo.available <= 3) {
+        stockEl.textContent = 'only ' + stockInfo.available + ' left in stock';
+        stockEl.className = 'text-sm mt-2 text-orange-600';
+      } else {
+        stockEl.classList.add('hidden');
+      }
+    }
+
+    fetch('/api/stock?ids=' + encodeURIComponent(product.id))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        stockInfo = data.stock && data.stock[product.id];
+        applyStockUI();
+      })
+      .catch(function() {});
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateVolumeHint();
+      if (typeof applyMarketPrices === 'function') applyMarketPrices();
+    });
 
     document.getElementById('qty-minus').addEventListener('click', () => {
       if (qty > 1) { qty--; qtyEl.textContent = qty; }
@@ -196,19 +242,21 @@ const hasMultipleImages = productImages.length > 1;
     });
 
     document.getElementById('add-to-cart-btn').addEventListener('click', () => {
-      const cart = getCart();
+      if (stockInfo && !stockInfo.purchasable) return;
       const cartId = selectedVariant ? selectedVariant.id : product.id;
       const cartTitle = selectedVariant ? product.title + ' - ' + selectedVariant.label : product.title;
       const cartImage = selectedVariant ? selectedVariant.image : product.image;
 
-      const existing = cart.find(item => item.id === cartId);
-      if (existing) {
-        existing.qty += qty;
-      } else {
-        cart.push({ id: cartId, title: cartTitle, price: product.price, image: cartImage, category: product.category, qty });
-      }
-      saveCart(cart);
-      toggleCart(true);
+      addToCart({
+        id: cartId,
+        title: cartTitle,
+        price: product.price,
+        priceUsd: product.price,
+        priceIdr: product.priceIdr,
+        image: cartImage,
+        category: product.category,
+        qty: qty,
+      });
     });
   })();
 </script>
