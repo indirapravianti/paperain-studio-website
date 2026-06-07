@@ -14,7 +14,6 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
     "@tailwindcss/vite": "^4.3.0",
-    "@vercel/functions": "^3.6.2",
     "astro": "^6.3.1",
     "tailwindcss": "^4.3.0"
   }
