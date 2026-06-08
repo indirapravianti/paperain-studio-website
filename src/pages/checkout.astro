@@ -141,7 +141,7 @@ import Layout from '../layouts/Layout.astro';
     const errorEl = document.getElementById('checkout-error');
     const user = getUser();
     var currency = typeof getCurrency === 'function' ? getCurrency() : 'IDR';
-    var SHIPPING_FEE = typeof getShippingFee === 'function' ? getShippingFee(currency) : 3;
+    var SHIPPING_FEE = typeof getShippingFee === 'function' ? getShippingFee() : 48000;
 
     if (!user) {
       document.getElementById('auth-notice').classList.remove('hidden');
@@ -167,7 +167,7 @@ import Layout from '../layouts/Layout.astro';
     }
 
     function fmt(val) {
-      return typeof formatPrice === 'function' ? formatPrice(val, currency) : '$' + Number(val).toFixed(2);
+      return typeof formatPrice === 'function' ? formatPrice(val) : 'Rp' + Math.round(Number(val)).toLocaleString('id-ID');
     }
 
     var cartFiltered = cart.filter(function(item) {
@@ -191,8 +191,8 @@ import Layout from '../layouts/Layout.astro';
     function updateTotals() {
       var subtotal = cartFiltered.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
       var volDisc = typeof getVolumeDiscount === 'function'
-        ? getVolumeDiscount(subtotal, currency)
-        : (subtotal >= 50 ? subtotal * 0.2 : 0);
+        ? getVolumeDiscount(subtotal)
+        : (subtotal >= 80000 ? subtotal * 0.2 : 0);
 
       if (volDisc > 0) {
         discountRow.classList.remove('hidden');
@@ -257,8 +257,8 @@ import Layout from '../layouts/Layout.astro';
 
       var subtotal = cartFiltered.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
       var volDisc = typeof getVolumeDiscount === 'function'
-        ? getVolumeDiscount(subtotal, currency)
-        : (subtotal >= 50 ? subtotal * 0.2 : 0);
+        ? getVolumeDiscount(subtotal)
+        : (subtotal >= 80000 ? subtotal * 0.2 : 0);
       var total = subtotal - volDisc + SHIPPING_FEE;
       var localOrderId = 'ORD-' + Date.now().toString(36).toUpperCase();
 
@@ -303,8 +303,7 @@ import Layout from '../layouts/Layout.astro';
         cart.filter(function(item) { return item.currency && item.currency !== currency; })
       ));
       updateCartCount();
-      var payPath = typeof marketPath === 'function' ? marketPath('/payment') : '/payment';
-      window.location.href = payPath + '?id=' + localOrderId;
+      window.location.href = '/payment?id=' + localOrderId;
     });
   })();
 </script>

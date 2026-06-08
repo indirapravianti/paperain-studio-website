@@ -75,7 +75,7 @@ const hasMultipleImages = productImages.length > 1;
         </span>
         <h1 class="text-2xl sm:text-3xl font-semibold mb-3">{product.title}</h1>
         <div class="mb-6">
-          <p class="text-2xl font-medium text-gray-800 market-price" data-usd={product.price} data-idr={productIdrPrice}>${product.price.toFixed(2)}</p>
+          <p class="text-2xl font-medium text-gray-800 product-price" data-idr={productIdrPrice} data-category={product.category}>Rp{productIdrPrice.toLocaleString('id-ID')}</p>
           <p id="stock-status" class="text-sm mt-2 hidden"></p>
         </div>
 
@@ -195,7 +195,7 @@ const hasMultipleImages = productImages.length > 1;
 
     document.addEventListener('DOMContentLoaded', function() {
       updateVolumeHint();
-      if (typeof applyMarketPrices === 'function') applyMarketPrices();
+      if (typeof applyProductPrices === 'function') applyProductPrices();
     });
 
     document.getElementById('qty-minus').addEventListener('click', () => {

@@ -87,7 +87,7 @@ import Layout from '../../layouts/Layout.astro';
         localStorage.setItem('sb-refresh-token', data.refresh_token);
         localStorage.setItem('sb-user', JSON.stringify(data.user));
 
-        var dest = typeof marketPath === 'function' ? marketPath('/account') : '/account';
+        var dest = '/account';
         var params = new URLSearchParams(window.location.search);
         if (params.get('redirect')) {
           dest = params.get('redirect');

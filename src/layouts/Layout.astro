@@ -14,7 +14,7 @@ const { title = 'paperain studio' } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,8 +27,6 @@ const { title = 'paperain studio' } = Astro.props;
     <meta name="supabase-key" content={import.meta.env.PUBLIC_SUPABASE_ANON_KEY || ''} />
     <meta name="midtrans-client-key" content={import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY || ''} />
     <meta name="site-url" content={import.meta.env.PUBLIC_SITE_URL || 'https://www.paperainstudio.com'} />
-    <link rel="alternate" hreflang="en" href={`${import.meta.env.PUBLIC_SITE_URL || 'https://www.paperainstudio.com'}/`} />
-    <link rel="alternate" hreflang="id" href={`${import.meta.env.PUBLIC_SITE_URL || 'https://www.paperainstudio.com'}/id/`} />
     <title>{title} | paperain studio</title>
     <GoogleAnalytics />
     {import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY && (
@@ -65,18 +63,15 @@ const { title = 'paperain studio' } = Astro.props;
           <span class="font-medium">Total</span>
           <span id="cart-total" class="text-lg font-semibold">$0.00</span>
         </div>
-        <a href="/checkout" id="cart-checkout-link" class="block w-full bg-burgundy text-white text-center py-3 rounded-lg hover:bg-burgundy/80 transition-colors market-aware-link" data-href="/checkout">Checkout</a>
+        <a href="/checkout" id="cart-checkout-link" class="block w-full bg-burgundy text-white text-center py-3 rounded-lg hover:bg-burgundy/80 transition-colors">Checkout</a>
       </div>
     </div>
 
     <script is:inline>
       var IDR_PLACEHOLDER = 13000;
-      var SHIPPING_USD = 3;
       var SHIPPING_IDR = 48000;
-      var DISCOUNT_THRESHOLD_USD = 50;
       var DISCOUNT_THRESHOLD_IDR = 80000;
       var DISCOUNT_RATE = 0.2;
-      var USD_TO_IDR = 16000;
       var IDR_CATEGORY_PRICES = {
         'sticker sheet': 13000,
         keychain: 20000,
@@ -87,10 +82,6 @@ const { title = 'paperain studio' } = Astro.props;
         phonestrap: 22000
       };
 
-      function getMarket() {
-        return 'id';
-      }
-
       function getCurrency() {
         return 'IDR';
       }
@@ -100,55 +91,29 @@ const { title = 'paperain studio' } = Astro.props;
         return IDR_PLACEHOLDER;
       }
 
-      function stripMarketPrefix(path) {
-        if (path === '/id') return '/';
-        if (path.startsWith('/id/')) return path.slice(3) || '/';
-        return path;
+      function formatPrice(amount) {
+        return 'Rp' + Math.round(Number(amount)).toLocaleString('id-ID');
       }
 
-      function marketPath(path) {
-        var base = stripMarketPrefix(path);
-        if (getMarket() === 'id') return base === '/' ? '/id' : '/id' + base;
-        return base;
+      function getDisplayPrice(_usd, idr, category) {
+        if (idr != null) return idr;
+        if (category) return getIdrPriceForCategory(category);
+        return IDR_PLACEHOLDER;
       }
 
-      function formatPrice(amount, currency) {
-        currency = currency || getCurrency();
-        if (currency === 'IDR') return 'Rp' + Math.round(Number(amount)).toLocaleString('id-ID');
-        return '$' + Number(amount).toFixed(2);
+      function getShippingFee() {
+        return SHIPPING_IDR;
       }
 
-      function getDisplayPrice(usd, idr, category) {
-        if (getCurrency() === 'IDR') {
-          if (idr != null) return idr;
-          if (category) return getIdrPriceForCategory(category);
-          return IDR_PLACEHOLDER;
-        }
-        return Number(usd);
+      function getVolumeDiscount(subtotal) {
+        return subtotal >= DISCOUNT_THRESHOLD_IDR ? subtotal * DISCOUNT_RATE : 0;
       }
 
-      function getShippingFee(currency) {
-        return (currency || getCurrency()) === 'IDR' ? SHIPPING_IDR : SHIPPING_USD;
-      }
-
-      function getVolumeDiscount(subtotal, currency) {
-        currency = currency || getCurrency();
-        var threshold = currency === 'IDR' ? DISCOUNT_THRESHOLD_IDR : DISCOUNT_THRESHOLD_USD;
-        return subtotal >= threshold ? subtotal * DISCOUNT_RATE : 0;
-      }
-
-      function applyMarketLinks() {
-        document.querySelectorAll('.market-aware-link').forEach(function(el) {
-          var href = el.getAttribute('data-href') || el.getAttribute('href');
-          if (href) el.setAttribute('href', marketPath(href));
-        });
-      }
-
-      function applyMarketPrices() {
-        document.querySelectorAll('.market-price').forEach(function(el) {
-          var usd = parseFloat(el.getAttribute('data-usd') || '0');
+      function applyProductPrices() {
+        document.querySelectorAll('.product-price').forEach(function(el) {
           var idr = parseFloat(el.getAttribute('data-idr') || String(IDR_PLACEHOLDER));
-          el.textContent = formatPrice(getDisplayPrice(usd, idr));
+          var category = el.getAttribute('data-category');
+          el.textContent = formatPrice(getDisplayPrice(0, idr, category));
         });
       }
 
@@ -247,11 +212,10 @@ const { title = 'paperain studio' } = Astro.props;
         const currency = getCurrency();
 
         if (cart.length === 0) {
-          var shopPath = typeof marketPath === 'function' ? marketPath('/products') : '/products';
           container.innerHTML =
             '<div class="text-center py-12">' +
               '<p class="text-gray-400 mb-6">your cart is empty</p>' +
-              '<a href="' + shopPath + '" class="inline-block bg-burgundy text-white text-sm rounded-full px-6 py-2.5 hover:bg-burgundy/80 transition-colors" onclick="toggleCart()">shop now</a>' +
+              '<a href="/products" class="inline-block bg-burgundy text-white text-sm rounded-full px-6 py-2.5 hover:bg-burgundy/80 transition-colors" onclick="toggleCart()">shop now</a>' +
             '</div>';
           footer.classList.add('hidden');
           return;
@@ -266,27 +230,26 @@ const { title = 'paperain studio' } = Astro.props;
         if (discount > 0) {
           discountEl.classList.remove('hidden');
           discountEl.className = 'text-sm text-green-600 mb-2';
-          discountEl.textContent = '20% discount applied! You save ' + formatPrice(discount, currency);
+          discountEl.textContent = '20% discount applied! You save ' + formatPrice(discount);
         } else {
-          var threshold = currency === 'IDR' ? DISCOUNT_THRESHOLD_IDR : DISCOUNT_THRESHOLD_USD;
-          var remaining = threshold - subtotal;
-          if (remaining > 0 && remaining <= (currency === 'IDR' ? 200000 : 20)) {
+          var remaining = DISCOUNT_THRESHOLD_IDR - subtotal;
+          if (remaining > 0 && remaining <= 20000) {
             discountEl.classList.remove('hidden');
             discountEl.className = 'text-sm text-amber-600 mb-2';
-            discountEl.textContent = 'Add ' + formatPrice(remaining, currency) + ' more to get 20% off!';
+            discountEl.textContent = 'Add ' + formatPrice(remaining) + ' more to get 20% off!';
           } else {
             discountEl.classList.add('hidden');
           }
         }
 
-        totalEl.textContent = formatPrice(total, currency);
+        totalEl.textContent = formatPrice(total);
         container.innerHTML = cart.map(item => {
           return `
           <div class="flex gap-4 py-4 border-b border-gray-50">
             <img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded-lg" />
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium truncate">${item.title}</p>
-              <p class="text-sm text-gray-500">${formatPrice(item.price, currency)}</p>
+              <p class="text-sm text-gray-500">${formatPrice(item.price)}</p>
               <div class="flex items-center gap-2 mt-1">
                 <button onclick="updateQty('${item.id}', -1)" class="w-6 h-6 rounded border border-gray-200 text-xs hover:bg-gray-50">−</button>
                 <span class="text-sm">${item.qty}</span>
@@ -390,8 +353,7 @@ const { title = 'paperain studio' } = Astro.props;
       }
 
       document.addEventListener('DOMContentLoaded', function() {
-        applyMarketLinks();
-        applyMarketPrices();
+        applyProductPrices();
         checkAuth();
         updateCartCount();
       });

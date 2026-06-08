@@ -173,7 +173,7 @@ import Layout from '../layouts/Layout.astro';
     var currency = data.currency || 'IDR';
 
     function fmt(val) {
-      if (typeof formatPrice === 'function') return formatPrice(val, currency);
+      if (typeof formatPrice === 'function') return formatPrice(val);
       return 'Rp' + Math.round(Number(val)).toLocaleString('id-ID');
     }
 

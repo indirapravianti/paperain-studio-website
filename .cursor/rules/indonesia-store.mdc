@@ -1,0 +1,14 @@
+---
+description: Paperain store runs Indonesia-only IDR pricing — no dual-market routing
+alwaysApply: true
+---
+
+# Indonesia Store (IDR Only)
+
+- **No Vercel middleware** — do not add `middleware.js` unless explicitly requested and tested on Vercel Preview
+- **No `/id/` URL prefix** — all pages live at normal paths (`/products`, `/checkout`, etc.)
+- **No IP-based or cookie-based market detection** — never worked reliably in production
+- **Currency is always IDR** — enforced in `src/layouts/Layout.astro` and `lib/api/region-pricing.js`
+- **Do not add** RegionSwitcher, dual-market docs, or geo redirect logic without explicit user request
+
+Pricing reference: `docs/PRICING.md`
