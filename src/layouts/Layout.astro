@@ -302,6 +302,17 @@ const { title = 'paperain studio' } = Astro.props;
         localStorage.removeItem('sb-user');
       }
 
+      function showDesktopNavLink(el, visible) {
+        if (!el) return;
+        if (visible) {
+          el.classList.remove('hidden');
+          el.classList.add('sm:inline-flex');
+        } else {
+          el.classList.add('hidden');
+          el.classList.remove('sm:inline-flex');
+        }
+      }
+
       function updateNavAuth() {
         var signinEl = document.getElementById('nav-signin');
         var accountEl = document.getElementById('nav-account');
@@ -309,23 +320,26 @@ const { title = 'paperain studio' } = Astro.props;
         var mobileUser = document.getElementById('mobile-auth-user');
         var nameEl = document.getElementById('nav-account-name');
         var mobileNameEl = document.getElementById('mobile-account-name');
+        var token = localStorage.getItem('sb-access-token');
         var user = null;
 
         try { user = JSON.parse(localStorage.getItem('sb-user')); } catch {}
 
-        if (user && user.email) {
+        var loggedIn = !!(token && user && user.email);
+
+        if (loggedIn) {
           var displayName = (user.user_metadata && user.user_metadata.full_name
             ? user.user_metadata.full_name
             : user.email.split('@')[0]).split(' ')[0].toLowerCase();
-          if (signinEl) signinEl.classList.add('hidden');
-          if (accountEl) accountEl.classList.remove('hidden');
+          showDesktopNavLink(signinEl, false);
+          showDesktopNavLink(accountEl, true);
           if (mobileGuest) mobileGuest.classList.add('hidden');
           if (mobileUser) mobileUser.classList.remove('hidden');
           if (nameEl) nameEl.textContent = displayName;
           if (mobileNameEl) mobileNameEl.textContent = displayName;
         } else {
-          if (signinEl) signinEl.classList.remove('hidden');
-          if (accountEl) accountEl.classList.add('hidden');
+          showDesktopNavLink(signinEl, true);
+          showDesktopNavLink(accountEl, false);
           if (mobileGuest) mobileGuest.classList.remove('hidden');
           if (mobileUser) mobileUser.classList.add('hidden');
         }
@@ -357,6 +371,8 @@ const { title = 'paperain studio' } = Astro.props;
         checkAuth();
         updateCartCount();
       });
+
+      updateNavAuth();
     </script>
   </body>
 </html>
