@@ -10,7 +10,7 @@
 | Feature | Active file | Archived / stash location |
 |---------|-------------|---------------------------|
 | Region switcher (navbar) | Removed from `src/components/Navbar.astro` | Original: `src/components/RegionSwitcher.astro` |
-| Dual-market middleware | `middleware.js` (Indonesia-only) | `src/components/archived/middleware-dual-market.js` |
+| Dual-market middleware | `middleware.js` (minimal cookie-only — safe) | `src/components/archived/middleware-dual-market.js` |
 | International payment disclosure | Removed from `src/pages/payment.astro` | `src/components/archived/IntlCurrencyNotice.astro` |
 | USD pricing display | Client forced to IDR in `src/layouts/Layout.astro` | Restore `getMarket()` / `getCurrency()` logic |
 | USD volume discount ($50) | Still in server code, unused on client | `lib/market.js` → `VOLUME_DISCOUNT_THRESHOLD_USD` |
@@ -25,7 +25,7 @@
 | Volume discount threshold | Rp 80.000 (20% off) | `lib/market.js`, `lib/api/pricing.js`, `src/lib/idr-prices.js` |
 | Category IDR prices | sticker Rp13k, keychain Rp20k, griptok Rp27k, art print Rp10k, greeting card Rp14k, postcard Rp10k, phonestrap Rp22k | `lib/api/region-pricing.js`, `src/lib/idr-prices.js` |
 | Shipping | Indonesia only at checkout | `src/pages/checkout.astro` |
-| URL prefix | All visitors redirected to `/id/...` | `middleware.js` |
+| URL prefix | `/id/...` works via `vercel.json` rewrites; no forced redirect (see `docs/MIDDLEWARE-SAFETY.md`) | `middleware.js` |
 
 ---
 
@@ -33,7 +33,9 @@
 
 ### 1. Restore dual-market middleware
 
-Replace the contents of `middleware.js` with the archived version:
+> **Warning:** Read `docs/MIDDLEWARE-SAFETY.md` first. Never deploy redirect middleware without Vercel Preview testing.
+
+Replace the contents of `middleware.js` with the archived version, then add try/catch (see MIDDLEWARE-SAFETY.md):
 
 ```bash
 cp src/components/archived/middleware-dual-market.js middleware.js
