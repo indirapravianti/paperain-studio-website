@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import products from '../../data/products.json';
 import ProductCard from '../../components/ProductCard.astro';
+import { getIdrPriceForCategory } from '../../lib/idr-prices.js';
 
 export function getStaticPaths() {
   return products.filter(p => p.isActive).map(product => ({
@@ -11,6 +12,7 @@ export function getStaticPaths() {
 }
 
 const { product } = Astro.props;
+const productIdrPrice = getIdrPriceForCategory(product.category);
 
 const related = products
   .filter(p => p.isActive && p.category === product.category && p.id !== product.id)
@@ -73,7 +75,7 @@ const hasMultipleImages = productImages.length > 1;
         </span>
         <h1 class="text-2xl sm:text-3xl font-semibold mb-3">{product.title}</h1>
         <div class="mb-6">
-          <p class="text-2xl font-medium text-gray-800 market-price" data-usd={product.price} data-idr={50000}>${product.price.toFixed(2)}</p>
+          <p class="text-2xl font-medium text-gray-800 market-price" data-usd={product.price} data-idr={productIdrPrice}>${product.price.toFixed(2)}</p>
           <p id="stock-status" class="text-sm mt-2 hidden"></p>
         </div>
 
@@ -125,7 +127,7 @@ const hasMultipleImages = productImages.length > 1;
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
             </svg>
-            <span>Spend $50+ to get 20% off!</span>
+            <span>Spend Rp80.000+ to get 20% off!</span>
           </div>
         </div>
       </div>
@@ -145,7 +147,7 @@ const hasMultipleImages = productImages.length > 1;
   </section>
 </Layout>
 
-<script is:inline define:vars={{ productData: JSON.stringify({ id: product.id, title: product.title, price: product.price, priceIdr: 50000, image: product.image, category: product.category, variants: product.variants || [] }) }}>
+<script is:inline define:vars={{ productData: JSON.stringify({ id: product.id, title: product.title, price: product.price, priceIdr: productIdrPrice, image: product.image, category: product.category, variants: product.variants || [] }) }}>
   (function() {
     const product = JSON.parse(productData);
     let qty = 1;
@@ -159,9 +161,7 @@ const hasMultipleImages = productImages.length > 1;
     function updateVolumeHint() {
       var hint = document.getElementById('volume-discount-hint');
       if (!hint) return;
-      if (typeof getCurrency === 'function' && getCurrency() === 'IDR') {
-        hint.querySelector('span').textContent = 'Spend Rp500.000+ to get 20% off!';
-      }
+      hint.querySelector('span').textContent = 'Spend Rp80.000+ to get 20% off!';
     }
 
     function applyStockUI() {

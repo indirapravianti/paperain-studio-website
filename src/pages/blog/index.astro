@@ -1,0 +1,50 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const posts = [
+  {
+    slug: 'sticker-journaling-tips',
+    title: '5 sticker journaling tips for beginners',
+    excerpt: 'simple ways to use cute sticker sheets in your daily journal without overthinking the layout.',
+    date: 'June 1, 2026',
+  },
+  {
+    slug: 'caring-for-your-keychains',
+    title: 'how to care for your acrylic keychains',
+    excerpt: 'keep your favorite keychains looking fresh with these easy storage and cleaning tips.',
+    date: 'May 18, 2026',
+  },
+  {
+    slug: 'behind-the-design-process',
+    title: 'behind the design process at paperain studio',
+    excerpt: 'a peek into how we sketch, color, and turn little doodles into products you can hold.',
+    date: 'May 5, 2026',
+  },
+];
+---
+
+<Layout title="blog">
+  <section class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <div class="text-center mb-12">
+      <h1 class="text-3xl font-semibold mb-2">blog</h1>
+      <p class="text-sm text-gray-500">stories, tips, and behind-the-scenes from paperain studio</p>
+    </div>
+
+    <div class="space-y-8">
+      {posts.map(post => (
+        <article class="border-b border-gray-100 pb-8 last:border-0">
+          <p class="text-xs text-gray-400 mb-2">{post.date}</p>
+          <h2 class="text-xl font-semibold mb-2">
+            <a href={`/blog/${post.slug}`} class="hover:text-primary transition-colors market-aware-link" data-href={`/blog/${post.slug}`}>
+              {post.title}
+            </a>
+          </h2>
+          <p class="text-sm text-gray-600 leading-relaxed mb-4">{post.excerpt}</p>
+          <a href={`/blog/${post.slug}`} class="text-sm text-primary hover:underline market-aware-link" data-href={`/blog/${post.slug}`}>
+            read more →
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+</Layout>

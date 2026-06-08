@@ -1,8 +1,7 @@
 /**
- * Vercel Edge Middleware — Indonesia-only market (international disabled)
- * Self-contained: no external imports (Edge runtime compatibility)
- *
- * To re-enable dual-market routing, see docs/REACTIVATE-INTERNATIONAL.md
+ * ARCHIVED — Dual-market Vercel Edge Middleware (Indonesia / international).
+ * Replaced by Indonesia-only routing in /middleware.js (June 2026).
+ * To restore: see docs/REACTIVATE-INTERNATIONAL.md
  */
 
 export const config = {
@@ -11,6 +10,7 @@ export const config = {
 
 const MARKET_COOKIE = 'paperain-market';
 const MARKET_ID = 'id';
+const MARKET_INTL = 'intl';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 function getCookie(request, name) {
@@ -29,9 +29,12 @@ function stripMarketPrefix(pathname) {
   return pathname;
 }
 
-function addMarketPrefix(pathname) {
+function addMarketPrefix(pathname, market) {
   const base = stripMarketPrefix(pathname);
-  return base === '/' ? '/id' : '/id' + base;
+  if (market === MARKET_ID) {
+    return base === '/' ? '/id' : '/id' + base;
+  }
+  return base;
 }
 
 function shouldSkipRedirect(pathname) {
@@ -42,20 +45,20 @@ function shouldSkipRedirect(pathname) {
   );
 }
 
-function continueWithCookie() {
+function continueWithCookie(market) {
   const headers = new Headers({ 'x-middleware-next': '1' });
   headers.set(
     'Set-Cookie',
-    MARKET_COOKIE + '=' + MARKET_ID + '; Path=/; Max-Age=' + COOKIE_MAX_AGE + '; SameSite=Lax',
+    MARKET_COOKIE + '=' + market + '; Path=/; Max-Age=' + COOKIE_MAX_AGE + '; SameSite=Lax',
   );
   return new Response(null, { status: 200, headers });
 }
 
-function redirectWithCookie(url) {
+function redirectWithCookie(url, market) {
   const response = Response.redirect(url, 302);
   response.headers.set(
     'Set-Cookie',
-    MARKET_COOKIE + '=' + MARKET_ID + '; Path=/; Max-Age=' + COOKIE_MAX_AGE + '; SameSite=Lax',
+    MARKET_COOKIE + '=' + market + '; Path=/; Max-Age=' + COOKIE_MAX_AGE + '; SameSite=Lax',
   );
   return response;
 }
@@ -63,29 +66,30 @@ function redirectWithCookie(url) {
 export default function middleware(request) {
   const url = new URL(request.url);
   const pathname = url.pathname;
+  const country = request.headers.get('x-vercel-ip-country') || '';
   const existingCookie = getCookie(request, MARKET_COOKIE);
 
-  // Force Indonesia market — ignore international override attempts
   const marketParam = url.searchParams.get('market');
-  if (marketParam) {
+  if (marketParam === MARKET_ID || marketParam === MARKET_INTL) {
     url.searchParams.delete('market');
-    if (!isIndonesiaPath(pathname) && !shouldSkipRedirect(pathname)) {
-      url.pathname = addMarketPrefix(pathname);
-      return redirectWithCookie(url);
-    }
-    if (url.search !== new URL(request.url).search) {
-      return redirectWithCookie(url);
-    }
+    url.pathname = addMarketPrefix(stripMarketPrefix(pathname), marketParam);
+    return redirectWithCookie(url, marketParam);
   }
 
-  // Redirect non-/id paths to /id/ (Indonesia store)
-  if (!isIndonesiaPath(pathname) && !shouldSkipRedirect(pathname)) {
-    url.pathname = addMarketPrefix(pathname);
-    return redirectWithCookie(url);
+  const pathMarket = isIndonesiaPath(pathname) ? MARKET_ID : MARKET_INTL;
+
+  if (
+    !existingCookie &&
+    country === 'ID' &&
+    pathMarket === MARKET_INTL &&
+    !shouldSkipRedirect(pathname)
+  ) {
+    url.pathname = addMarketPrefix(pathname, MARKET_ID);
+    return redirectWithCookie(url, MARKET_ID);
   }
 
-  if (existingCookie !== MARKET_ID) {
-    return continueWithCookie();
+  if (existingCookie !== pathMarket) {
+    return continueWithCookie(pathMarket);
   }
 
   return new Response(null, { status: 200, headers: { 'x-middleware-next': '1' } });

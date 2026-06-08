@@ -8,6 +8,19 @@ import Layout from '../layouts/Layout.astro';
 
     <div class="grid md:grid-cols-5 gap-8">
       <div class="md:col-span-3">
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+          <p class="text-sm text-amber-900 leading-relaxed">
+            <strong class="font-medium">shipping update:</strong> international air mail is still in progress.
+            we are currently accepting orders within Indonesia only — we'll let you know when international shipping opens!
+          </p>
+        </div>
+
+        <div id="intl-shipping-warning" class="hidden bg-red-50 border border-red-100 rounded-lg p-4 mb-6">
+          <p class="text-sm text-red-700">
+            sorry, we can only ship within Indonesia for now. please select Indonesia as your shipping country, or check back when international orders open.
+          </p>
+        </div>
+
         <div id="auth-notice" class="hidden bg-pastel-blue/20 border border-pastel-blue rounded-lg p-4 mb-6">
           <p class="text-sm text-burgundy">
             checking out as a guest.
@@ -39,7 +52,7 @@ import Layout from '../layouts/Layout.astro';
             <select id="country" required
               class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors bg-white">
               <option value="">select country</option>
-              <option value="ID">Indonesia</option>
+              <option value="ID" selected>Indonesia</option>
               <option value="JP">Japan</option>
               <option value="SG">Singapore</option>
               <option value="MY">Malaysia</option>
@@ -127,7 +140,7 @@ import Layout from '../layouts/Layout.astro';
     const shippingEl = document.getElementById('checkout-shipping');
     const errorEl = document.getElementById('checkout-error');
     const user = getUser();
-    var currency = typeof getCurrency === 'function' ? getCurrency() : 'USD';
+    var currency = typeof getCurrency === 'function' ? getCurrency() : 'IDR';
     var SHIPPING_FEE = typeof getShippingFee === 'function' ? getShippingFee(currency) : 3;
 
     if (!user) {
@@ -199,6 +212,17 @@ import Layout from '../layouts/Layout.astro';
 
     updateTotals();
 
+    var countrySelect = document.getElementById('country');
+    var intlWarning = document.getElementById('intl-shipping-warning');
+
+    function updateCountryWarning() {
+      var isIndonesia = countrySelect.value === 'ID';
+      intlWarning.classList.toggle('hidden', !countrySelect.value || isIndonesia);
+    }
+
+    countrySelect.addEventListener('change', updateCountryWarning);
+    updateCountryWarning();
+
     document.getElementById('checkout-form').addEventListener('submit', function(e) {
       e.preventDefault();
       errorEl.classList.add('hidden');
@@ -217,6 +241,14 @@ import Layout from '../layouts/Layout.astro';
       var countryCode = document.getElementById('country').value;
       if (!countryCode) {
         errorEl.textContent = 'please select a shipping country.';
+        errorEl.classList.remove('hidden');
+        btn.textContent = 'proceed to payment';
+        btn.disabled = false;
+        return;
+      }
+
+      if (countryCode !== 'ID') {
+        errorEl.textContent = 'we currently only ship within Indonesia. please select Indonesia or check back when international shipping opens.';
         errorEl.classList.remove('hidden');
         btn.textContent = 'proceed to payment';
         btn.disabled = false;

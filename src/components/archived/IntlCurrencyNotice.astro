@@ -1,0 +1,32 @@
+---
+/**
+ * ARCHIVED — International card payment disclosure (USD store).
+ * Hidden while the store focuses on the Indonesian market (IDR only).
+ * To restore: see docs/REACTIVATE-INTERNATIONAL.md
+ */
+---
+
+<div id="intl-currency-notice" class="mb-6 bg-buttermilk/40 border border-buttermilk rounded-xl p-4">
+  <div class="flex items-start gap-3">
+    <div class="w-9 h-9 shrink-0 bg-pastel-blue/30 rounded-lg flex items-center justify-center mt-0.5">
+      <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    <div class="flex-1 min-w-0">
+      <p class="text-sm font-medium text-primary mb-1">international card payment</p>
+      <p class="text-xs text-gray-600 leading-relaxed mb-3">
+        prices on this site are shown in USD. your payment is processed by Midtrans in
+        <strong class="font-medium text-primary">Indonesian Rupiah (IDR)</strong>.
+        your bank will convert the charge using its exchange rate at the time of payment — the final amount on your statement may differ slightly from the estimate below.
+      </p>
+      <p id="pay-idr-estimate" class="text-xs text-primary/80 bg-white/60 rounded-lg px-3 py-2 mb-3 font-medium"></p>
+      <label class="flex items-start gap-3 cursor-pointer group">
+        <input type="checkbox" id="currency-ack" class="mt-0.5 accent-primary w-4 h-4 shrink-0 rounded border-gray-300" />
+        <span class="text-xs text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors">
+          i understand my card will be charged in IDR at my bank's prevailing exchange rate, and the USD total shown is an estimate only.
+        </span>
+      </label>
+    </div>
+  </div>
+</div>
