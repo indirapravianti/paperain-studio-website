@@ -1,0 +1,151 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="how we built piper ai for the build small hackathon">
+  <article class="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+    <a href="/blog" class="text-sm text-gray-400 hover:text-primary transition-colors market-aware-link" data-href="/blog">← back to blog</a>
+    <p class="text-xs text-gray-400 mt-6 mb-1">June 2026</p>
+    <p class="text-xs text-gray-400 mb-2 italic">originally written June 2026</p>
+    <h1 class="text-3xl font-semibold mb-6">how we built piper ai for the build small hackathon</h1>
+
+    <div class="prose prose-sm text-gray-600 space-y-4 leading-relaxed">
+      <p>If you have read my earlier post about <a href="/blog/how-i-started-my-small-biz" class="text-primary hover:underline market-aware-link" data-href="/blog/how-i-started-my-small-biz">how I started Paperain Studio</a>, you already know the short version: we design stickers in Yogyakarta and sell them through partner stores across Java. What that post did not cover is the boring monthly work behind the scenes — and that is exactly what we tried to fix for the <a href="https://huggingface.co/build-small-hackathon" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Build Small Hackathon 2026</a>.</p>
+
+      <p>This is the longer, more technical write-up of how we built <strong>Piper</strong>, a small-model desk assistant that turns messy store purchase orders into structured restock workflows. No hype — just background, problem, what we actually shipped, and where we think it could go next.</p>
+
+      <hr class="border-gray-200 my-8" />
+
+      <h2 class="text-lg font-medium text-gray-800 pt-2">background</h2>
+      <p><strong>Paperain Studio</strong> is a real family-run sticker business. We have around <strong>150 sticker designs</strong> and work with about <strong>25 offline partner stores</strong> in cities like Solo, Klaten, Semarang, Yogyakarta, Jakarta, Bandung, and Bali. Stores take stickers on consignment and send us monthly sales updates plus restock requests.</p>
+
+      <p>The business side is creative; the operations side is spreadsheets. Every month, each store sends orders in a different shape — Excel copy-pastes, informal WhatsApp messages, table screenshots, handwritten notes, Indonesian, English, or both mixed together. Examples we see in the wild look like <em>"stiker kucing hologram 20 pcs"</em>, <em>"boba 25, unicorn x10 — tolong kirim minggu ini"</em>, or a clean two-column Excel export. Same meaning, totally different format.</p>
+
+      <p>My family used to spend roughly <strong>3+ hours every month</strong> retyping that data, comparing it against home stock, calculating how many A3 sheets to print (we fit 8 A5 stickers per sheet), and writing delivery notes per store. It is not hard work intellectually, but it is repetitive — and easy to mess up when you are tired.</p>
+
+      <p>When the Build Small Hackathon opened — a Gradio + Hugging Face challenge to ship useful apps with models under 32B parameters — this felt like the right problem to solve. Not a generic chatbot demo, but a tool tied to a workflow we already live with.</p>
+
+      <h2 class="text-lg font-medium text-gray-800 pt-2">the problem</h2>
+      <p>Broken down, the pain points were:</p>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Format chaos:</strong> 25 stores, 25-ish ways of saying "I need 20 cat stickers."</li>
+        <li><strong>Code-mixed language:</strong> Indonesian slang, English product names, informal quantities (<em>lembar</em>, <em>pcs</em>, <em>x25</em>).</li>
+        <li><strong>Manual aggregation:</strong> No single view of total demand across stores until someone merges spreadsheets by hand.</li>
+        <li><strong>Downstream math:</strong> Shortage = demand minus home stock; print sheets = ceiling(qty ÷ 8).</li>
+        <li><strong>Delivery paperwork:</strong> Each shipment needs a readable packing list, sometimes in English, sometimes in Indonesian.</li>
+        <li><strong>Accessibility:</strong> The people doing this work are not developers. The tool had to feel like a form, not a terminal.</li>
+      </ul>
+
+      <p>We did not need an AI that writes poetry. We needed structured extraction from messy text — which is a different (and smaller) job than "general intelligence."</p>
+
+      <hr class="border-gray-200 my-8" />
+
+      <h2 class="text-lg font-medium text-gray-800 pt-2">the solution: meet piper</h2>
+      <p><strong>Piper</strong> is the name we gave the assistant inside the app. Think of it as a desk helper for restock month: paste a PO, review a table, aggregate demand, calculate printing, export documents. The live demo is on Hugging Face Spaces at <a href="https://huggingface.co/spaces/huals/sticker-manager" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">huals/sticker-manager</a>.</p>
+
+      <h3 class="text-base font-medium text-gray-800 pt-2">what the app does (five tabs)</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>PO Intake:</strong> Select a store, paste any PO text, parse into an editable Product / Qty / Notes table.</li>
+        <li><strong>Stock &amp; Demand:</strong> Compare aggregated store demand against editable home inventory; highlight shortages.</li>
+        <li><strong>Print Calculator:</strong> Turn shortages into print quantities and A3 sheet counts; export CSV.</li>
+        <li><strong>Delivery Docs:</strong> Generate bilingual packing lists (English or Indonesian) for a chosen store.</li>
+        <li><strong>Best Sellers:</strong> Summarise cross-store demand and suggest what partner stores might restock.</li>
+      </ul>
+
+      <p>Under the hood the stack is straightforward:</p>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Python 3.11</strong> for all backend logic</li>
+        <li><strong>Gradio 6.x</strong> for the UI (required by the hackathon)</li>
+        <li><strong>pandas</strong> for tables and CSV export</li>
+        <li><strong>Qwen2.5-7B-Instruct</strong> via the Hugging Face Inference API in production</li>
+        <li>Optional <strong>Ollama</strong> path for local runs when <code>FORCE_HF=0</code> (useful for offline demos on a machine with enough RAM)</li>
+      </ul>
+
+      <h3 class="text-base font-medium text-gray-800 pt-2">why a 7B model — and not gpt-4</h3>
+      <p>The hackathon cap is 32B parameters. We picked <strong>Qwen2.5-7B</strong> because our core task is JSON extraction from short business text, not long-form reasoning. Parsing <em>"restock ASAP: boba 25, unicorn x10"</em> into <code>{'{product, quantity, notes}'}</code> is exactly the kind of structured job small models handle well.</p>
+
+      <p>Practical reasons that mattered to us:</p>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>No per-token API bill for a family business workflow</li>
+        <li>Store PO text stays in our pipeline, not a general-purpose chat product</li>
+        <li>Inference at <strong>temperature 0.1</strong> keeps outputs stable for tabular data</li>
+        <li>Good enough multilingual behaviour for Indonesian/English mix without calling a giant model</li>
+      </ul>
+
+      <p>That is the honest fit: we are not claiming 7B beats frontier models at everything. We are claiming it is the right size for this specific job.</p>
+
+      <h3 class="text-base font-medium text-gray-800 pt-2">the 3-stage parsing pipeline</h3>
+      <p>The most important engineering decision was not the mascot (though Piper the blob is cute). It was treating PO parsing as a <strong>pipeline</strong>, not a single prompt and prayer.</p>
+
+      <p><strong>Stage 1 — normalize (<code>po_normalizer.py</code>)</strong><br />
+      Before the model sees anything, we clean code-mixed text with rule-based replacements: <em>stiker → sticker</em>, <em>lembar → pcs</em>, strip filler like <em>hai kak</em>, collapse messy whitespace. This gives the LLM cleaner input and makes failures easier to debug.</p>
+
+      <p><strong>Stage 2 — extract JSON (<code>prompts.py</code> + <code>config.py</code>)</strong><br />
+      Piper's system prompt includes the official sticker catalog (~30 canonical names in the demo dataset, representing our real naming scheme), few-shot examples of Indonesian/English PO lines, and strict rules: return <strong>only valid JSON</strong>, map products to catalog names, put informal wording in <code>notes</code>. The model returns something like:</p>
+
+      <pre class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs overflow-x-auto"><code>{`{"items": [
+  {"product": "Holographic Cat Sticker", "quantity": 20, "notes": "stiker kucing hologram"},
+  {"product": "Kawaii Boba Tea Sticker", "quantity": 25, "notes": "restock ASAP"}
+], "store_notes": "tolong kirim minggu ini"}`}</code></pre>
+
+      <p><strong>Stage 3 — validate &amp; anchor catalog (<code>services.py</code> + <code>catalog_resolver.py</code>)</strong><br />
+      We validate the schema (drop zero quantities, enforce integer qty), then fuzzy-match product strings to the catalog using aliases, substring matches, and <code>difflib</code> similarity. If the model says <em>"kucing holo"</em> we still land on <em>Holographic Cat Sticker</em> reliably.</p>
+
+      <p><strong>Fallback (<code>parser_fallback.py</code>)</strong><br />
+      If the Inference API is cold, the token is missing, or JSON parsing fails, a rule-based line parser kicks in. It is not as flexible as the LLM, but it keeps the demo usable — important when judges click a public Space link and the model is waking up.</p>
+
+      <h3 class="text-base font-medium text-gray-800 pt-2">prompt design</h3>
+      <p>We kept prompts narrow on purpose:</p>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Parse PO:</strong> catalog-aware JSON extraction with few-shot code-mixed examples</li>
+        <li><strong>Delivery doc:</strong> short professional packing list with date, store, itemised qty, total count</li>
+        <li><strong>Best sellers:</strong> practical recommendation from aggregated demand tables, not fantasy marketing copy</li>
+      </ul>
+
+      <p>Each prompt states Piper's role, output shape, and constraints. Delivery and best-seller generation also have template fallbacks so the tabs still produce something readable if the LLM errors out.</p>
+
+      <h3 class="text-base font-medium text-gray-800 pt-2">ui and deployment</h3>
+      <p>The frontend is Gradio, but we customised it heavily to match the light cream palette on <a href="https://paperainstudio.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">paperainstudio.com</a> — dark text, warm background, readable tables. Gradio 6 on Hugging Face Spaces required passing <code>theme</code>, <code>css</code>, and <code>head</code> on <code>gr.Blocks()</code> itself (not only on <code>launch()</code>), plus light-mode CSS variables for dataframe cells so tables stay readable.</p>
+
+      <p>Deployment path:</p>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Code lives in a GitHub repo and syncs to HF Spaces via a GitHub Action</li>
+        <li>The Space runs the Gradio app; the LLM runs through HF Inference API with <code>HF_TOKEN</code> as a secret</li>
+        <li>Judges get a public URL — no install step</li>
+      </ul>
+
+      <p>The hero section states the story upfront: 25 stores, 150 designs, 7B parameters, hours saved per restock cycle. That was intentional — hackathon reviewers spend minutes, not hours, per project.</p>
+
+      <hr class="border-gray-200 my-8" />
+
+      <h2 class="text-lg font-medium text-gray-800 pt-2">what we learned</h2>
+      <p>A few things that were true in practice:</p>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Real data beats synthetic demos.</strong> Sample POs in the app are modelled after actual message styles from partner stores — informal Indonesian, Excel pipes, numbered lists.</li>
+        <li><strong>Pipelines beat one-shot prompts.</strong> Normalization + JSON extraction + catalog anchoring reduced "almost right" product names.</li>
+        <li><strong>Fallbacks matter on Spaces.</strong> Cold starts and API hiccups happen; rule-based parsing saved us during testing.</li>
+        <li><strong>Small models fit small businesses.</strong> The win is not "we used AI" — it is "we used the smallest tool that honestly solves the job."</li>
+      </ul>
+
+      <h2 class="text-lg font-medium text-gray-800 pt-2">future vision</h2>
+      <p>Piper is a hackathon build, not a finished ERP. We are clear about that. Still, the direction we care about:</p>
+      <ul class="list-disc pl-5 space-y-2">
+        <li><strong>Use it on real restock months</strong> with our family's actual PO exports, not just demo samples — and measure time saved honestly.</li>
+        <li><strong>Fine-tune on our PO history</strong> (the hackathon's "Well-Tuned" badge path) once we collect enough labelled examples of our messiest store formats.</li>
+        <li><strong>Stronger local / offline mode</strong> so store data never leaves a home laptop — relevant for privacy and for the "Off the Grid" bonus quest.</li>
+        <li><strong>Inventory sync</strong> instead of manual stock tables: connect home stock to a simple database or spreadsheet source of truth.</li>
+        <li><strong>Partner-facing view</strong> where stores submit POs in a minimal form, while Piper still accepts free-text for the ones that will never stop using WhatsApp.</li>
+      </ul>
+
+      <p>Our online shops are still closed day-to-day; restock work happens through partners. Piper is meant to support that reality, not replace the relationships behind it.</p>
+
+      <hr class="border-gray-200 my-8" />
+
+      <p>If you want to try it: open the <a href="https://huggingface.co/spaces/huals/sticker-manager" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Space</a>, click a sample PO, hit <strong>Parse PO with Piper</strong>, then walk through demand → print → delivery. Or clone the repo and run <code>python app.py</code> locally.</p>
+
+      <p>Thanks for reading — and to Gradio + Hugging Face for running a hackathon that rewards small, practical models instead of only the biggest ones.</p>
+
+      <p class="pt-4">talk soon,<br /><strong>indira</strong></p>
+    </div>
+  </article>
+</Layout>
