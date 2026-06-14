@@ -19,7 +19,7 @@ import Layout from '../../layouts/Layout.astro';
       <h2 class="text-lg font-medium text-gray-800 pt-2">background</h2>
       <p><strong>Paperain Studio</strong> is a real family-run sticker business. We have around <strong>150 sticker designs</strong> and work with about <strong>25 offline partner stores</strong> in cities like Solo, Klaten, Semarang, Yogyakarta, Jakarta, Bandung, and Bali. Stores take stickers on consignment and send us monthly sales updates plus restock requests.</p>
 
-      <p>The business side is creative; the operations side is spreadsheets. Every month, each store sends orders in a different shape — Excel copy-pastes, informal WhatsApp messages, table screenshots, handwritten notes, Indonesian, English, or both mixed together. Examples we see in the wild look like <em>"stiker kucing hologram 20 pcs"</em>, <em>"boba 25, unicorn x10 — tolong kirim minggu ini"</em>, or a clean two-column Excel export. Same meaning, totally different format.</p>
+      <p>The business side is creative; the operations side is spreadsheets. Every month, each store sends orders in a different shape — Excel copy-pastes, informal WhatsApp messages, table screenshots, handwritten notes, Indonesian, English, or both mixed together. Examples we see in the wild look like <em>"stiker kucing 20 pcs"</em>, <em>"boba shop 25, teddy bear x10 — tolong kirim minggu ini"</em>, or a clean two-column Excel export. Same meaning, totally different format.</p>
 
       <p>My family used to spend roughly <strong>3+ hours every month</strong> retyping that data, comparing it against home stock, calculating how many A3 sheets to print (we fit 8 A5 stickers per sheet), and writing delivery notes per store. It is not hard work intellectually, but it is repetitive — and easy to mess up when you are tired.</p>
 
@@ -28,7 +28,7 @@ import Layout from '../../layouts/Layout.astro';
       <h2 class="text-lg font-medium text-gray-800 pt-2">the problem</h2>
       <p>Broken down, the pain points were:</p>
       <ul class="list-disc pl-5 space-y-1">
-        <li><strong>Format chaos:</strong> 25 stores, 25-ish ways of saying "I need 20 cat stickers."</li>
+        <li><strong>Format chaos:</strong> 25 stores, 25-ish ways of saying "I need 20 cats sticker sheets."</li>
         <li><strong>Code-mixed language:</strong> Indonesian slang, English product names, informal quantities (<em>lembar</em>, <em>pcs</em>, <em>x25</em>).</li>
         <li><strong>Manual aggregation:</strong> No single view of total demand across stores until someone merges spreadsheets by hand.</li>
         <li><strong>Downstream math:</strong> Shortage = demand minus home stock; print sheets = ceiling(qty ÷ 8).</li>
@@ -62,7 +62,7 @@ import Layout from '../../layouts/Layout.astro';
       </ul>
 
       <h3 class="text-base font-medium text-gray-800 pt-2">why a 7B model — and not gpt-4</h3>
-      <p>The hackathon cap is 32B parameters. We picked <strong>Qwen2.5-7B</strong> because our core task is JSON extraction from short business text, not long-form reasoning. Parsing <em>"restock ASAP: boba 25, unicorn x10"</em> into <code>{'{product, quantity, notes}'}</code> is exactly the kind of structured job small models handle well.</p>
+      <p>The hackathon cap is 32B parameters. We picked <strong>Qwen2.5-7B</strong> because our core task is JSON extraction from short business text, not long-form reasoning. Parsing <em>"restock ASAP: boba shop 25, blushing bunny x10"</em> into <code>{'{product, quantity, notes}'}</code> is exactly the kind of structured job small models handle well.</p>
 
       <p>Practical reasons that mattered to us:</p>
       <ul class="list-disc pl-5 space-y-1">
@@ -84,12 +84,12 @@ import Layout from '../../layouts/Layout.astro';
       Piper's system prompt includes the official sticker catalog (~30 canonical names in the demo dataset, representing our real naming scheme), few-shot examples of Indonesian/English PO lines, and strict rules: return <strong>only valid JSON</strong>, map products to catalog names, put informal wording in <code>notes</code>. The model returns something like:</p>
 
       <pre class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs overflow-x-auto"><code>{`{"items": [
-  {"product": "Holographic Cat Sticker", "quantity": 20, "notes": "stiker kucing hologram"},
-  {"product": "Kawaii Boba Tea Sticker", "quantity": 25, "notes": "restock ASAP"}
+  {"product": "cats sticker sheet", "quantity": 20, "notes": "stiker kucing"},
+  {"product": "boba shop sticker sheet", "quantity": 25, "notes": "restock ASAP"}
 ], "store_notes": "tolong kirim minggu ini"}`}</code></pre>
 
       <p><strong>Stage 3 — validate &amp; anchor catalog (<code>services.py</code> + <code>catalog_resolver.py</code>)</strong><br />
-      We validate the schema (drop zero quantities, enforce integer qty), then fuzzy-match product strings to the catalog using aliases, substring matches, and <code>difflib</code> similarity. If the model says <em>"kucing holo"</em> we still land on <em>Holographic Cat Sticker</em> reliably.</p>
+      We validate the schema (drop zero quantities, enforce integer qty), then fuzzy-match product strings to the catalog using aliases, substring matches, and <code>difflib</code> similarity. If the model says <em>"stiker kucing"</em> we still land on <em>cats sticker sheet</em> reliably.</p>
 
       <p><strong>Fallback (<code>parser_fallback.py</code>)</strong><br />
       If the Inference API is cold, the token is missing, or JSON parsing fails, a rule-based line parser kicks in. It is not as flexible as the LLM, but it keeps the demo usable — important when judges click a public Space link and the model is waking up.</p>
