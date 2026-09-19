@@ -47,7 +47,9 @@ import Layout from '../layouts/Layout.astro';
             <input type="tel" id="phone" name="phone" required
               class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
           </div>
-          <div>
+          <!-- Country selection deactivated for now — Indonesia-only checkout. Re-enable this block
+               (remove `hidden`) when international shipping is ready to launch. -->
+          <div class="hidden">
             <label for="country" class="block text-sm font-medium mb-1.5">shipping country</label>
             <select id="country" required
               class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors bg-white">
@@ -75,9 +77,54 @@ import Layout from '../layouts/Layout.astro';
               <option value="OTHER">Other</option>
             </select>
           </div>
-          <div>
+          <div id="id-address-fields" class="space-y-5">
+            <div>
+              <label for="street" class="block text-sm font-medium mb-1.5">street address</label>
+              <input type="text" id="street" name="street"
+                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
+                placeholder="street, building, house number" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="province" class="block text-sm font-medium mb-1.5">province</label>
+                <select id="province"
+                  class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors bg-white" disabled>
+                  <option value="">loading...</option>
+                </select>
+              </div>
+              <div>
+                <label for="city" class="block text-sm font-medium mb-1.5">city / regency</label>
+                <select id="city"
+                  class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors bg-white" disabled>
+                  <option value="">select province first</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="district" class="block text-sm font-medium mb-1.5">district</label>
+                <select id="district"
+                  class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors bg-white" disabled>
+                  <option value="">select city first</option>
+                </select>
+              </div>
+              <div>
+                <label for="postal-code" class="block text-sm font-medium mb-1.5">postal code</label>
+                <input type="text" id="postal-code" name="postal-code" inputmode="numeric" maxlength="5"
+                  class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
+              </div>
+            </div>
+
+            <div id="courier-section" class="hidden">
+              <label class="block text-sm font-medium mb-1.5">shipping courier</label>
+              <div id="courier-list" class="space-y-2"></div>
+              <p id="courier-status" class="text-xs text-gray-400 mt-1"></p>
+            </div>
+          </div>
+
+          <div id="fallback-address-field" class="hidden">
             <label for="address" class="block text-sm font-medium mb-1.5">shipping address</label>
-            <textarea id="address" name="address" rows="3" required
+            <textarea id="address" name="address" rows="3"
               class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors resize-none"
               placeholder="street, city, state / province, postal code"></textarea>
           </div>
@@ -141,7 +188,21 @@ import Layout from '../layouts/Layout.astro';
     const errorEl = document.getElementById('checkout-error');
     const user = getUser();
     var currency = typeof getCurrency === 'function' ? getCurrency() : 'IDR';
-    var SHIPPING_FEE = typeof getShippingFee === 'function' ? getShippingFee() : 48000;
+    var FLAT_SHIPPING_FEE = typeof getShippingFee === 'function' ? getShippingFee() : 48000;
+    var SHIPPING_FEE = FLAT_SHIPPING_FEE;
+
+    // Structured (KiriminAja) address + courier state
+    var kiriminajaAvailable = true;
+    var selectedRate = null;
+    var provinceSelect = document.getElementById('province');
+    var citySelect = document.getElementById('city');
+    var districtSelect = document.getElementById('district');
+    var postalInput = document.getElementById('postal-code');
+    var courierSection = document.getElementById('courier-section');
+    var courierList = document.getElementById('courier-list');
+    var courierStatus = document.getElementById('courier-status');
+    var idAddressFields = document.getElementById('id-address-fields');
+    var fallbackAddressField = document.getElementById('fallback-address-field');
 
     if (!user) {
       document.getElementById('auth-notice').classList.remove('hidden');
@@ -161,10 +222,156 @@ import Layout from '../layouts/Layout.astro';
           if (c.full_name) document.getElementById('name').value = c.full_name;
           if (c.email) document.getElementById('email').value = c.email;
           if (c.phone) document.getElementById('phone').value = c.phone;
-          if (c.address) document.getElementById('address').value = c.address;
+          if (c.address) {
+            document.getElementById('street').value = c.address;
+            document.getElementById('address').value = c.address;
+          }
         }
       } catch {}
     }
+
+    async function fetchJson(url, opts) {
+      var res = await fetch(url, opts);
+      var text = await res.text();
+      var json = {};
+      try { json = text ? JSON.parse(text) : {}; } catch {}
+      if (!res.ok) {
+        var err = new Error(json.error || 'request failed');
+        err.status = res.status;
+        throw err;
+      }
+      return json;
+    }
+
+    function useFallbackAddress() {
+      if (!kiriminajaAvailable) return;
+      kiriminajaAvailable = false;
+      idAddressFields.classList.add('hidden');
+      fallbackAddressField.classList.remove('hidden');
+      SHIPPING_FEE = FLAT_SHIPPING_FEE;
+      updateTotals();
+    }
+
+    async function loadProvinces() {
+      try {
+        var json = await fetchJson('/api/kiriminaja-regions?type=province');
+        var provinces = json.data || [];
+        provinceSelect.innerHTML = '<option value="">select province</option>' +
+          provinces.map(function(p) {
+            return '<option value="' + p.id + '">' + p.provinsi_name + '</option>';
+          }).join('');
+        provinceSelect.disabled = false;
+      } catch (err) {
+        useFallbackAddress();
+      }
+    }
+
+    async function loadCities(provinceId) {
+      citySelect.innerHTML = '<option value="">loading...</option>';
+      citySelect.disabled = true;
+      districtSelect.innerHTML = '<option value="">select city first</option>';
+      districtSelect.disabled = true;
+      try {
+        var json = await fetchJson('/api/kiriminaja-regions?type=city&province_id=' + encodeURIComponent(provinceId));
+        var cities = json.data || [];
+        citySelect.innerHTML = '<option value="">select city / regency</option>' +
+          cities.map(function(c) {
+            return '<option value="' + c.id + '">' + c.type + ' ' + c.kabupaten_name + '</option>';
+          }).join('');
+        citySelect.disabled = false;
+      } catch (err) {
+        if (err.status === 503) { useFallbackAddress(); return; }
+        citySelect.innerHTML = '<option value="">could not load cities, try again</option>';
+      }
+    }
+
+    async function loadDistricts(cityId) {
+      districtSelect.innerHTML = '<option value="">loading...</option>';
+      districtSelect.disabled = true;
+      courierSection.classList.add('hidden');
+      selectedRate = null;
+      try {
+        var json = await fetchJson('/api/kiriminaja-regions?type=district&city_id=' + encodeURIComponent(cityId));
+        var districts = json.data || [];
+        districtSelect.innerHTML = '<option value="">select district</option>' +
+          districts.map(function(d) {
+            return '<option value="' + d.id + '" data-postal="' + (d.postal_code || '') + '">' + d.kecamatan_name + '</option>';
+          }).join('');
+        districtSelect.disabled = false;
+      } catch (err) {
+        if (err.status === 503) { useFallbackAddress(); return; }
+        districtSelect.innerHTML = '<option value="">could not load districts, try again</option>';
+      }
+    }
+
+    async function loadCourierRates(districtId) {
+      courierSection.classList.remove('hidden');
+      courierList.innerHTML = '';
+      courierStatus.textContent = 'checking courier rates...';
+      selectedRate = null;
+      SHIPPING_FEE = 0;
+      updateTotals();
+
+      try {
+        var json = await fetchJson('/api/shipping-rate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: cartFiltered.map(function(item) { return { id: item.id, qty: item.qty }; }),
+            district_id: districtId,
+          }),
+        });
+        var rates = json.rates || [];
+        if (rates.length === 0) {
+          courierStatus.textContent = 'no courier available for this address yet.';
+          return;
+        }
+        courierStatus.textContent = '';
+        courierList.innerHTML = rates.map(function(r, idx) {
+          return '<label class="courier-option flex items-center justify-between gap-3 border border-gray-200 rounded-lg px-4 py-2.5 text-sm cursor-pointer">' +
+            '<span class="flex items-center gap-3">' +
+              '<input type="radio" name="courier" class="courier-radio accent-primary" value="' + idx + '"' + (idx === 0 ? ' checked' : '') + ' />' +
+              '<span><span class="font-medium">' + r.service_name + '</span>' +
+                (r.etd ? '<br/><span class="text-xs text-gray-400">est. ' + r.etd + ' days</span>' : '') +
+              '</span>' +
+            '</span>' +
+            '<span class="font-medium">' + fmt(r.cost) + '</span>' +
+          '</label>';
+        }).join('');
+
+        function applySelection(idx) {
+          selectedRate = rates[idx];
+          SHIPPING_FEE = selectedRate.cost;
+          updateTotals();
+          document.querySelectorAll('.courier-option').forEach(function(el, i) {
+            el.classList.toggle('border-primary', i === idx);
+            el.classList.toggle('bg-primary/5', i === idx);
+          });
+        }
+
+        courierList.querySelectorAll('.courier-radio').forEach(function(radio) {
+          radio.addEventListener('change', function() { applySelection(Number(radio.value)); });
+        });
+        applySelection(0);
+      } catch (err) {
+        if (err.status === 503) { useFallbackAddress(); return; }
+        courierStatus.textContent = 'could not load courier rates. please try again.';
+      }
+    }
+
+    provinceSelect.addEventListener('change', function() {
+      if (provinceSelect.value) loadCities(provinceSelect.value);
+    });
+    citySelect.addEventListener('change', function() {
+      if (citySelect.value) loadDistricts(citySelect.value);
+    });
+    districtSelect.addEventListener('change', function() {
+      var opt = districtSelect.selectedOptions[0];
+      if (opt && opt.dataset.postal) postalInput.value = opt.dataset.postal;
+      if (districtSelect.value) loadCourierRates(districtSelect.value);
+    });
+
+    loadProvinces();
 
     function fmt(val) {
       return typeof formatPrice === 'function' ? formatPrice(val) : 'Rp' + Math.round(Number(val)).toLocaleString('id-ID');
@@ -255,6 +462,53 @@ import Layout from '../layouts/Layout.astro';
         return;
       }
 
+      var shippingDetails = { name: document.getElementById('name').value, email: document.getElementById('email').value, phone: document.getElementById('phone').value, country: countryCode };
+
+      if (kiriminajaAvailable) {
+        var street = document.getElementById('street').value.trim();
+        var provinceOpt = provinceSelect.selectedOptions[0];
+        var cityOpt = citySelect.selectedOptions[0];
+        var districtOpt = districtSelect.selectedOptions[0];
+        var postal = postalInput.value.trim();
+
+        if (!street || !provinceSelect.value || !citySelect.value || !districtSelect.value || !postal) {
+          errorEl.textContent = 'please complete your shipping address (street, province, city, district, postal code).';
+          errorEl.classList.remove('hidden');
+          btn.textContent = 'proceed to payment';
+          btn.disabled = false;
+          return;
+        }
+        if (!selectedRate) {
+          errorEl.textContent = 'please select a shipping courier.';
+          errorEl.classList.remove('hidden');
+          btn.textContent = 'proceed to payment';
+          btn.disabled = false;
+          return;
+        }
+
+        shippingDetails.address = street + ', ' + districtOpt.textContent + ', ' + cityOpt.textContent + ', ' + provinceOpt.textContent + ' ' + postal;
+        shippingDetails.province = provinceOpt.textContent;
+        shippingDetails.province_id = provinceSelect.value;
+        shippingDetails.city = cityOpt.textContent;
+        shippingDetails.city_id = citySelect.value;
+        shippingDetails.district = districtOpt.textContent;
+        shippingDetails.district_id = districtSelect.value;
+        shippingDetails.postal_code = postal;
+        shippingDetails.courier = selectedRate.courier;
+        shippingDetails.service_type = selectedRate.service_type;
+        shippingDetails.service_name = selectedRate.service_name;
+      } else {
+        var fallbackAddress = document.getElementById('address').value.trim();
+        if (!fallbackAddress) {
+          errorEl.textContent = 'please enter your shipping address.';
+          errorEl.classList.remove('hidden');
+          btn.textContent = 'proceed to payment';
+          btn.disabled = false;
+          return;
+        }
+        shippingDetails.address = fallbackAddress;
+      }
+
       var subtotal = cartFiltered.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
       var volDisc = typeof getVolumeDiscount === 'function'
         ? getVolumeDiscount(subtotal)
@@ -281,13 +535,7 @@ import Layout from '../layouts/Layout.astro';
             shipping: SHIPPING_FEE,
             total: total,
           },
-          shipping: {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            address: document.getElementById('address').value,
-            country: countryCode,
-          },
+          shipping: shippingDetails,
           notes: document.getElementById('notes').value || null,
           currency: currency,
         }));

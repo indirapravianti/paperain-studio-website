@@ -20,10 +20,14 @@ Source of truth for display: `src/lib/idr-prices.js` and `lib/api/region-pricing
 
 | Rule | Value |
 |------|-------|
-| Flat shipping | Rp 48,000 |
+| Shipping | KiriminAja courier rates by province/city/district (falls back to flat Rp 48,000 if `KIRIMINAJA_TOKEN` isn't configured — see `.env.example`) |
 | Volume discount | 20% off when subtotal ≥ Rp 80,000 |
 | Payment | Midtrans (IDR) |
-| Shipping | Indonesia only (for now) |
+| Shipping coverage | Indonesia only (for now) |
+
+Shipping fee is quoted live at checkout (`/api/shipping-rate`) and re-verified server-side against
+KiriminAja at order placement (`lib/api/place-order-handler.js`) — the client-selected courier is never
+trusted for the charged amount. Per-category package weights live in `lib/api/shipping-weight.js`.
 
 ## Updating prices
 
