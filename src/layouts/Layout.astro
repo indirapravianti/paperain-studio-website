@@ -27,6 +27,9 @@ const { title = 'paperain studio' } = Astro.props;
     <meta name="supabase-key" content={import.meta.env.PUBLIC_SUPABASE_ANON_KEY || ''} />
     <meta name="midtrans-client-key" content={import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY || ''} />
     <meta name="site-url" content={import.meta.env.PUBLIC_SITE_URL || 'https://www.paperainstudio.com'} />
+    <meta name="shipping-origin-name" content={import.meta.env.KIRIMINAJA_ORIGIN_NAME || 'paperain studio'} />
+    <meta name="shipping-origin-address" content={import.meta.env.KIRIMINAJA_ORIGIN_ADDRESS || ''} />
+    <meta name="shipping-origin-phone" content={import.meta.env.KIRIMINAJA_ORIGIN_PHONE || ''} />
     <title>{title} | paperain studio</title>
     <GoogleAnalytics />
     {import.meta.env.PUBLIC_MIDTRANS_CLIENT_KEY && (
@@ -103,6 +106,54 @@ const { title = 'paperain studio' } = Astro.props;
 
       function getShippingFee() {
         return SHIPPING_IDR;
+      }
+
+      // Renders a printable shipping label (KiriminAja does not hand back a hosted label PDF —
+      // per their docs the label is merchant-built). Returns HTML with a `.barcode-el` placeholder;
+      // the caller must load JsBarcode and call `JsBarcode('.barcode-el').init()` after inserting it.
+      function renderShippingLabelHtml(order, items) {
+        var courierName = order.courier_service_name || order.courier_code || 'courier';
+        var serviceType = order.courier_service_type || '';
+        var weightGrams = (items || []).length
+          ? null // computed server-side at shipment time; not stored per-order, so we show item count instead
+          : null;
+        var itemRows = (items || []).map(function(item) {
+          return '<tr>' +
+            '<td>' + item.title + '</td>' +
+            '<td style="text-align:center">' + item.quantity + '</td>' +
+            '<td style="text-align:right">' + formatPrice(item.price * item.quantity) + '</td>' +
+            '</tr>';
+        }).join('');
+        var totalQty = (items || []).reduce(function(sum, item) { return sum + item.quantity; }, 0);
+
+        return (
+          '<div class="shipping-label">' +
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:8px;">' +
+              '<div><div style="font-size:18px;font-weight:700;">' + courierName + '</div>' +
+              '<div style="font-size:13px;">' + serviceType + ' &middot; NON-COD</div></div>' +
+              '<div style="text-align:right;font-size:12px;">order ref<br/><strong>' + (order.display_id || order.id) + '</strong></div>' +
+            '</div>' +
+            '<div style="text-align:center;margin:12px 0;">' +
+              '<svg class="barcode-el" jsbarcode-format="CODE128" jsbarcode-value="' + (order.shipment_awb || '') + '" jsbarcode-displayvalue="true"></svg>' +
+            '</div>' +
+            '<table style="width:100%;font-size:13px;margin-bottom:10px;"><tbody>' +
+              '<tr><td style="width:50%;vertical-align:top;padding-right:8px;">' +
+                '<strong>from</strong><br/>' + (order.origin_name || 'paperain studio') + '<br/>' +
+              '</td><td style="width:50%;vertical-align:top;">' +
+                '<strong>to</strong><br/>' + order.shipping_name + '<br/>' + order.shipping_phone + '<br/>' +
+                '<span style="white-space:pre-line">' + order.shipping_address + '</span><br/>' + (order.destination_zipcode || '') +
+              '</td></tr>' +
+            '</tbody></table>' +
+            '<div style="font-size:13px;margin-bottom:10px;">' +
+              '<strong>weight:</strong> ' + (order.shipment_weight_grams || '—') + ' g &nbsp; ' +
+              '<strong>qty:</strong> ' + totalQty + ' item(s)' +
+            '</div>' +
+            '<table style="width:100%;font-size:12px;border-collapse:collapse;" border="1" cellpadding="4">' +
+              '<thead><tr><th>item</th><th>qty</th><th>price</th></tr></thead>' +
+              '<tbody>' + itemRows + '</tbody>' +
+            '</table>' +
+          '</div>'
+        );
       }
 
       function getVolumeDiscount(subtotal) {
