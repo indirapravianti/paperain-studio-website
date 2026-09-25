@@ -114,6 +114,13 @@ import Layout from '../layouts/Layout.astro';
                   class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
               </div>
             </div>
+            <div>
+              <label for="subdistrict" class="block text-sm font-medium mb-1.5">subdistrict (kelurahan)</label>
+              <select id="subdistrict"
+                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors bg-white" disabled>
+                <option value="">select district first</option>
+              </select>
+            </div>
 
             <div id="courier-section" class="hidden">
               <label class="block text-sm font-medium mb-1.5">shipping courier</label>
@@ -197,6 +204,7 @@ import Layout from '../layouts/Layout.astro';
     var provinceSelect = document.getElementById('province');
     var citySelect = document.getElementById('city');
     var districtSelect = document.getElementById('district');
+    var subdistrictSelect = document.getElementById('subdistrict');
     var postalInput = document.getElementById('postal-code');
     var courierSection = document.getElementById('courier-section');
     var courierList = document.getElementById('courier-list');
@@ -288,6 +296,8 @@ import Layout from '../layouts/Layout.astro';
     async function loadDistricts(cityId) {
       districtSelect.innerHTML = '<option value="">loading...</option>';
       districtSelect.disabled = true;
+      subdistrictSelect.innerHTML = '<option value="">select district first</option>';
+      subdistrictSelect.disabled = true;
       courierSection.classList.add('hidden');
       selectedRate = null;
       try {
@@ -301,6 +311,23 @@ import Layout from '../layouts/Layout.astro';
       } catch (err) {
         if (err.status === 503) { useFallbackAddress(); return; }
         districtSelect.innerHTML = '<option value="">could not load districts, try again</option>';
+      }
+    }
+
+    async function loadSubdistricts(districtId) {
+      subdistrictSelect.innerHTML = '<option value="">loading...</option>';
+      subdistrictSelect.disabled = true;
+      try {
+        var json = await fetchJson('/api/kiriminaja-regions?type=subdistrict&district_id=' + encodeURIComponent(districtId));
+        var subdistricts = json.data || [];
+        subdistrictSelect.innerHTML = '<option value="">select subdistrict</option>' +
+          subdistricts.map(function(s) {
+            return '<option value="' + s.id + '">' + s.kelurahan_name + '</option>';
+          }).join('');
+        subdistrictSelect.disabled = false;
+      } catch (err) {
+        if (err.status === 503) { useFallbackAddress(); return; }
+        subdistrictSelect.innerHTML = '<option value="">could not load subdistricts, try again</option>';
       }
     }
 
@@ -368,7 +395,10 @@ import Layout from '../layouts/Layout.astro';
     districtSelect.addEventListener('change', function() {
       var opt = districtSelect.selectedOptions[0];
       if (opt && opt.dataset.postal) postalInput.value = opt.dataset.postal;
-      if (districtSelect.value) loadCourierRates(districtSelect.value);
+      if (districtSelect.value) {
+        loadCourierRates(districtSelect.value);
+        loadSubdistricts(districtSelect.value);
+      }
     });
 
     loadProvinces();
@@ -469,10 +499,11 @@ import Layout from '../layouts/Layout.astro';
         var provinceOpt = provinceSelect.selectedOptions[0];
         var cityOpt = citySelect.selectedOptions[0];
         var districtOpt = districtSelect.selectedOptions[0];
+        var subdistrictOpt = subdistrictSelect.selectedOptions[0];
         var postal = postalInput.value.trim();
 
-        if (!street || !provinceSelect.value || !citySelect.value || !districtSelect.value || !postal) {
-          errorEl.textContent = 'please complete your shipping address (street, province, city, district, postal code).';
+        if (!street || !provinceSelect.value || !citySelect.value || !districtSelect.value || !subdistrictSelect.value || !postal) {
+          errorEl.textContent = 'please complete your shipping address (street, province, city, district, subdistrict, postal code).';
           errorEl.classList.remove('hidden');
           btn.textContent = 'proceed to payment';
           btn.disabled = false;
@@ -486,13 +517,15 @@ import Layout from '../layouts/Layout.astro';
           return;
         }
 
-        shippingDetails.address = street + ', ' + districtOpt.textContent + ', ' + cityOpt.textContent + ', ' + provinceOpt.textContent + ' ' + postal;
+        shippingDetails.address = street + ', ' + subdistrictOpt.textContent + ', ' + districtOpt.textContent + ', ' + cityOpt.textContent + ', ' + provinceOpt.textContent + ' ' + postal;
         shippingDetails.province = provinceOpt.textContent;
         shippingDetails.province_id = provinceSelect.value;
         shippingDetails.city = cityOpt.textContent;
         shippingDetails.city_id = citySelect.value;
         shippingDetails.district = districtOpt.textContent;
         shippingDetails.district_id = districtSelect.value;
+        shippingDetails.subdistrict = subdistrictOpt.textContent;
+        shippingDetails.subdistrict_id = subdistrictSelect.value;
         shippingDetails.postal_code = postal;
         shippingDetails.courier = selectedRate.courier;
         shippingDetails.service_type = selectedRate.service_type;

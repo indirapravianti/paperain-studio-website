@@ -1,0 +1,164 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="shipping label">
+  <style>
+    @media print {
+      header, nav, footer, #announcement-bar, .no-print { display: none !important; }
+      body { margin: 0; }
+    }
+  </style>
+
+  <section class="max-w-xl mx-auto px-4 sm:px-6 py-10">
+    <div id="label-loading" class="text-center py-20">
+      <p class="text-gray-400">loading...</p>
+    </div>
+
+    <div id="label-denied" class="hidden text-center py-20">
+      <h1 class="text-2xl font-semibold mb-4">access denied</h1>
+      <p class="text-gray-500 text-sm">you need admin access to view this page.</p>
+    </div>
+
+    <div id="label-main" class="hidden">
+      <div class="no-print flex items-center justify-between mb-6">
+        <a href="/admin/orders" class="text-sm text-gray-500 hover:underline">&larr; back to orders</a>
+        <button id="print-btn" class="text-sm bg-primary text-white px-4 py-2 rounded-lg">print label</button>
+      </div>
+
+      <div id="label-card" class="border-2 border-black rounded-lg p-5 text-sm space-y-3">
+        <div class="flex justify-between items-start border-b-2 border-black pb-2">
+          <div>
+            <p class="text-xs text-gray-500">service</p>
+            <p class="font-bold text-lg uppercase" id="lbl-service">-</p>
+            <p class="text-xs" id="lbl-service-type">-</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-gray-500">shipping type</p>
+            <p class="font-bold" id="lbl-shipping-type">NON-COD</p>
+          </div>
+        </div>
+
+        <div class="text-center py-2 border-b border-gray-200">
+          <svg id="lbl-barcode"></svg>
+          <p class="font-mono text-xs" id="lbl-awb">-</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 border-b border-gray-200 pb-3">
+          <div>
+            <p class="text-xs text-gray-500 font-medium">sender</p>
+            <p id="lbl-sender-name">-</p>
+            <p class="text-xs" id="lbl-sender-phone">-</p>
+            <p class="text-xs" id="lbl-sender-city">-</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 font-medium">recipient</p>
+            <p id="lbl-recipient-name">-</p>
+            <p class="text-xs" id="lbl-recipient-phone">-</p>
+            <p class="text-xs" id="lbl-recipient-address">-</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 text-xs border-b border-gray-200 pb-3">
+          <div><p class="text-gray-500">weight</p><p class="font-medium" id="lbl-weight">-</p></div>
+          <div><p class="text-gray-500">qty</p><p class="font-medium" id="lbl-qty">-</p></div>
+          <div><p class="text-gray-500">insurance</p><p class="font-medium" id="lbl-insurance">-</p></div>
+        </div>
+
+        <div class="text-xs">
+          <p class="text-gray-500 font-medium">items</p>
+          <p id="lbl-items">-</p>
+        </div>
+
+        <div class="text-xs border-t-2 border-black pt-2 flex justify-between">
+          <span>order ref</span>
+          <span class="font-mono font-bold" id="lbl-order-ref">-</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script is:inline>
+  (function() {
+    const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
+    const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content;
+
+    function getUser() { try { return JSON.parse(localStorage.getItem('sb-user')); } catch { return null; } }
+    function getToken() { return localStorage.getItem('sb-access-token'); }
+
+    const user = getUser();
+    const token = getToken();
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('order');
+
+    const loadingEl = document.getElementById('label-loading');
+    const deniedEl = document.getElementById('label-denied');
+    const mainEl = document.getElementById('label-main');
+
+    async function checkAdmin() {
+      if (!user || !token || !SUPABASE_URL || !SUPABASE_KEY) return false;
+      if (user.app_metadata?.role === 'admin' || user.user_metadata?.role === 'admin') return true;
+      try {
+        const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+          headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + token },
+        });
+        const fresh = await res.json();
+        return fresh.app_metadata?.role === 'admin';
+      } catch { return false; }
+    }
+
+    async function loadOrder() {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}&select=*,order_items(*)`,
+        { headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + token } },
+      );
+      const rows = await res.json();
+      return rows?.[0] || null;
+    }
+
+    function set(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value ?? '-';
+    }
+
+    checkAdmin().then(async (isAdmin) => {
+      loadingEl.classList.add('hidden');
+      if (!isAdmin) { deniedEl.classList.remove('hidden'); return; }
+      if (!orderId) { deniedEl.classList.remove('hidden'); return; }
+
+      const order = await loadOrder();
+      if (!order) { deniedEl.classList.remove('hidden'); return; }
+
+      mainEl.classList.remove('hidden');
+
+      set('lbl-service', order.shipping_courier || 'flat rate');
+      set('lbl-service-type', order.shipping_service_name || order.shipping_service_type || '');
+      set('lbl-shipping-type', 'NON-COD');
+      set('lbl-awb', order.kiriminaja_awb || '(awb pending)');
+      set('lbl-sender-name', 'paperain studio');
+      set('lbl-sender-phone', '');
+      set('lbl-sender-city', 'Depok, Sleman, DIY');
+      set('lbl-recipient-name', order.shipping_name);
+      set('lbl-recipient-phone', order.shipping_phone);
+      set('lbl-recipient-address', [order.shipping_address].filter(Boolean).join(', '));
+      set('lbl-weight', order.shipping_weight_grams ? order.shipping_weight_grams + ' g' : '-');
+      const qty = (order.order_items || []).reduce((s, i) => s + i.quantity, 0);
+      set('lbl-qty', qty || '-');
+      set('lbl-insurance', 'not used');
+      set('lbl-items', (order.order_items || []).map((i) => `${i.title} x${i.quantity}`).join(', '));
+      set('lbl-order-ref', order.display_id || order.id);
+
+      if (order.kiriminaja_awb && window.JsBarcode) {
+        try {
+          window.JsBarcode('#lbl-barcode', order.kiriminaja_awb, {
+            format: 'CODE128', displayValue: false, height: 50, margin: 0,
+          });
+        } catch {}
+      }
+    });
+
+    document.getElementById('print-btn')?.addEventListener('click', () => window.print());
+  })();
+</script>

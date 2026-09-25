@@ -146,6 +146,38 @@ import Layout from '../../layouts/Layout.astro';
     // Make updateOrderStatus global for inline onclick
     window.adminUpdateStatus = updateOrderStatus;
 
+    async function callKiriminajaApi(path, options) {
+      const res = await fetch(path, {
+        ...options,
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token, ...(options?.headers || {}) },
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || 'request failed');
+      return json;
+    }
+
+    window.adminCreateShipment = async function(orderId, btn) {
+      btn.disabled = true;
+      btn.textContent = 'creating...';
+      try {
+        await callKiriminajaApi('/api/kiriminaja-shipment', { method: 'POST', body: JSON.stringify({ order_id: orderId }) });
+        loadOrders();
+      } catch (err) {
+        alert('shipment creation failed: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = 'create shipment';
+      }
+    };
+
+    window.adminTrackShipment = async function(orderId) {
+      try {
+        const data = await callKiriminajaApi('/api/kiriminaja-tracking?order_id=' + orderId, { method: 'GET' });
+        alert(data.text || JSON.stringify(data.details || data, null, 2));
+      } catch (err) {
+        alert('tracking failed: ' + err.message);
+      }
+    };
+
     async function loadOrders() {
       const listEl = document.getElementById('admin-orders-list');
       const emptyEl = document.getElementById('admin-orders-empty');
@@ -220,6 +252,23 @@ import Layout from '../../layouts/Layout.astro';
               <p class="whitespace-pre-line">${order.shipping_address}</p>
               ${order.notes ? `<p class="mt-2 font-medium">notes:</p><p>${order.notes}</p>` : ''}
             </div>
+
+            ${order.shipping_courier ? `
+              <div class="flex flex-wrap items-center gap-2 text-xs mb-3">
+                <span class="px-2 py-1 rounded bg-gray-100">${order.shipping_courier} ${order.shipping_service_name || order.shipping_service_type || ''}</span>
+                ${order.kiriminaja_awb
+                  ? `<span class="px-2 py-1 rounded bg-green-100 text-green-700">AWB ${order.kiriminaja_awb}</span>`
+                  : `<span class="px-2 py-1 rounded bg-yellow-100 text-yellow-700">${order.kiriminaja_error ? 'shipment failed' : 'no AWB yet'}</span>`}
+                ${order.status === 'confirmed' || order.kiriminaja_error
+                  ? `<button onclick="adminCreateShipment('${order.id}', this)" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">${order.kiriminaja_awb ? 're-sync' : 'create shipment'}</button>`
+                  : ''}
+                ${order.kiriminaja_awb ? `
+                  <button onclick="adminTrackShipment('${order.id}')" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">track</button>
+                  <a href="/admin/label?order=${order.id}" target="_blank" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">label</a>
+                ` : ''}
+              </div>
+              ${order.kiriminaja_error ? `<p class="text-xs text-red-500 mb-3">kiriminaja error: ${order.kiriminaja_error}</p>` : ''}
+            ` : ''}
 
             <div class="space-y-2 mb-3">
               ${(order.order_items || []).map(item => `

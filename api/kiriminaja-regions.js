@@ -1,5 +1,5 @@
 import { applyCors, sendJson } from '../lib/api/cors.js';
-import { getProvinces, getCities, getDistricts } from '../lib/api/kiriminaja.js';
+import { getProvinces, getCities, getDistricts, getSubdistricts } from '../lib/api/kiriminaja.js';
 
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
@@ -30,6 +30,13 @@ export default async function handler(req, res) {
       const cityId = req.query?.city_id;
       if (!cityId) return sendJson(res, { error: 'city_id is required' }, 400);
       const data = await getDistricts(cityId);
+      return sendJson(res, { data }, 200);
+    }
+
+    if (type === 'subdistrict') {
+      const districtId = req.query?.district_id;
+      if (!districtId) return sendJson(res, { error: 'district_id is required' }, 400);
+      const data = await getSubdistricts(districtId);
       return sendJson(res, { data }, 200);
     }
 
