@@ -63,9 +63,39 @@ import Layout from '../layouts/Layout.astro';
             </div>
           </div>
 
+          <!-- Shipping courier -->
+          <div class="mb-6">
+            <h2 class="font-medium mb-4">shipping courier</h2>
+
+            <div class="relative mb-3">
+              <label class="block text-sm font-medium mb-1.5">destination</label>
+              <input id="ship-dest-search" type="text" autocomplete="off"
+                placeholder="search city, district, or postal code"
+                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
+              <div id="ship-dest-results"
+                class="hidden absolute z-10 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-sm max-h-56 overflow-y-auto"></div>
+            </div>
+
+            <div id="ship-dest-selected" class="hidden bg-gray-50 rounded-lg p-3 mb-3 flex items-center justify-between gap-3">
+              <span id="ship-dest-selected-text" class="text-sm text-gray-600"></span>
+              <button type="button" id="ship-dest-clear" class="text-xs text-gray-400 hover:text-primary transition-colors shrink-0">change</button>
+            </div>
+
+            <div id="ship-dest-zip-wrap" class="hidden mb-3">
+              <label class="block text-sm font-medium mb-1.5">postal code</label>
+              <input id="ship-dest-zip" type="text" inputmode="numeric" placeholder="e.g. 55581"
+                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
+            </div>
+
+            <p id="ship-courier-hint" class="text-xs text-gray-400">search your destination to see available couriers.</p>
+            <div id="ship-courier-loading" class="hidden text-sm text-gray-400 py-2">loading courier options...</div>
+            <div id="ship-courier-empty" class="hidden text-sm text-gray-400 py-2">no courier services available for this destination.</div>
+            <div id="ship-courier-list" class="space-y-3"></div>
+          </div>
+
           <div id="pay-error-msg" class="hidden text-sm text-red-500 bg-red-50 border border-red-100 rounded-lg p-3 mb-4"></div>
 
-          <button id="pay-btn"
+          <button id="pay-btn" disabled
             class="w-full bg-primary text-white py-3.5 rounded-lg text-sm font-medium hover:bg-primary/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-primary">
             pay now
           </button>
@@ -196,8 +226,8 @@ import Layout from '../layouts/Layout.astro';
       document.getElementById('pay-discount-row').classList.remove('hidden');
       document.getElementById('pay-discount').textContent = '-' + fmt(s.volumeDiscount);
     }
-    document.getElementById('pay-shipping').textContent = fmt(s.shipping || 0);
-    document.getElementById('pay-total').textContent = fmt(s.total || 0);
+    document.getElementById('pay-shipping').textContent = 'select courier';
+    document.getElementById('pay-total').textContent = fmt((s.subtotal || 0) - (s.volumeDiscount || 0));
 
     if (data.shipping) {
       document.getElementById('pay-ship-name').textContent = data.shipping.name || '';
@@ -209,6 +239,150 @@ import Layout from '../layouts/Layout.astro';
     var payBtn = document.getElementById('pay-btn');
     var errorMsg = document.getElementById('pay-error-msg');
     var isProcessing = false;
+
+    var baseSubtotal = s.subtotal || 0;
+    var baseDiscount = s.volumeDiscount || 0;
+
+    // Shipping courier selection
+    var selectedDestination = null; // { district_id, kelurahan_id, full_address, postal_code }
+    var selectedCourier = null; // { courier_code, service_type, service_name, cost, etd }
+
+    var destSearchInput = document.getElementById('ship-dest-search');
+    var destResultsEl = document.getElementById('ship-dest-results');
+    var destSelectedEl = document.getElementById('ship-dest-selected');
+    var destSelectedTextEl = document.getElementById('ship-dest-selected-text');
+    var destClearBtn = document.getElementById('ship-dest-clear');
+    var destZipWrap = document.getElementById('ship-dest-zip-wrap');
+    var destZipInput = document.getElementById('ship-dest-zip');
+    var courierHintEl = document.getElementById('ship-courier-hint');
+    var courierLoadingEl = document.getElementById('ship-courier-loading');
+    var courierEmptyEl = document.getElementById('ship-courier-empty');
+    var courierListEl = document.getElementById('ship-courier-list');
+
+    function updateShippingSummary(cost) {
+      var total = baseSubtotal - baseDiscount + cost;
+      document.getElementById('pay-shipping').textContent = fmt(cost);
+      document.getElementById('pay-total').textContent = fmt(total);
+    }
+
+    function updatePayButtonState() {
+      var ready = !!(selectedDestination && selectedCourier && destZipInput.value.trim());
+      payBtn.disabled = !ready;
+    }
+
+    async function callApiSilent(endpoint, payload) {
+      var res = await fetch('/api/' + endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      var json = {};
+      try { json = await res.json(); } catch {}
+      return { ok: res.ok, json: json };
+    }
+
+    var destSearchTimer = null;
+    destSearchInput.addEventListener('input', function() {
+      var query = destSearchInput.value.trim();
+      clearTimeout(destSearchTimer);
+      if (query.length < 3) {
+        destResultsEl.classList.add('hidden');
+        return;
+      }
+      destSearchTimer = setTimeout(async function() {
+        var result = await callApiSilent('shipping-coverage', { search: query });
+        if (!result.ok || !result.json.results || !result.json.results.length) {
+          destResultsEl.innerHTML = '<div class="px-4 py-2.5 text-sm text-gray-400">no matches found</div>';
+          destResultsEl.classList.remove('hidden');
+          return;
+        }
+        destResultsEl.innerHTML = result.json.results.map(function(r, i) {
+          return '<div class="px-4 py-2.5 text-sm hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0" data-idx="' + i + '">' +
+            r.full_address + '</div>';
+        }).join('');
+        destResultsEl.classList.remove('hidden');
+
+        Array.prototype.forEach.call(destResultsEl.children, function(el, i) {
+          el.addEventListener('click', function() {
+            selectDestination(result.json.results[i]);
+          });
+        });
+      }, 350);
+    });
+
+    function selectDestination(result) {
+      selectedDestination = result;
+      selectedCourier = null;
+
+      destResultsEl.classList.add('hidden');
+      destSearchInput.value = '';
+      destSelectedTextEl.textContent = result.full_address;
+      destSelectedEl.classList.remove('hidden');
+      destSearchInput.parentElement.classList.add('hidden');
+
+      destZipWrap.classList.remove('hidden');
+      destZipInput.value = result.postal_code || '';
+
+      courierListEl.innerHTML = '';
+      courierEmptyEl.classList.add('hidden');
+      courierHintEl.classList.add('hidden');
+      updatePayButtonState();
+      fetchCourierOptions();
+    }
+
+    destClearBtn.addEventListener('click', function() {
+      selectedDestination = null;
+      selectedCourier = null;
+      destSelectedEl.classList.add('hidden');
+      destSearchInput.parentElement.classList.remove('hidden');
+      destZipWrap.classList.add('hidden');
+      courierListEl.innerHTML = '';
+      courierEmptyEl.classList.add('hidden');
+      courierHintEl.classList.remove('hidden');
+      document.getElementById('pay-shipping').textContent = 'select courier';
+      document.getElementById('pay-total').textContent = fmt(baseSubtotal - baseDiscount);
+      updatePayButtonState();
+    });
+
+    destZipInput.addEventListener('input', updatePayButtonState);
+
+    async function fetchCourierOptions() {
+      courierLoadingEl.classList.remove('hidden');
+      courierEmptyEl.classList.add('hidden');
+      courierListEl.innerHTML = '';
+
+      var result = await callApiSilent('shipping-pricing', {
+        items: data.items.map(function(item) { return { id: item.id, qty: item.qty }; }),
+        destination_kecamatan_id: selectedDestination.district_id,
+        destination_kelurahan_id: selectedDestination.kelurahan_id,
+      });
+
+      courierLoadingEl.classList.add('hidden');
+
+      if (!result.ok || !result.json.options || !result.json.options.length) {
+        courierEmptyEl.classList.remove('hidden');
+        return;
+      }
+
+      courierListEl.innerHTML = result.json.options.map(function(opt, i) {
+        return '<label class="flex items-center gap-4 border border-gray-200 rounded-xl p-4 cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5" data-idx="' + i + '">' +
+          '<input type="radio" name="courier" class="accent-primary w-4 h-4" />' +
+          '<div class="flex-1">' +
+            '<p class="text-sm font-medium">' + opt.service_name + '</p>' +
+            '<p class="text-xs text-gray-400">' + opt.service_type + (opt.etd ? ' &middot; est. ' + opt.etd + ' days' : '') + '</p>' +
+          '</div>' +
+          '<p class="text-sm font-medium">' + fmt(opt.cost) + '</p>' +
+        '</label>';
+      }).join('');
+
+      Array.prototype.forEach.call(courierListEl.children, function(el, i) {
+        el.querySelector('input').addEventListener('change', function() {
+          selectedCourier = result.json.options[i];
+          updateShippingSummary(selectedCourier.cost);
+          updatePayButtonState();
+        });
+      });
+    }
 
     function showError(msg) {
       errorMsg.textContent = msg;
@@ -274,6 +448,10 @@ import Layout from '../layouts/Layout.astro';
 
     payBtn.addEventListener('click', async function() {
       if (isProcessing) return;
+      if (!selectedDestination || !selectedCourier || !destZipInput.value.trim()) {
+        showError('please choose a shipping courier before paying.');
+        return;
+      }
       isProcessing = true;
       hideError();
       payBtn.textContent = 'processing...';
@@ -299,6 +477,14 @@ import Layout from '../layouts/Layout.astro';
           shipping_country: data.shipping.country || 'OTHER',
           notes: data.notes || null,
           customer_id: user ? user.id : null,
+          courier_code: selectedCourier.courier_code,
+          courier_service_type: selectedCourier.service_type,
+          courier_service_name: selectedCourier.service_name,
+          courier_etd: selectedCourier.etd,
+          shipping_cost: selectedCourier.cost,
+          destination_kecamatan_id: selectedDestination.district_id,
+          destination_kelurahan_id: selectedDestination.kelurahan_id,
+          destination_zipcode: destZipInput.value.trim(),
         };
 
         var orderResult = await callApi('place-order', orderPayload);
