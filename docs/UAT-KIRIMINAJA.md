@@ -12,7 +12,7 @@ User Acceptance Test for integrating the KiriminAja shipping API (MitraAPI) into
 
 | Field | Nilai |
 | --- | --- |
-| Nama Brand / Merchant | |
+| Nama Brand / Merchant | paperain studio |
 | Nama PIC | |
 | Email PIC | |
 | Nomor HP PIC | |
@@ -28,17 +28,17 @@ Centang fitur yang diuji dan beri catatan jika tidak digunakan.
 
 | Fitur Core | Status | Catatan |
 | --- | --- | --- |
-| Authentication / API Key Sandbox | ☐ Diuji ☐ N/A | |
-| Coverage / Courier Service | ☐ Diuji ☐ N/A | |
-| Pricing | ☐ Diuji ☐ N/A | |
-| Create Paket Non-COD | ☐ Diuji ☐ N/A | |
-| Create Paket COD | ☐ Diuji ☐ N/A | Declare COD Value |
-| Create Paket Insurance | ☐ Diuji ☐ N/A | Declare insurance amount/type |
-| Create Paket KA Credit | ☐ Diuji ☐ N/A | Declare payment method KA Credit |
-| Label Pengiriman | ☐ Diuji ☐ N/A | Lampirkan screenshot label |
-| Tracking | ☐ Diuji ☐ N/A | |
-| Webhook / Callback | ☐ Diuji ☐ N/A | Jika digunakan |
-| Cancel / Void | ☐ Diuji ☐ N/A | Jika digunakan |
+| Authentication / API Key Sandbox | ☐ Diuji ☐ N/A | Bearer `KIRIMINAJA_TOKEN`, sandbox `https://tdev.kiriminaja.com` |
+| Coverage / Courier Service | ☐ Diuji ☐ N/A | Province → city → district → kelurahan at checkout |
+| Pricing | ☐ Diuji ☐ N/A | `v6.1/shipping_price`, chargeable weight = max(actual, volume) |
+| Create Paket Non-COD | ☐ Diuji ☐ N/A | `v6.2/request_pickup` after payment. `cod` is always 0. `package_type_id` 7 |
+| Create Paket COD | ☐ Diuji ☑ N/A | Not offered. Checkout is prepaid via Midtrans |
+| Create Paket Insurance | ☐ Diuji ☐ N/A | Sent only when `force_insurance` or JNE goods value is above Rp500.000 |
+| Create Paket KA Credit | ☐ Diuji ☑ N/A | Not used. Shipping is paid by the customer through Midtrans |
+| Label Pengiriman | ☐ Diuji ☐ N/A | Admin → orders → label. Official PDF via `v6.1/awb/print`, plus member label |
+| Tracking | ☐ Diuji ☐ N/A | Admin track button, `POST /api/mitra/tracking` |
+| Webhook / Callback | ☐ Diuji ☐ N/A | `https://www.paperainstudio.com/api/kiriminaja-webhook` |
+| Cancel / Void | ☐ Diuji ☐ N/A | Admin cancel button, `POST /api/mitra/v3/cancel_shipment` |
 
 ---
 
@@ -109,3 +109,24 @@ Acuan field label mengikuti dokumentasi KiriminAja: https://developer.kiriminaja
 2. Barcode AWB wajib dapat discan; jika order reference barcode digunakan, pastikan juga dapat discan.
 3. Untuk JNE Drop-Off, tambahkan informasi `CASHLESS` sebelum Shipping Type, contoh: `CASHLESS COD: Rp500.000` atau `CASHLESS Non-COD`.
 4. Untuk kurir dengan requirement khusus seperti J&T Cargo atau SPX Express, ikuti sorting/routing code sesuai dokumentasi/arah PIC KiriminAja.
+
+---
+
+## 5. Cara menjalankan skenario wajib
+
+Sandbox only. Do not paste the API key into this document.
+
+1. Run `supabase/patch-011-kiriminaja-uat.sql` if it is not applied yet.
+2. Set the sender env vars in `.env.example` (`KIRIMINAJA_TOKEN`, origin district, kelurahan, name, phone, address, city, zipcode).
+3. Place two paid sandbox orders (Non-COD, insurance off):
+
+| Skenario UAT | Keranjang | Yang terkirim ke `request_pickup` |
+| --- | --- | --- |
+| Berat barang lebih tinggi dari berat volume | 4 keychains or more (actual weight above 150 g while the carton is still the 15×20×3 cm mailer, volume 150 g) | `weight` = actual grams, dimensions whose volume is lower |
+| Berat volume lebih tinggi dari berat barang | 1 sticker sheet (actual 100 g, mailer 15×20×3 cm = 150 g volume) | `weight` = 100, `width` 15, `length` 20, `height` 3 |
+
+Checkout shows both weights next to the courier list. The order row stores `shipping_actual_weight_grams` and `shipping_volumetric_weight_grams`.
+
+4. After payment, KiriminAja creates the shipment. AWB may arrive in the create response or on the `processed_packages` webhook.
+5. Open **admin → orders → label**. Attach the KiriminAja PDF screenshot to section 4. The on-page card is the member copy (courier name, service, Code 128A barcodes, sorting code from tracking, sender and recipient with postal code, weight, qty, items and prices, order ref).
+6. Use **track** and **cancel** on the same order row for rows 14 and 16. COD and KA Credit stay N/A.

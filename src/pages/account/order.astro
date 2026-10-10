@@ -72,6 +72,10 @@ import Layout from '../../layouts/Layout.astro';
             <span class="text-gray-500">shipping fee</span>
             <span id="od-shipping"></span>
           </div>
+          <div id="od-insurance-row" class="flex justify-between hidden">
+            <span class="text-gray-500">insurance</span>
+            <span id="od-insurance"></span>
+          </div>
           <div class="flex justify-between font-medium text-base border-t border-gray-100 pt-2 mt-2">
             <span>total</span>
             <span id="od-total"></span>
@@ -239,6 +243,10 @@ import Layout from '../../layouts/Layout.astro';
           document.getElementById('od-promo-discount').textContent = '-' + fmt(promoDisc);
         }
         document.getElementById('od-shipping').textContent = Number(order.shipping_fee) > 0 ? fmt(order.shipping_fee) : 'free';
+        if (Number(order.shipping_insurance_amount) > 0) {
+          document.getElementById('od-insurance-row').classList.remove('hidden');
+          document.getElementById('od-insurance').textContent = fmt(order.shipping_insurance_amount);
+        }
         document.getElementById('od-total').textContent = fmt(order.total);
 
         // Shipping info

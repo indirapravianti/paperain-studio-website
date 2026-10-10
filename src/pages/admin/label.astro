@@ -7,6 +7,7 @@ import Layout from '../../layouts/Layout.astro';
     @media print {
       header, nav, footer, #announcement-bar, .no-print { display: none !important; }
       body { margin: 0; }
+      #label-card { border-width: 2px; }
     }
   </style>
 
@@ -21,41 +22,66 @@ import Layout from '../../layouts/Layout.astro';
     </div>
 
     <div id="label-main" class="hidden">
-      <div class="no-print flex items-center justify-between mb-6">
+      <div class="no-print flex items-center justify-between mb-6 gap-3">
         <a href="/admin/orders" class="text-sm text-gray-500 hover:underline">&larr; back to orders</a>
-        <button id="print-btn" class="text-sm bg-primary text-white px-4 py-2 rounded-lg">print label</button>
+        <div class="flex gap-2">
+          <a id="pdf-link" href="#" target="_blank" class="hidden text-sm border border-gray-200 px-4 py-2 rounded-lg">KiriminAja PDF</a>
+          <button id="print-btn" class="text-sm bg-primary text-white px-4 py-2 rounded-lg">print label</button>
+        </div>
       </div>
 
+      <p id="pdf-note" class="no-print hidden text-xs text-gray-500 mb-4">
+        The KiriminAja PDF is the courier label (logo, sorting code, Code 128A). The card below is our copy of the same required fields.
+      </p>
+
       <div id="label-card" class="border-2 border-black rounded-lg p-5 text-sm space-y-3">
-        <div class="flex justify-between items-start border-b-2 border-black pb-2">
-          <div>
+        <div class="flex justify-between items-start border-b-2 border-black pb-2 gap-3">
+          <div class="border-2 border-black px-3 py-2 min-w-24 text-center">
+            <p class="text-[10px] uppercase tracking-wide">logistic</p>
+            <p class="font-black text-xl uppercase leading-none" id="lbl-courier">-</p>
+          </div>
+          <div class="text-right">
             <p class="text-xs text-gray-500">service</p>
             <p class="font-bold text-lg uppercase" id="lbl-service">-</p>
             <p class="text-xs" id="lbl-service-type">-</p>
           </div>
-          <div class="text-right">
-            <p class="text-xs text-gray-500">shipping type</p>
-            <p class="font-bold" id="lbl-shipping-type">NON-COD</p>
-          </div>
+        </div>
+
+        <div class="text-center border-b-2 border-black pb-2">
+          <p class="text-[10px] uppercase tracking-wide text-gray-500">sorting code</p>
+          <p class="font-black text-3xl tracking-widest" id="lbl-sorting">-</p>
         </div>
 
         <div class="text-center py-2 border-b border-gray-200">
           <svg id="lbl-barcode"></svg>
-          <p class="font-mono text-xs" id="lbl-awb">-</p>
+          <p class="font-mono text-sm font-bold" id="lbl-awb">-</p>
+        </div>
+
+        <div class="flex justify-between items-center border-b border-gray-200 pb-2">
+          <div>
+            <p class="text-xs text-gray-500">shipping type</p>
+            <p class="font-bold" id="lbl-shipping-type">NON-COD</p>
+          </div>
+          <div class="text-right text-xs">
+            <p class="text-gray-500">origin → destination</p>
+            <p class="font-medium" id="lbl-cities">-</p>
+          </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3 border-b border-gray-200 pb-3">
           <div>
             <p class="text-xs text-gray-500 font-medium">sender</p>
-            <p id="lbl-sender-name">-</p>
+            <p class="font-medium" id="lbl-sender-name">-</p>
             <p class="text-xs" id="lbl-sender-phone">-</p>
-            <p class="text-xs" id="lbl-sender-city">-</p>
+            <p class="text-xs" id="lbl-sender-address">-</p>
+            <p class="text-xs" id="lbl-sender-zip">-</p>
           </div>
           <div>
             <p class="text-xs text-gray-500 font-medium">recipient</p>
-            <p id="lbl-recipient-name">-</p>
+            <p class="font-medium" id="lbl-recipient-name">-</p>
             <p class="text-xs" id="lbl-recipient-phone">-</p>
             <p class="text-xs" id="lbl-recipient-address">-</p>
+            <p class="text-xs" id="lbl-recipient-zip">-</p>
           </div>
         </div>
 
@@ -66,13 +92,23 @@ import Layout from '../../layouts/Layout.astro';
         </div>
 
         <div class="text-xs">
-          <p class="text-gray-500 font-medium">items</p>
-          <p id="lbl-items">-</p>
+          <p class="text-gray-500 font-medium mb-1">items</p>
+          <table class="w-full">
+            <thead>
+              <tr class="text-gray-400">
+                <th class="text-left font-normal">name</th>
+                <th class="text-right font-normal">qty</th>
+                <th class="text-right font-normal">price</th>
+              </tr>
+            </thead>
+            <tbody id="lbl-items"></tbody>
+          </table>
         </div>
 
-        <div class="text-xs border-t-2 border-black pt-2 flex justify-between">
-          <span>order ref</span>
-          <span class="font-mono font-bold" id="lbl-order-ref">-</span>
+        <div class="border-t-2 border-black pt-2 text-center">
+          <p class="text-[10px] uppercase tracking-wide text-gray-500">order ref</p>
+          <svg id="lbl-order-barcode" class="mx-auto"></svg>
+          <p class="font-mono font-bold" id="lbl-order-ref">-</p>
         </div>
       </div>
     </div>
@@ -97,6 +133,32 @@ import Layout from '../../layouts/Layout.astro';
     const deniedEl = document.getElementById('label-denied');
     const mainEl = document.getElementById('label-main');
 
+    function set(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value == null || value === '' ? '-' : value;
+    }
+
+    function fmtIdr(n) {
+      return 'Rp' + Math.round(Number(n) || 0).toLocaleString('id-ID');
+    }
+
+    function esc(value) {
+      return String(value ?? '').replace(/[&<>"']/g, function(ch) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+      });
+    }
+
+    function drawBarcode(selector, value) {
+      if (!value || !window.JsBarcode) return;
+      try {
+        window.JsBarcode(selector, value, { format: 'CODE128A', displayValue: false, height: 48, margin: 0 });
+      } catch {
+        try {
+          window.JsBarcode(selector, value, { format: 'CODE128', displayValue: false, height: 48, margin: 0 });
+        } catch {}
+      }
+    }
+
     async function checkAdmin() {
       if (!user || !token || !SUPABASE_URL || !SUPABASE_KEY) return false;
       if (user.app_metadata?.role === 'admin' || user.user_metadata?.role === 'admin') return true;
@@ -109,54 +171,70 @@ import Layout from '../../layouts/Layout.astro';
       } catch { return false; }
     }
 
-    async function loadOrder() {
-      const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}&select=*,order_items(*)`,
-        { headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + token } },
-      );
-      const rows = await res.json();
-      return rows?.[0] || null;
-    }
-
-    function set(id, value) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = value ?? '-';
-    }
-
     checkAdmin().then(async (isAdmin) => {
       loadingEl.classList.add('hidden');
-      if (!isAdmin) { deniedEl.classList.remove('hidden'); return; }
-      if (!orderId) { deniedEl.classList.remove('hidden'); return; }
+      if (!isAdmin || !orderId) { deniedEl.classList.remove('hidden'); return; }
 
-      const order = await loadOrder();
-      if (!order) { deniedEl.classList.remove('hidden'); return; }
+      let payload;
+      try {
+        const res = await fetch('/api/kiriminaja-label?order_id=' + encodeURIComponent(orderId), {
+          headers: { Authorization: 'Bearer ' + token },
+        });
+        payload = await res.json();
+        if (!res.ok) throw new Error(payload.error || 'could not load label');
+      } catch (err) {
+        deniedEl.classList.remove('hidden');
+        deniedEl.querySelector('p').textContent = err.message || 'could not load label';
+        return;
+      }
 
+      const label = payload.label || {};
       mainEl.classList.remove('hidden');
 
-      set('lbl-service', order.shipping_courier || 'flat rate');
-      set('lbl-service-type', order.shipping_service_name || order.shipping_service_type || '');
-      set('lbl-shipping-type', 'NON-COD');
-      set('lbl-awb', order.kiriminaja_awb || '(awb pending)');
-      set('lbl-sender-name', 'paperain studio');
-      set('lbl-sender-phone', '');
-      set('lbl-sender-city', 'Depok, Sleman, DIY');
-      set('lbl-recipient-name', order.shipping_name);
-      set('lbl-recipient-phone', order.shipping_phone);
-      set('lbl-recipient-address', [order.shipping_address].filter(Boolean).join(', '));
-      set('lbl-weight', order.shipping_weight_grams ? order.shipping_weight_grams + ' g' : '-');
-      const qty = (order.order_items || []).reduce((s, i) => s + i.quantity, 0);
-      set('lbl-qty', qty || '-');
-      set('lbl-insurance', 'not used');
-      set('lbl-items', (order.order_items || []).map((i) => `${i.title} x${i.quantity}`).join(', '));
-      set('lbl-order-ref', order.display_id || order.id);
-
-      if (order.kiriminaja_awb && window.JsBarcode) {
-        try {
-          window.JsBarcode('#lbl-barcode', order.kiriminaja_awb, {
-            format: 'CODE128', displayValue: false, height: 50, margin: 0,
-          });
-        } catch {}
+      if (payload.pdf_url) {
+        const link = document.getElementById('pdf-link');
+        link.href = payload.pdf_url;
+        link.classList.remove('hidden');
+        document.getElementById('pdf-note').classList.remove('hidden');
       }
+
+      set('lbl-courier', label.courier);
+      set('lbl-service', label.service_name || label.service_type);
+      set('lbl-service-type', label.service_type);
+      set('lbl-sorting', label.sorting_code || 'pending');
+      set('lbl-awb', label.awb || '(awb pending)');
+      const shippingType = label.cashless ? 'CASHLESS ' + (label.shipping_type || 'NON-COD') : (label.shipping_type || 'NON-COD');
+      set('lbl-shipping-type', shippingType);
+      set('lbl-cities', (label.origin_city || '-') + ' → ' + (label.destination_city || '-'));
+
+      const sender = label.sender || {};
+      const recipient = label.recipient || {};
+      set('lbl-sender-name', sender.name);
+      set('lbl-sender-phone', sender.phone);
+      set('lbl-sender-address', sender.address);
+      set('lbl-sender-zip', sender.zipcode);
+      set('lbl-recipient-name', recipient.name);
+      set('lbl-recipient-phone', recipient.phone);
+      set('lbl-recipient-address', recipient.address);
+      set('lbl-recipient-zip', recipient.zipcode);
+
+      const actual = label.actual_weight_grams;
+      const volume = label.volumetric_weight_grams;
+      const weightText = (label.weight_grams ? label.weight_grams + ' g' : '-') +
+        (actual && volume ? ' (actual ' + actual + ' g, volume ' + volume + ' g)' : '');
+      set('lbl-weight', weightText);
+      set('lbl-qty', label.qty || '-');
+      set('lbl-insurance', label.insurance_amount > 0 ? fmtIdr(label.insurance_amount) : 'not used');
+      set('lbl-order-ref', label.order_ref);
+
+      const tbody = document.getElementById('lbl-items');
+      tbody.innerHTML = (label.items || []).map(function(item) {
+        return '<tr><td>' + esc(item.name) + '</td><td class="text-right">' + esc(item.qty) +
+          '</td><td class="text-right">' + esc(fmtIdr(item.price)) + '</td></tr>';
+      }).join('') || '<tr><td colspan="3">-</td></tr>';
+
+      drawBarcode('#lbl-barcode', label.awb);
+      drawBarcode('#lbl-order-barcode', label.order_ref);
     });
 
     document.getElementById('print-btn')?.addEventListener('click', () => window.print());

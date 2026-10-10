@@ -353,22 +353,28 @@ import Layout from '../layouts/Layout.astro';
           courierStatus.textContent = 'no courier available for this address yet.';
           return;
         }
-        courierStatus.textContent = '';
+        var weightNote = '';
+        if (json.actual_weight_grams && json.volumetric_weight_grams) {
+          weightNote = 'chargeable ' + json.weight_grams + ' g (actual ' + json.actual_weight_grams + ' g, volume ' + json.volumetric_weight_grams + ' g)';
+        }
+        courierStatus.textContent = weightNote;
         courierList.innerHTML = rates.map(function(r, idx) {
+          var price = r.customer_cost != null ? r.customer_cost : r.cost;
           return '<label class="courier-option flex items-center justify-between gap-3 border border-gray-200 rounded-lg px-4 py-2.5 text-sm cursor-pointer">' +
             '<span class="flex items-center gap-3">' +
               '<input type="radio" name="courier" class="courier-radio accent-primary" value="' + idx + '"' + (idx === 0 ? ' checked' : '') + ' />' +
               '<span><span class="font-medium">' + r.service_name + '</span>' +
                 (r.etd ? '<br/><span class="text-xs text-gray-400">est. ' + r.etd + ' days</span>' : '') +
+                (r.insurance_amount > 0 ? '<br/><span class="text-xs text-gray-400">includes insurance</span>' : '') +
               '</span>' +
             '</span>' +
-            '<span class="font-medium">' + fmt(r.cost) + '</span>' +
+            '<span class="font-medium">' + fmt(price) + '</span>' +
           '</label>';
         }).join('');
 
         function applySelection(idx) {
           selectedRate = rates[idx];
-          SHIPPING_FEE = selectedRate.cost;
+          SHIPPING_FEE = selectedRate.customer_cost != null ? selectedRate.customer_cost : selectedRate.cost;
           updateTotals();
           document.querySelectorAll('.courier-option').forEach(function(el, i) {
             el.classList.toggle('border-primary', i === idx);

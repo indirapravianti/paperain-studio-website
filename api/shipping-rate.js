@@ -22,7 +22,19 @@ export default async function handler(req, res) {
       return sendJson(res, { error: result.error }, result.notConfigured ? 503 : 400);
     }
 
-    return sendJson(res, { rates: result.rates, weight_grams: result.weightGrams }, 200);
+    return sendJson(
+      res,
+      {
+        rates: result.rates,
+        weight_grams: result.chargeableWeightGrams,
+        actual_weight_grams: result.actualWeightGrams,
+        volumetric_weight_grams: result.volumetricWeightGrams,
+        width_cm: result.width,
+        length_cm: result.length,
+        height_cm: result.height,
+      },
+      200,
+    );
   } catch (err) {
     console.error('api/shipping-rate error:', err);
     const message = err instanceof Error ? err.message : 'server error';

@@ -20,7 +20,7 @@ Source of truth for display: `src/lib/idr-prices.js` and `lib/api/region-pricing
 
 | Rule | Value |
 |------|-------|
-| Shipping | KiriminAja courier rates by province/city/district (falls back to flat Rp 48,000 if `KIRIMINAJA_TOKEN` isn't configured — see `.env.example`) |
+| Shipping | KiriminAja courier rates by province/city/district. Chargeable weight is the greater of actual grams and volumetric grams (`width × length × height ÷ 6`). Insurance is added only when KiriminAja marks `force_insurance` or the courier is JNE and the goods value is above Rp 500,000. Falls back to flat Rp 48,000 if `KIRIMINAJA_TOKEN` isn't configured — see `.env.example` |
 | Volume discount | 20% off when subtotal ≥ Rp 80,000 |
 | Payment | Midtrans (IDR) |
 | Shipping coverage | Indonesia only (for now) |

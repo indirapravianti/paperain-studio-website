@@ -178,6 +178,21 @@ import Layout from '../../layouts/Layout.astro';
       }
     };
 
+    window.adminCancelShipment = async function(orderId) {
+      const reason = window.prompt('cancel reason (at least 5 characters)');
+      if (!reason || reason.trim().length < 5) return;
+      try {
+        await callKiriminajaApi('/api/kiriminaja-cancel', {
+          method: 'POST',
+          body: JSON.stringify({ order_id: orderId, reason: reason.trim() }),
+        });
+        alert('cancel requested');
+        loadOrders();
+      } catch (err) {
+        alert('cancel failed: ' + err.message);
+      }
+    };
+
     async function loadOrders() {
       const listEl = document.getElementById('admin-orders-list');
       const emptyEl = document.getElementById('admin-orders-empty');
@@ -265,6 +280,7 @@ import Layout from '../../layouts/Layout.astro';
                 ${order.kiriminaja_awb ? `
                   <button onclick="adminTrackShipment('${order.id}')" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">track</button>
                   <a href="/admin/label?order=${order.id}" target="_blank" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">label</a>
+                  <button onclick="adminCancelShipment('${order.id}')" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">cancel</button>
                 ` : ''}
               </div>
               ${order.kiriminaja_error ? `<p class="text-xs text-red-500 mb-3">kiriminaja error: ${order.kiriminaja_error}</p>` : ''}
