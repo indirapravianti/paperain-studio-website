@@ -44,7 +44,7 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error('api/kiriminaja-regions error:', err);
     const message = err instanceof Error ? err.message : 'server error';
-    const status = message === 'kiriminaja is not configured' ? 503 : 502;
+    const status = message === 'kiriminaja is not configured' ? 503 : 500;
     return sendJson(res, { error: message }, status);
   }
 }

@@ -27,7 +27,7 @@ export default async function handler(req, res) {
 
   try {
     const result = await createKiriminajaShipmentForOrder(getSupabaseAdmin(), order_id);
-    return sendJson(res, result, result.ok ? 200 : 502);
+    return sendJson(res, result, result.ok ? 200 : 500);
   } catch (err) {
     console.error('api/kiriminaja-shipment error:', err);
     return sendJson(res, { error: err instanceof Error ? err.message : 'server error' }, 500);

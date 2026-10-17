@@ -40,6 +40,6 @@ export default async function handler(req, res) {
     return sendJson(res, data, 200);
   } catch (err) {
     console.error('api/kiriminaja-cancel error:', err);
-    return sendJson(res, { error: err instanceof Error ? err.message : 'server error' }, 502);
+    return sendJson(res, { error: err instanceof Error ? err.message : 'server error' }, 500);
   }
 }
