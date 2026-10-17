@@ -239,16 +239,22 @@ import Layout from '../layouts/Layout.astro';
     }
 
     async function fetchJson(url, opts) {
-      var res = await fetch(url, opts);
-      var text = await res.text();
-      var json = {};
-      try { json = text ? JSON.parse(text) : {}; } catch {}
-      if (!res.ok) {
+      // The courier API occasionally answers 502; retry lookups (not POSTs) before giving up.
+      var maxAttempts = opts && opts.method === 'POST' ? 1 : 3;
+      for (var attempt = 1; ; attempt++) {
+        var res = await fetch(url, opts);
+        var text = await res.text();
+        var json = {};
+        try { json = text ? JSON.parse(text) : {}; } catch {}
+        if (res.ok) return json;
+        if (attempt < maxAttempts && res.status >= 500 && res.status !== 503) {
+          await new Promise(function(resolve) { setTimeout(resolve, 500 * attempt); });
+          continue;
+        }
         var err = new Error(json.error || 'request failed');
         err.status = res.status;
         throw err;
       }
-      return json;
     }
 
     function useFallbackAddress() {
@@ -274,11 +280,24 @@ import Layout from '../layouts/Layout.astro';
       }
     }
 
+    // Clear everything below a changed province/city so stale values can't be submitted.
+    function resetBelowDistrict() {
+      subdistrictSelect.innerHTML = '<option value="">select district first</option>';
+      subdistrictSelect.disabled = true;
+      postalInput.value = '';
+      courierSection.classList.add('hidden');
+      courierList.innerHTML = '';
+      selectedRate = null;
+      SHIPPING_FEE = 0;
+      updateTotals();
+    }
+
     async function loadCities(provinceId) {
       citySelect.innerHTML = '<option value="">loading...</option>';
       citySelect.disabled = true;
       districtSelect.innerHTML = '<option value="">select city first</option>';
       districtSelect.disabled = true;
+      resetBelowDistrict();
       try {
         var json = await fetchJson('/api/kiriminaja-regions?type=city&province_id=' + encodeURIComponent(provinceId));
         var cities = json.data || [];
@@ -296,10 +315,7 @@ import Layout from '../layouts/Layout.astro';
     async function loadDistricts(cityId) {
       districtSelect.innerHTML = '<option value="">loading...</option>';
       districtSelect.disabled = true;
-      subdistrictSelect.innerHTML = '<option value="">select district first</option>';
-      subdistrictSelect.disabled = true;
-      courierSection.classList.add('hidden');
-      selectedRate = null;
+      resetBelowDistrict();
       try {
         var json = await fetchJson('/api/kiriminaja-regions?type=district&city_id=' + encodeURIComponent(cityId));
         var districts = json.data || [];
