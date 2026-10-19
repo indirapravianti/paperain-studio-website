@@ -26,6 +26,9 @@ import Layout from '../../layouts/Layout.astro';
             <option value="delivered">delivered</option>
             <option value="cancelled">cancelled</option>
           </select>
+          <button id="register-callback-btn" title="register the KiriminAja webhook URL so AWBs arrive automatically" class="text-sm border border-gray-200 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors">
+            register webhook
+          </button>
           <button id="refresh-btn" class="text-sm border border-gray-200 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors">
             refresh
           </button>
@@ -156,18 +159,35 @@ import Layout from '../../layouts/Layout.astro';
       return json;
     }
 
+    // Same endpoint for create and "check AWB": the server never re-books an order that already
+    // has a pickup request, it only pulls the AWB from KiriminAja tracking.
     window.adminCreateShipment = async function(orderId, btn) {
+      const label = btn.textContent;
       btn.disabled = true;
-      btn.textContent = 'creating...';
+      btn.textContent = 'working...';
       try {
-        await callKiriminajaApi('/api/kiriminaja-shipment', { method: 'POST', body: JSON.stringify({ order_id: orderId }) });
+        const result = await callKiriminajaApi('/api/kiriminaja-shipment', { method: 'POST', body: JSON.stringify({ order_id: orderId }) });
+        if (result.alreadyCreated && !result.awb) alert('pickup is booked, but KiriminAja has not assigned an AWB yet. try again later.');
         loadOrders();
       } catch (err) {
-        alert('shipment creation failed: ' + err.message);
+        alert('kiriminaja request failed: ' + err.message);
         btn.disabled = false;
-        btn.textContent = 'create shipment';
+        btn.textContent = label;
       }
     };
+
+    async function registerKiriminajaCallback() {
+      if (!confirm('register ' + location.origin + '/api/kiriminaja-webhook as the KiriminAja callback? this replaces any URL registered before.')) return;
+      try {
+        const result = await callKiriminajaApi('/api/kiriminaja-callback', {
+          method: 'POST',
+          body: JSON.stringify({ url: location.origin + '/api/kiriminaja-webhook' }),
+        });
+        alert(result.text || 'callback registered: ' + result.url);
+      } catch (err) {
+        alert('callback registration failed: ' + err.message);
+      }
+    }
 
     window.adminTrackShipment = async function(orderId) {
       try {
@@ -273,12 +293,21 @@ import Layout from '../../layouts/Layout.astro';
                 <span class="px-2 py-1 rounded bg-gray-100">${order.shipping_courier} ${order.shipping_service_name || order.shipping_service_type || ''}</span>
                 ${order.kiriminaja_awb
                   ? `<span class="px-2 py-1 rounded bg-green-100 text-green-700">AWB ${order.kiriminaja_awb}</span>`
-                  : `<span class="px-2 py-1 rounded bg-yellow-100 text-yellow-700">${order.kiriminaja_error ? 'shipment failed' : 'no AWB yet'}</span>`}
-                ${order.status === 'confirmed' || order.kiriminaja_error
-                  ? `<button onclick="adminCreateShipment('${order.id}', this)" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">${order.kiriminaja_awb ? 're-sync' : 'create shipment'}</button>`
+                  : order.kiriminaja_pickup_number
+                    ? `<span class="px-2 py-1 rounded bg-yellow-100 text-yellow-700">pickup ${order.kiriminaja_pickup_number}, AWB pending</span>`
+                    : `<span class="px-2 py-1 rounded bg-yellow-100 text-yellow-700">${order.kiriminaja_error ? 'shipment failed' : 'no AWB yet'}</span>`}
+                ${['problem', 'canceled', 'cancel_pending', 'returned'].includes(order.kiriminaja_status)
+                  ? `<span class="px-2 py-1 rounded bg-red-100 text-red-700">${order.kiriminaja_status.replace('_', ' ')}</span>`
+                  : ''}
+                ${!order.kiriminaja_awb && order.kiriminaja_pickup_number
+                  ? `<button onclick="adminCreateShipment('${order.id}', this)" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">check AWB</button>`
+                  : order.status === 'confirmed' || order.kiriminaja_error
+                    ? `<button onclick="adminCreateShipment('${order.id}', this)" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">${order.kiriminaja_awb ? 're-sync' : 'create shipment'}</button>`
+                    : ''}
+                ${order.kiriminaja_awb || order.kiriminaja_pickup_number
+                  ? `<button onclick="adminTrackShipment('${order.id}')" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">track</button>`
                   : ''}
                 ${order.kiriminaja_awb ? `
-                  <button onclick="adminTrackShipment('${order.id}')" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">track</button>
                   <a href="/admin/label?order=${order.id}" target="_blank" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">label</a>
                   <button onclick="adminCancelShipment('${order.id}')" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">cancel</button>
                 ` : ''}
@@ -330,6 +359,7 @@ import Layout from '../../layouts/Layout.astro';
       if (isAdmin) {
         loadOrders();
         document.getElementById('status-filter').addEventListener('change', loadOrders);
+        document.getElementById('register-callback-btn').addEventListener('click', registerKiriminajaCallback);
         document.getElementById('refresh-btn').addEventListener('click', loadOrders);
       }
     });

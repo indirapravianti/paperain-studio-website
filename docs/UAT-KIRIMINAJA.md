@@ -127,6 +127,7 @@ Sandbox only. Do not paste the API key into this document.
 
 Checkout shows both weights next to the courier list. The order row stores `shipping_actual_weight_grams` and `shipping_volumetric_weight_grams`.
 
-4. After payment, KiriminAja creates the shipment. AWB may arrive in the create response or on the `processed_packages` webhook.
-5. Open **admin → orders → label**. Attach the KiriminAja PDF screenshot to section 4. The on-page card is the member copy (courier name, service, Code 128A barcodes, sorting code from tracking, sender and recipient with postal code, weight, qty, items and prices, order ref).
-6. Use **track** and **cancel** on the same order row for rows 14 and 16. COD and KA Credit stay N/A.
+4. Once per environment, open **admin → orders → register webhook**. It calls `set_callback` with `<this site>/api/kiriminaja-webhook` (one URL per KiriminAja account; registering again replaces it).
+5. After payment, KiriminAja creates the shipment. AWB may arrive in the create response or on the `processed_packages` webhook. If an order shows "AWB pending", **check AWB** pulls it from the tracking endpoint. It never books a second pickup.
+6. Open **admin → orders → label**. Attach the KiriminAja PDF screenshot to section 4. The on-page card is the member copy (courier name, service, Code 128A barcodes, sorting code from tracking, sender and recipient with postal code, weight, qty, items and prices, order ref).
+7. Use **track** and **cancel** on the same order row for rows 14 and 16. COD and KA Credit stay N/A.

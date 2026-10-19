@@ -82,3 +82,12 @@ See `.env.example`. OAuth vars (`KIRIMINAJA_API_KEY`, `KIRIMINAJA_API_SECRET`, `
 
 - Which token KiriminAja expects in `X-OAUTH-TOKEN`: implemented as the member `token` from login; the doc only says "NEW_TOKEN_FROM_OAUTH".
 - `expired_at` for grant client: doc example is 26298 with the note "on a hour"; we send 24 (`KIRIMINAJA_GRANT_EXPIRED_HOURS`).
+
+## AWB flow (2026-10-19)
+
+- `request_pickup` often returns only a `pickup_number`. The AWB comes later on the `processed_packages` webhook.
+- The webhook only fires after our URL is registered with `set_callback`: admin → orders → **register webhook** (`api/kiriminaja-callback.js`). One URL per account, so registering from a preview deployment replaces production's.
+- Fallback when the webhook is missed: **check AWB** on the order row calls `/api/kiriminaja-shipment`, which looks the order up via `/api/mitra/tracking` (accepts our `PPRS-...` order id) and saves `awb` + `sorting_code`.
+- Duplicate guard: an order with a `kiriminaja_pickup_number`, or one that tracking already knows, is never booked again.
+- Webhook also handles `canceled_packages` and `problem_packages` (sets `kiriminaja_status` + `kiriminaja_error`; our `order.status` is left for a manual refund/rebook decision).
+
