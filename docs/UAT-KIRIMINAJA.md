@@ -34,7 +34,7 @@ Centang fitur yang diuji dan beri catatan jika tidak digunakan.
 | Create Paket Non-COD | ☐ Diuji ☐ N/A | `v6.2/request_pickup` after payment. `cod` is always 0. `package_type_id` 7 |
 | Create Paket COD | ☐ Diuji ☑ N/A | Not offered. Checkout is prepaid via Midtrans |
 | Create Paket Insurance | ☐ Diuji ☐ N/A | Sent only when `force_insurance` or JNE goods value is above Rp500.000 |
-| Create Paket KA Credit | ☐ Diuji ☑ N/A | Not used. Shipping is paid by the customer through Midtrans |
+| Create Paket KA Credit | ☐ Diuji ☐ N/A | `payment_method: credit` (env `KIRIMINAJA_PAYMENT_METHOD=credit`, optional `KIRIMINAJA_PIN`). The customer pays shipping through Midtrans; we pay KiriminAja from KA Credit so the AWB is returned immediately |
 | Label Pengiriman | ☐ Diuji ☐ N/A | Admin → orders → label. Official PDF via `v6.1/awb/print`, plus member label |
 | Tracking | ☐ Diuji ☐ N/A | Admin track button, `POST /api/mitra/tracking` |
 | Webhook / Callback | ☐ Diuji ☐ N/A | `https://www.paperainstudio.com/api/kiriminaja-webhook` |
@@ -117,8 +117,10 @@ Acuan field label mengikuti dokumentasi KiriminAja: https://developer.kiriminaja
 Sandbox only. Do not paste the API key into this document.
 
 1. Run `supabase/patch-011-kiriminaja-uat.sql` if it is not applied yet.
-2. Set the sender env vars in `.env.example` (`KIRIMINAJA_TOKEN`, origin district, kelurahan, name, phone, address, city, zipcode).
-3. Place two paid sandbox orders (Non-COD, insurance off):
+2. Set the sender env vars in `.env.example` (`KIRIMINAJA_TOKEN`, origin district, kelurahan, name, phone, address, city, zipcode). The sender name must be 8–14 characters.
+3. Set `KIRIMINAJA_PAYMENT_METHOD=credit` in Vercel and redeploy. Without it, KiriminAja creates a QRIS bill per pickup and holds the AWB until it is paid, and the sandbox QR (`qr_content`) cannot be paid. Check the balance with `node --env-file=.env scripts/kiriminaja-set-callback.mjs balance` (the sandbox account had Rp500.000 on 2026-10-23).
+4. Make sure the webhook is registered (`node --env-file=.env scripts/kiriminaja-set-callback.mjs register`, done on 2026-10-17).
+5. Place two paid sandbox orders (Non-COD, insurance off):
 
 | Skenario UAT | Keranjang | Yang terkirim ke `request_pickup` |
 | --- | --- | --- |
@@ -127,6 +129,6 @@ Sandbox only. Do not paste the API key into this document.
 
 Checkout shows both weights next to the courier list. The order row stores `shipping_actual_weight_grams` and `shipping_volumetric_weight_grams`.
 
-4. After payment, KiriminAja creates the shipment. AWB may arrive in the create response or on the `processed_packages` webhook.
-5. Open **admin → orders → label**. Attach the KiriminAja PDF screenshot to section 4. The on-page card is the member copy (courier name, service, Code 128A barcodes, sorting code from tracking, sender and recipient with postal code, weight, qty, items and prices, order ref).
-6. Use **track** and **cancel** on the same order row for rows 14 and 16. COD and KA Credit stay N/A.
+6. After payment, KiriminAja creates the shipment and deducts the shipping cost from KA Credit. AWB may arrive in the create response or on the `processed_packages` webhook. These orders also cover row 12 (KA Credit).
+7. Open **admin → orders → label**. Attach the KiriminAja PDF screenshot to section 4. The on-page card is the member copy (courier name, service, Code 128A barcodes, sorting code from tracking, sender and recipient with postal code, weight, qty, items and prices, order ref).
+8. Use **track** and **cancel** on the same order row for rows 14 and 16. COD stays N/A.

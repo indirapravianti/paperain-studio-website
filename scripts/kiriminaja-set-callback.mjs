@@ -1,8 +1,10 @@
-// One-off: register the KiriminAja webhook URL for this account.
+// KiriminAja account helper: register the webhook URL, plus read-only checks (tracking, payment, KA Credit).
 // Usage (from repo root, reads .env for the KiriminAja token + OAuth credentials):
 //   node --env-file=.env scripts/kiriminaja-set-callback.mjs check [order_id]   # read-only auth test via tracking
 //   node --env-file=.env scripts/kiriminaja-set-callback.mjs register [url]
-import { setCallback, trackShipment } from '../lib/api/kiriminaja.js';
+//   node --env-file=.env scripts/kiriminaja-set-callback.mjs payment <pickup_number>   # read-only payment status
+//   node --env-file=.env scripts/kiriminaja-set-callback.mjs balance   # read-only KA Credit balance
+import { getCreditBalance, getPayment, setCallback, trackShipment } from '../lib/api/kiriminaja.js';
 
 const DEFAULT_CALLBACK_URL = 'https://www.paperainstudio.com/api/kiriminaja-webhook';
 
@@ -15,7 +17,11 @@ if (mode === 'check') {
   const url = arg || DEFAULT_CALLBACK_URL;
   console.log(`registering ${url} on ${process.env.KIRIMINAJA_BASE_URL}`);
   console.log(JSON.stringify(await setCallback(url), null, 2));
+} else if (mode === 'balance') {
+  console.log(JSON.stringify(await getCreditBalance(), null, 2));
+} else if (mode === 'payment' && arg) {
+  console.log(JSON.stringify(await getPayment(arg), null, 2));
 } else {
-  console.error('usage: kiriminaja-set-callback.mjs check [order_id] | register [url]');
+  console.error('usage: kiriminaja-set-callback.mjs check [order_id] | register [url] | payment <pickup_number> | balance');
   process.exit(1);
 }
