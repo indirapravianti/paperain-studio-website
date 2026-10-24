@@ -1,0 +1,89 @@
+{
+  "destination": {
+    "province": {
+      "id": 6,
+      "provinsi_name": "DKI Jakarta"
+    },
+    "city": {
+      "id": 153,
+      "provinsi_id": 6,
+      "kabupaten_name": "Jakarta Selatan",
+      "type": "Kota",
+      "postal_code": "12230"
+    },
+    "district": {
+      "id": 2111,
+      "kecamatan_name": "Setia Budi",
+      "kabupaten_id": 153,
+      "postal_code": "12980"
+    },
+    "subdistrict": {
+      "id": 17578,
+      "kelurahan_name": "Karet Semanggi",
+      "kecamatan_id": 2111,
+      "postal_code": "12930"
+    }
+  },
+  "pickups": [
+    {
+      "scenario": {
+        "key": "actual-heavier",
+        "uatRow": 4,
+        "title": "UAT Keychain",
+        "category": "keychain",
+        "qty": 4
+      },
+      "orderId": "PPRS-261023-916069",
+      "pack": {
+        "qty": 4,
+        "width": 15,
+        "length": 20,
+        "height": 3,
+        "actualWeightGrams": 170,
+        "volumetricWeightGrams": 150,
+        "chargeableWeightGrams": 170
+      },
+      "rate": {
+        "courier": "sicepat",
+        "service_type": "REG",
+        "service_name": "Sicepat REGULER",
+        "cost": 19000,
+        "insurance_amount": 0,
+        "customer_cost": 19000,
+        "etd": "2-4",
+        "group": "regular"
+      },
+      "error": "Unable to proceed, pin invalid"
+    },
+    {
+      "scenario": {
+        "key": "volume-heavier",
+        "uatRow": 6,
+        "title": "UAT Sticker Sheet",
+        "category": "sticker sheet",
+        "qty": 1
+      },
+      "orderId": "PPRS-261023-920471",
+      "pack": {
+        "qty": 1,
+        "width": 15,
+        "length": 20,
+        "height": 3,
+        "actualWeightGrams": 100,
+        "volumetricWeightGrams": 150,
+        "chargeableWeightGrams": 150
+      },
+      "rate": {
+        "courier": "sicepat",
+        "service_type": "REG",
+        "service_name": "Sicepat REGULER",
+        "cost": 19000,
+        "insurance_amount": 0,
+        "customer_cost": 19000,
+        "etd": "2-4",
+        "group": "regular"
+      },
+      "error": "Unable to proceed, pin invalid"
+    }
+  ]
+}
