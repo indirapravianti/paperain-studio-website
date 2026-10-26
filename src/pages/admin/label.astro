@@ -157,6 +157,24 @@ import Layout from '../../layouts/Layout.astro';
           window.JsBarcode(selector, value, { format: 'CODE128', displayValue: false, height: 48, margin: 0 });
         } catch {}
       }
+      fitBarcode(document.querySelector(selector));
+    }
+
+    // JsBarcode draws a fixed 2px per bar, so a long AWB (e.g. sandbox MOCK-…) overflows the card.
+    // Scale it down to the card width, never up past its natural size.
+    function fitBarcode(svg) {
+      const width = parseFloat(svg?.getAttribute('width'));
+      const height = parseFloat(svg?.getAttribute('height'));
+      if (!width || !height) return;
+      svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+      svg.setAttribute('preserveAspectRatio', 'none');
+      svg.removeAttribute('width');
+      svg.removeAttribute('height');
+      svg.style.display = 'block';
+      svg.style.margin = '0 auto';
+      svg.style.width = '100%';
+      svg.style.maxWidth = width + 'px';
+      svg.style.height = height + 'px';
     }
 
     async function checkAdmin() {
@@ -216,6 +234,9 @@ import Layout from '../../layouts/Layout.astro';
       set('lbl-recipient-name', recipient.name);
       set('lbl-recipient-phone', recipient.phone);
       set('lbl-recipient-address', recipient.address);
+      // Checkout addresses already end with the postal code; don't print it twice.
+      const recipientZipInAddress = recipient.zipcode && String(recipient.address || '').includes(recipient.zipcode);
+      document.getElementById('lbl-recipient-zip').classList.toggle('hidden', !!recipientZipInAddress);
       set('lbl-recipient-zip', recipient.zipcode);
 
       const actual = label.actual_weight_grams;

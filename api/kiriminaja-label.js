@@ -3,7 +3,7 @@ import { requireAdmin } from '../lib/api/admin-auth.js';
 import { getSupabaseAdmin } from '../lib/api/supabase-admin.js';
 import { getOriginProfile, printShippingLabel, trackShipment } from '../lib/api/kiriminaja.js';
 
-function labelPayload(order, origin, sortingCode, pdfUrl) {
+function labelPayload(order, origin, sortingCode, pdfUrl, trackedOriginCity) {
   const items = (order.order_items || []).map((item) => ({
     name: item.title,
     qty: item.quantity,
@@ -30,7 +30,7 @@ function labelPayload(order, origin, sortingCode, pdfUrl) {
       qty,
       insurance_amount: insuranceAmount,
       item_value: Number(order.shipping_item_value) || items.reduce((sum, item) => sum + item.price * item.qty, 0),
-      origin_city: origin.city || '',
+      origin_city: origin.city || trackedOriginCity || '',
       destination_city: order.shipping_city || '',
       sender: {
         name: origin.name || '',
@@ -84,6 +84,7 @@ export default async function handler(req, res) {
   const origin = getOriginProfile();
   let sortingCode = order.kiriminaja_sorting_code || null;
   let pdfUrl = null;
+  let trackedOriginCity = null;
 
   if (order.kiriminaja_awb) {
     try {
@@ -93,11 +94,14 @@ export default async function handler(req, res) {
       console.error('kiriminaja label print failed:', order.id, err);
     }
 
-    if (!sortingCode) {
+    // Tracking also gives the origin city, for when KIRIMINAJA_ORIGIN_CITY isn't set.
+    if (!sortingCode || !origin.city) {
       try {
         const tracked = await trackShipment(order.kiriminaja_awb);
-        sortingCode = tracked?.details?.sorting_code || null;
-        if (sortingCode) {
+        trackedOriginCity = tracked?.details?.origin?.city || null;
+        const trackedSortingCode = tracked?.details?.sorting_code || null;
+        if (!sortingCode && trackedSortingCode) {
+          sortingCode = trackedSortingCode;
           const { error: sortingError } = await supabase
             .from('orders')
             .update({ kiriminaja_sorting_code: sortingCode })
@@ -110,5 +114,5 @@ export default async function handler(req, res) {
     }
   }
 
-  return sendJson(res, labelPayload(order, origin, sortingCode, pdfUrl), 200);
+  return sendJson(res, labelPayload(order, origin, sortingCode, pdfUrl, trackedOriginCity), 200);
 }
