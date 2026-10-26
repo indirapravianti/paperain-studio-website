@@ -449,9 +449,13 @@ import Layout from '../layouts/Layout.astro';
       document.getElementById('submit-btn').classList.add('opacity-50', 'cursor-not-allowed');
     } else {
       container.innerHTML = cartFiltered.map(item => {
+        const thumb = item.image
+          ? `<img src="${item.image}" alt="" class="w-12 h-12 rounded-lg object-cover bg-gray-50 shrink-0" />`
+          : '<div class="w-12 h-12 rounded-lg bg-gray-50 shrink-0"></div>';
         return `
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-600">${item.title} × ${item.qty}</span>
+          <div class="flex items-center gap-3 text-sm">
+            ${thumb}
+            <span class="flex-1 text-gray-600">${item.title} × ${item.qty}</span>
             <span>${fmt(item.price * item.qty)}</span>
           </div>`;
       }).join('');
