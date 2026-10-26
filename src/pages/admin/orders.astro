@@ -240,7 +240,7 @@ import Layout from '../../layouts/Layout.astro';
           year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
         });
 
-        const fmtAmt = (val) => '$' + Number(val).toFixed(2);
+        const fmtAmt = (val) => 'Rp' + Math.round(Number(val) || 0).toLocaleString('id-ID');
 
         const statusClass = statusColors[order.status] || 'bg-gray-100 text-gray-700';
 

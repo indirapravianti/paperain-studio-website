@@ -184,8 +184,11 @@ import Layout from '../layouts/Layout.astro';
     var itemsEl = document.getElementById('pay-items');
     itemsEl.innerHTML = (data.items || []).map(function(item) {
       var lineTotal = (item.price || 0) * item.qty;
-      return '<div class="flex justify-between text-sm">' +
-        '<span class="text-gray-600">' + item.title + ' &times; ' + item.qty + '</span>' +
+      var thumb = item.image
+        ? '<img src="' + item.image + '" alt="" class="w-12 h-12 rounded-lg object-cover bg-gray-50 shrink-0" />'
+        : '<div class="w-12 h-12 rounded-lg bg-gray-50 shrink-0"></div>';
+      return '<div class="flex items-center gap-3 text-sm">' + thumb +
+        '<span class="flex-1 text-gray-600">' + item.title + ' &times; ' + item.qty + '</span>' +
         '<span>' + fmt(lineTotal) + '</span></div>';
     }).join('') || '<p class="text-sm text-gray-400">no items</p>';
 
