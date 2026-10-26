@@ -4,7 +4,9 @@ import { getSupabaseAdmin } from '../lib/api/supabase-admin.js';
 import { getOriginProfile, printShippingLabel, trackShipment } from '../lib/api/kiriminaja.js';
 
 function labelPayload(order, origin, sortingCode, pdfUrl, trackedOrigin) {
+  // Env first: the label must not depend on the tracking call succeeding.
   const originCity = origin.city || trackedOrigin?.city || '';
+  const originProvince = origin.province || trackedOrigin?.province || '';
   const items = (order.order_items || []).map((item) => ({
     name: item.title,
     qty: item.quantity,
@@ -41,7 +43,7 @@ function labelPayload(order, origin, sortingCode, pdfUrl, trackedOrigin) {
       sender: {
         name: origin.name || '',
         phone: origin.phone || '',
-        area: [originCity, trackedOrigin?.province].filter(Boolean).join(', '),
+        area: [originCity, originProvince].filter(Boolean).join(', '),
       },
       recipient: {
         name: order.shipping_name || '',

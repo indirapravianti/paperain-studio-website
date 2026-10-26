@@ -5,7 +5,8 @@ import Layout from '../../layouts/Layout.astro';
 <Layout title="shipping label">
   <style is:global>
     /* Courier label: 100 × 150 mm, the standard thermal label size. Fields follow KiriminAja's
-       shipping label doc plus the UAT checklist (sorting code, cities, item prices, order ref). */
+       shipping label doc plus the UAT checklist (sorting code, cities, order ref). Item prices and
+       the sender's street address are left off on purpose: the label is on every parcel. */
     #label-sheet {
       width: 100mm;
       min-height: 150mm;
@@ -182,7 +183,7 @@ import Layout from '../../layouts/Layout.astro';
           <div class="cell grow">
             <table class="items">
               <thead>
-                <tr><th style="width: 4mm;">#</th><th>nama produk</th><th class="num" style="width: 8mm;">qty</th><th class="num" style="width: 16mm;">harga</th></tr>
+                <tr><th style="width: 4mm;">#</th><th>nama produk</th><th class="num" style="width: 10mm;">qty</th></tr>
               </thead>
               <tbody id="lbl-items"></tbody>
             </table>
@@ -367,13 +368,12 @@ import Layout from '../../layouts/Layout.astro';
       const items = label.items || [];
       const shown = items.slice(0, MAX_ITEM_ROWS);
       let rows = shown.map(function(item, i) {
-        return '<tr><td>' + (i + 1) + '</td><td>' + esc(item.name) + '</td><td class="num">' + esc(item.qty) +
-          '</td><td class="num">' + esc(fmtIdr(item.price)) + '</td></tr>';
+        return '<tr><td>' + (i + 1) + '</td><td>' + esc(item.name) + '</td><td class="num">' + esc(item.qty) + '</td></tr>';
       }).join('');
       if (items.length > shown.length) {
-        rows += '<tr><td></td><td colspan="3">+ ' + (items.length - shown.length) + ' produk lainnya</td></tr>';
+        rows += '<tr><td></td><td colspan="2">+ ' + (items.length - shown.length) + ' produk lainnya</td></tr>';
       }
-      document.getElementById('lbl-items').innerHTML = rows || '<tr><td colspan="4">-</td></tr>';
+      document.getElementById('lbl-items').innerHTML = rows || '<tr><td colspan="3">-</td></tr>';
 
       drawBarcode('#lbl-barcode', label.awb, 14);
       drawBarcode('#lbl-order-barcode', label.order_ref, 8);
