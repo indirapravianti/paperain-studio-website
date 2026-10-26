@@ -3,7 +3,8 @@ import { requireAdmin } from '../lib/api/admin-auth.js';
 import { getSupabaseAdmin } from '../lib/api/supabase-admin.js';
 import { getOriginProfile, printShippingLabel, trackShipment } from '../lib/api/kiriminaja.js';
 
-function labelPayload(order, origin, sortingCode, pdfUrl, trackedOriginCity) {
+function labelPayload(order, origin, sortingCode, pdfUrl, trackedOrigin) {
+  const originCity = origin.city || trackedOrigin?.city || '';
   const items = (order.order_items || []).map((item) => ({
     name: item.title,
     qty: item.quantity,
@@ -30,16 +31,17 @@ function labelPayload(order, origin, sortingCode, pdfUrl, trackedOriginCity) {
       qty,
       insurance_amount: insuranceAmount,
       item_value: Number(order.shipping_item_value) || items.reduce((sum, item) => sum + item.price * item.qty, 0),
-      origin_city: origin.city || trackedOriginCity || '',
+      origin_city: originCity,
       destination_city: order.shipping_city || '',
       destination_district: order.shipping_district || '',
       order_date: order.created_at || null,
       notes: order.notes || '',
+      // Like KiriminAja's own label, the sender shows only city and province, never the street
+      // address: the label is on every parcel, and the courier has the pickup address already.
       sender: {
         name: origin.name || '',
         phone: origin.phone || '',
-        address: origin.address || '',
-        zipcode: origin.zipcode || '',
+        area: [originCity, trackedOrigin?.province].filter(Boolean).join(', '),
       },
       recipient: {
         name: order.shipping_name || '',
@@ -87,7 +89,7 @@ export default async function handler(req, res) {
   const origin = getOriginProfile();
   let sortingCode = order.kiriminaja_sorting_code || null;
   let pdfUrl = null;
-  let trackedOriginCity = null;
+  let trackedOrigin = null;
 
   if (order.kiriminaja_awb) {
     try {
@@ -97,25 +99,23 @@ export default async function handler(req, res) {
       console.error('kiriminaja label print failed:', order.id, err);
     }
 
-    // Tracking also gives the origin city, for when KIRIMINAJA_ORIGIN_CITY isn't set.
-    if (!sortingCode || !origin.city) {
-      try {
-        const tracked = await trackShipment(order.kiriminaja_awb);
-        trackedOriginCity = tracked?.details?.origin?.city || null;
-        const trackedSortingCode = tracked?.details?.sorting_code || null;
-        if (!sortingCode && trackedSortingCode) {
-          sortingCode = trackedSortingCode;
-          const { error: sortingError } = await supabase
-            .from('orders')
-            .update({ kiriminaja_sorting_code: sortingCode })
-            .eq('id', order.id);
-          if (sortingError) console.error('could not store sorting code:', order.id, sortingError.message);
-        }
-      } catch (err) {
-        console.error('kiriminaja label tracking lookup failed:', order.id, err);
+    // Tracking gives the sorting code and the sender's city and province.
+    try {
+      const tracked = await trackShipment(order.kiriminaja_awb);
+      trackedOrigin = tracked?.details?.origin || null;
+      const trackedSortingCode = tracked?.details?.sorting_code || null;
+      if (!sortingCode && trackedSortingCode) {
+        sortingCode = trackedSortingCode;
+        const { error: sortingError } = await supabase
+          .from('orders')
+          .update({ kiriminaja_sorting_code: sortingCode })
+          .eq('id', order.id);
+        if (sortingError) console.error('could not store sorting code:', order.id, sortingError.message);
       }
+    } catch (err) {
+      console.error('kiriminaja label tracking lookup failed:', order.id, err);
     }
   }
 
-  return sendJson(res, labelPayload(order, origin, sortingCode, pdfUrl, trackedOriginCity), 200);
+  return sendJson(res, labelPayload(order, origin, sortingCode, pdfUrl, trackedOrigin), 200);
 }

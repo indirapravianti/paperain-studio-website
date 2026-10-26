@@ -59,6 +59,7 @@ Status as of 2026-10-26. The form itself is [`UAT-KIRIMINAJA.md`](UAT-KIRIMINAJA
 | Table (order ID, AWB, courier, Non-COD, source) | ⬜ | Fill from order A after S7 |
 | Label screenshot | ⬜ | S7 |
 | Checklist: courier logo, service, AWB barcode (128A), AWB text, Non-COD, sender and recipient, quantity, origin and destination city, order ref | ✅ | On the KiriminAja PDF |
+| Checklist: sender address | ⚠️ by choice | Both labels print the sender as name, phone, "Kabupaten Sleman, DI Yogyakarta", not the street address (privacy; KiriminAja's own PDF does the same). Note it in "Catatan Validasi Label": *alamat lengkap pengirim tidak dicetak demi privasi, mengikuti format label KiriminAja; alamat pickup lengkap tersimpan di sistem KiriminAja.* |
 | Checklist: **sorting code** | ⬜ | Not on the sandbox PDF (tracking returned none). Our member label shows it from tracking, or "pending" if the sandbox has none |
 | Checklist: **item price** | ⬜ | Not on the KiriminAja PDF. It is on our member label |
 | Checklist: **weight** | ⚠️ | The PDF shows item weight (120 g / 10 g), not the package weight we send. Question pending with KiriminAja (see handoff note) |

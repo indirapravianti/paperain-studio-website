@@ -121,7 +121,7 @@ import Layout from '../../layouts/Layout.astro';
             <div class="cap">pengirim</div>
             <div class="bold" style="font-size: 8.5pt;" id="lbl-sender-name">-</div>
             <div class="bold" id="lbl-sender-phone">-</div>
-            <div style="font-size: 6.5pt;" id="lbl-sender-address">-</div>
+            <div id="lbl-sender-address">-</div>
           </div>
         </div>
 
@@ -341,7 +341,7 @@ import Layout from '../../layouts/Layout.astro';
       const recipient = label.recipient || {};
       set('lbl-sender-name', sender.name);
       set('lbl-sender-phone', sender.phone);
-      set('lbl-sender-address', [sender.address, sender.zipcode].filter(Boolean).join(' '));
+      set('lbl-sender-address', sender.area);
       set('lbl-recipient-name', recipient.name);
       set('lbl-recipient-phone', recipient.phone);
       // Checkout addresses already end with the postal code; don't print it twice.
