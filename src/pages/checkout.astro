@@ -44,7 +44,7 @@ import Layout from '../layouts/Layout.astro';
           </div>
           <div>
             <label for="phone" class="block text-sm font-medium mb-1.5">phone number</label>
-            <input type="tel" id="phone" name="phone" required
+            <input type="tel" id="phone" name="phone" required inputmode="tel" placeholder="081234567890"
               class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors" />
           </div>
           <!-- Country selection deactivated for now — Indonesia-only checkout. Re-enable this block
@@ -211,6 +211,16 @@ import Layout from '../layouts/Layout.astro';
     var courierStatus = document.getElementById('courier-status');
     var idAddressFields = document.getElementById('id-address-fields');
     var fallbackAddressField = document.getElementById('fallback-address-field');
+
+    // KiriminAja rejects anything but an Indonesian mobile number at pickup time, after payment.
+    // Keep in sync with isValidRecipientPhone in lib/api/kiriminaja.js.
+    var PHONE_PATTERN = /^08[1-9]\d{7,10}$/;
+    function isValidPhone(raw) {
+      var digits = String(raw || '').replace(/[^\d+]/g, '');
+      if (digits.indexOf('+62') === 0) digits = '0' + digits.slice(3);
+      else if (digits.indexOf('62') === 0) digits = '0' + digits.slice(2);
+      return PHONE_PATTERN.test(digits);
+    }
 
     if (!user) {
       document.getElementById('auth-notice').classList.remove('hidden');
@@ -517,6 +527,14 @@ import Layout from '../layouts/Layout.astro';
       var shippingDetails = { name: document.getElementById('name').value, email: document.getElementById('email').value, phone: document.getElementById('phone').value, country: countryCode };
 
       if (kiriminajaAvailable) {
+        if (!isValidPhone(shippingDetails.phone)) {
+          errorEl.textContent = 'please enter a valid Indonesian mobile number, e.g. 081234567890.';
+          errorEl.classList.remove('hidden');
+          btn.textContent = 'proceed to payment';
+          btn.disabled = false;
+          return;
+        }
+
         var street = document.getElementById('street').value.trim();
         var provinceOpt = provinceSelect.selectedOptions[0];
         var cityOpt = citySelect.selectedOptions[0];
