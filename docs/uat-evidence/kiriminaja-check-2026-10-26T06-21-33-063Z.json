@@ -1,0 +1,140 @@
+[
+  {
+    "awb": "MOCK-PPRS-261026-911450",
+    "label": {
+      "url": "https://storage.googleapis.com/kaj-stg-core-web/public/documents/pdf/100001529/6e1f8dd0-7d2f-4011-a11a-a126a8fc8789-2026_10_26_13_21.pdf?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=kaj-dev-pdf-render-srvc%40kirimin-aja.iam.gserviceaccount.com%2F20261026%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20261026T062108Z&X-Goog-Expires=3599&X-Goog-Signature=1a0309e7d29f44fd442ecc6e75e33bfada4f531d4c185ca27a1d62b298d4338bb636b1c955fe8560b65aa33159505e86558590c83fd51f5ec53a917fbba03dec9de583c6f3035f62d836e53ab3ccfdbdce06f49d6f7fd21fdc1d3978d687b4e57892a677fd738d5db1251af995459134dedfe01d4568a1051b8bbca3b006dc75eb50e1dfc4462217dd23c52e40d5c0bd2ec8c2a1e6cb1fec6faaccbfa11bd97f7ea13055d64239fbb88d6c4f8ff25bfa5463983bf58bd2a9ed683d8c0f984dd5b3de21ed390134c683fb5f71df51ee40b69dcd703590335b2cab5e17bc3e5ccdd11ed20dd2ec67e0dec4541ad90310ffb89423cfe632058b73796b2c5040618d&X-Goog-SignedHeaders=host",
+      "raw": {
+        "status": true,
+        "text": "Awb print successfully loaded",
+        "data": {
+          "url": "https://storage.googleapis.com/kaj-stg-core-web/public/documents/pdf/100001529/6e1f8dd0-7d2f-4011-a11a-a126a8fc8789-2026_10_26_13_21.pdf?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=kaj-dev-pdf-render-srvc%40kirimin-aja.iam.gserviceaccount.com%2F20261026%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20261026T062108Z&X-Goog-Expires=3599&X-Goog-Signature=1a0309e7d29f44fd442ecc6e75e33bfada4f531d4c185ca27a1d62b298d4338bb636b1c955fe8560b65aa33159505e86558590c83fd51f5ec53a917fbba03dec9de583c6f3035f62d836e53ab3ccfdbdce06f49d6f7fd21fdc1d3978d687b4e57892a677fd738d5db1251af995459134dedfe01d4568a1051b8bbca3b006dc75eb50e1dfc4462217dd23c52e40d5c0bd2ec8c2a1e6cb1fec6faaccbfa11bd97f7ea13055d64239fbb88d6c4f8ff25bfa5463983bf58bd2a9ed683d8c0f984dd5b3de21ed390134c683fb5f71df51ee40b69dcd703590335b2cab5e17bc3e5ccdd11ed20dd2ec67e0dec4541ad90310ffb89423cfe632058b73796b2c5040618d&X-Goog-SignedHeaders=host"
+        },
+        "method": "awb_print"
+      }
+    },
+    "tracking": {
+      "status": true,
+      "text": "Menunggu Pickup",
+      "method": "shTracking",
+      "status_code": 105,
+      "details": {
+        "awb": "MOCK-PPRS-261026-911450",
+        "signature_code": "",
+        "sorting_code": null,
+        "order_id": "PPRS-261026-911450",
+        "status_code": null,
+        "estimation": "2-4",
+        "service": "Sicepat Reguler",
+        "service_name": "REG",
+        "drop": false,
+        "shipped_at": "",
+        "delivered": false,
+        "delivered_at": "",
+        "refunded": false,
+        "refunded_at": "",
+        "images": {
+          "camera_img": null,
+          "signature_img": null,
+          "pop_img": null
+        },
+        "costs": {
+          "add_cost": 0,
+          "currency": "IDR",
+          "cod": 0,
+          "insurance_amount": 0,
+          "insurance_percent": 0,
+          "discount_amount": 0,
+          "subsidi_amount": 0,
+          "shipping_cost": 19000,
+          "correction": 0
+        },
+        "origin": {
+          "name": "PaperainStudio",
+          "address": "Jalan Flamboyan Sawitsari D-2  RT 007 RW 0054  Condongcatur  Depok  Sleman  DIY",
+          "phone": "62895355943939",
+          "city": "Kabupaten Sleman",
+          "zip_code": "55281",
+          "province": "DI Yogyakarta"
+        },
+        "destination": {
+          "name": "UAT Penerima",
+          "address": "Jl. Jenderal Sudirman No. 45  Karet Semanggi  Setiabudi  Jakarta Selatan",
+          "phone": "6281234567890",
+          "city": "Kota Jakarta Selatan",
+          "zip_code": "12930",
+          "province": "DKI Jakarta"
+        }
+      },
+      "histories": []
+    }
+  },
+  {
+    "awb": "MOCK-PPRS-261026-916073",
+    "label": {
+      "url": "https://storage.googleapis.com/kaj-stg-core-web/public/documents/pdf/100001529/202de513-b060-4b25-82ec-dc09e2707a44-2026_10_26_13_21.pdf?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=kaj-dev-pdf-render-srvc%40kirimin-aja.iam.gserviceaccount.com%2F20261026%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20261026T062125Z&X-Goog-Expires=3599&X-Goog-Signature=80812cee69a0f8d7ce35206d5c79c5a26fad2d96e6d956a3be088acb84626167c4d7e5e7ac49fe014814f19c5541b5bb4b902f732f13d7cf9fc4eb7fd6506cb0f7b1ded59cd66d4783155c7f8db35d75cfd6c808fa72271629350136b5ec32dec26f4544ccf2306f7431d9d39f1f753b2544195f6277ac376b0248bcaea669de5c23a50d40ca6b93b02e8741d52eefb91d6471c7de71fa4f9a1d9120c81d6f1c68cf4fe948072960bf58294ea858e4ce18378f7b4f0949ec822fd7f8be4390d79855fc07b9dc3e602eadbccdb84fa8e7225c5abf3915eb03f496bce4a9eeb1f7a523211c0a6737c004084a885a956c63535edb55f2b284b2ea1727baa496fa6c&X-Goog-SignedHeaders=host",
+      "raw": {
+        "status": true,
+        "text": "Awb print successfully loaded",
+        "data": {
+          "url": "https://storage.googleapis.com/kaj-stg-core-web/public/documents/pdf/100001529/202de513-b060-4b25-82ec-dc09e2707a44-2026_10_26_13_21.pdf?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=kaj-dev-pdf-render-srvc%40kirimin-aja.iam.gserviceaccount.com%2F20261026%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20261026T062125Z&X-Goog-Expires=3599&X-Goog-Signature=80812cee69a0f8d7ce35206d5c79c5a26fad2d96e6d956a3be088acb84626167c4d7e5e7ac49fe014814f19c5541b5bb4b902f732f13d7cf9fc4eb7fd6506cb0f7b1ded59cd66d4783155c7f8db35d75cfd6c808fa72271629350136b5ec32dec26f4544ccf2306f7431d9d39f1f753b2544195f6277ac376b0248bcaea669de5c23a50d40ca6b93b02e8741d52eefb91d6471c7de71fa4f9a1d9120c81d6f1c68cf4fe948072960bf58294ea858e4ce18378f7b4f0949ec822fd7f8be4390d79855fc07b9dc3e602eadbccdb84fa8e7225c5abf3915eb03f496bce4a9eeb1f7a523211c0a6737c004084a885a956c63535edb55f2b284b2ea1727baa496fa6c&X-Goog-SignedHeaders=host"
+        },
+        "method": "awb_print"
+      }
+    },
+    "tracking": {
+      "status": true,
+      "text": "Menunggu Pickup",
+      "method": "shTracking",
+      "status_code": 105,
+      "details": {
+        "awb": "MOCK-PPRS-261026-916073",
+        "signature_code": "",
+        "sorting_code": null,
+        "order_id": "PPRS-261026-916073",
+        "status_code": null,
+        "estimation": "2-4",
+        "service": "Sicepat Reguler",
+        "service_name": "REG",
+        "drop": false,
+        "shipped_at": "",
+        "delivered": false,
+        "delivered_at": "",
+        "refunded": false,
+        "refunded_at": "",
+        "images": {
+          "camera_img": null,
+          "signature_img": null,
+          "pop_img": null
+        },
+        "costs": {
+          "add_cost": 0,
+          "currency": "IDR",
+          "cod": 0,
+          "insurance_amount": 0,
+          "insurance_percent": 0,
+          "discount_amount": 0,
+          "subsidi_amount": 0,
+          "shipping_cost": 19000,
+          "correction": 0
+        },
+        "origin": {
+          "name": "PaperainStudio",
+          "address": "Jalan Flamboyan Sawitsari D-2  RT 007 RW 0054  Condongcatur  Depok  Sleman  DIY",
+          "phone": "62895355943939",
+          "city": "Kabupaten Sleman",
+          "zip_code": "55281",
+          "province": "DI Yogyakarta"
+        },
+        "destination": {
+          "name": "UAT Penerima",
+          "address": "Jl. Jenderal Sudirman No. 45  Karet Semanggi  Setiabudi  Jakarta Selatan",
+          "phone": "6281234567890",
+          "city": "Kota Jakarta Selatan",
+          "zip_code": "12930",
+          "province": "DKI Jakarta"
+        }
+      },
+      "histories": []
+    }
+  }
+]
