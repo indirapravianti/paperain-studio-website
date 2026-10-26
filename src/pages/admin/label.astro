@@ -3,15 +3,52 @@ import Layout from '../../layouts/Layout.astro';
 ---
 
 <Layout title="shipping label">
-  <style>
+  <style is:global>
+    /* Courier label: 100 × 150 mm, the standard thermal label size. Fields follow KiriminAja's
+       shipping label doc plus the UAT checklist (sorting code, cities, item prices, order ref). */
+    #label-sheet {
+      width: 100mm;
+      min-height: 150mm;
+      box-sizing: border-box;
+      border: 0.4mm solid #000;
+      background: #fff;
+      color: #000;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 7.5pt;
+      line-height: 1.25;
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+    }
+    #label-sheet .row { border-bottom: 0.3mm solid #000; display: flex; }
+    #label-sheet .row:last-child { border-bottom: 0; }
+    #label-sheet .cell { padding: 1mm 1.6mm; min-width: 0; }
+    #label-sheet .cell + .cell { border-left: 0.3mm solid #000; }
+    #label-sheet .cap { font-size: 6pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+    #label-sheet .big { font-size: 15pt; font-weight: 900; line-height: 1.05; }
+    #label-sheet .bold { font-weight: 700; }
+    #label-sheet .center { text-align: center; }
+    #label-sheet .grow { flex: 1; }
+    #label-sheet .items { width: 100%; border-collapse: collapse; font-size: 7pt; table-layout: fixed; }
+    #label-sheet .items td:nth-child(2) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #label-sheet .items th { text-align: left; font-weight: 700; border-bottom: 0.2mm solid #000; padding: 0 0.6mm 0.4mm; }
+    #label-sheet .items td { padding: 0.4mm 0.6mm; vertical-align: top; }
+    #label-sheet .items .num { text-align: right; white-space: nowrap; }
+    #label-sheet .disclaimer { font-size: 5.8pt; font-style: italic; }
+
+    @media screen {
+      #label-sheet { zoom: 1.5; }
+    }
+
+    @page { size: 100mm 150mm; margin: 0; }
     @media print {
-      header, nav, footer, #announcement-bar, .no-print { display: none !important; }
-      body { margin: 0; }
-      #label-card { border-width: 2px; }
+      body * { visibility: hidden !important; }
+      #label-sheet, #label-sheet * { visibility: visible !important; }
+      #label-sheet { position: fixed; left: 0; top: 0; zoom: 1; height: 150mm; overflow: hidden; }
     }
   </style>
 
-  <section class="max-w-xl mx-auto px-4 sm:px-6 py-10">
+  <section class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
     <div id="label-loading" class="text-center py-20">
       <p class="text-gray-400">loading...</p>
     </div>
@@ -22,7 +59,7 @@ import Layout from '../../layouts/Layout.astro';
     </div>
 
     <div id="label-main" class="hidden">
-      <div class="no-print flex items-center justify-between mb-6 gap-3">
+      <div class="no-print flex items-center justify-between mb-4 gap-3">
         <a href="/admin/orders" class="text-sm text-gray-500 hover:underline">&larr; back to orders</a>
         <div class="flex gap-2">
           <a id="pdf-link" href="#" target="_blank" class="hidden text-sm border border-gray-200 px-4 py-2 rounded-lg">KiriminAja PDF</a>
@@ -30,85 +67,135 @@ import Layout from '../../layouts/Layout.astro';
         </div>
       </div>
 
-      <p id="pdf-note" class="no-print hidden text-xs text-gray-500 mb-4">
-        The KiriminAja PDF is the courier label (logo, sorting code, Code 128A). The card below is our copy of the same required fields.
+      <p class="no-print text-xs text-gray-500 mb-6">
+        Prints at 100 × 150 mm (standard courier label). On A4 paper, print at 100% / actual size and cut along the border.
+        <span id="pdf-note" class="hidden">The KiriminAja PDF is the courier's own label for the same AWB.</span>
       </p>
 
-      <div id="label-card" class="border-2 border-black rounded-lg p-5 text-sm space-y-3">
-        <div class="flex justify-between items-start border-b-2 border-black pb-2 gap-3">
-          <div class="border-2 border-black px-3 py-2 min-w-24 text-center">
-            <p class="text-[10px] uppercase tracking-wide">logistic</p>
-            <p class="font-black text-xl uppercase leading-none" id="lbl-courier">-</p>
+      <div id="label-sheet">
+        <!-- courier · service · shipping type -->
+        <div class="row">
+          <div class="cell center" style="width: 34mm; display: flex; align-items: center; justify-content: center;">
+            <span class="big" id="lbl-courier">-</span>
           </div>
-          <div class="text-right">
-            <p class="text-xs text-gray-500">service</p>
-            <p class="font-bold text-lg uppercase" id="lbl-service">-</p>
-            <p class="text-xs" id="lbl-service-type">-</p>
+          <div class="cell center grow">
+            <div class="cap">layanan</div>
+            <div class="big" id="lbl-service-type">-</div>
+            <div id="lbl-service">-</div>
           </div>
-        </div>
-
-        <div class="text-center border-b-2 border-black pb-2">
-          <p class="text-[10px] uppercase tracking-wide text-gray-500">sorting code</p>
-          <p class="font-black text-3xl tracking-widest" id="lbl-sorting">-</p>
-        </div>
-
-        <div class="text-center py-2 border-b border-gray-200">
-          <svg id="lbl-barcode"></svg>
-          <p class="font-mono text-sm font-bold" id="lbl-awb">-</p>
-        </div>
-
-        <div class="flex justify-between items-center border-b border-gray-200 pb-2">
-          <div>
-            <p class="text-xs text-gray-500">shipping type</p>
-            <p class="font-bold" id="lbl-shipping-type">NON-COD</p>
-          </div>
-          <div class="text-right text-xs">
-            <p class="text-gray-500">origin → destination</p>
-            <p class="font-medium" id="lbl-cities">-</p>
+          <div class="cell center" style="width: 26mm; display: flex; flex-direction: column; justify-content: center;">
+            <div class="cap">tipe</div>
+            <div class="bold" style="font-size: 10pt;" id="lbl-shipping-type">NON-COD</div>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 border-b border-gray-200 pb-3">
-          <div>
-            <p class="text-xs text-gray-500 font-medium">sender</p>
-            <p class="font-medium" id="lbl-sender-name">-</p>
-            <p class="text-xs" id="lbl-sender-phone">-</p>
-            <p class="text-xs" id="lbl-sender-address">-</p>
-            <p class="text-xs" id="lbl-sender-zip">-</p>
+        <!-- sorting code · AWB -->
+        <div class="row">
+          <div class="cell center" style="width: 34mm;">
+            <div class="cap">sorting code</div>
+            <div class="bold" style="font-size: 12pt;" id="lbl-sorting">-</div>
           </div>
-          <div>
-            <p class="text-xs text-gray-500 font-medium">recipient</p>
-            <p class="font-medium" id="lbl-recipient-name">-</p>
-            <p class="text-xs" id="lbl-recipient-phone">-</p>
-            <p class="text-xs" id="lbl-recipient-address">-</p>
-            <p class="text-xs" id="lbl-recipient-zip">-</p>
+          <div class="cell grow" style="display: flex; flex-direction: column; justify-content: center;">
+            <div class="cap">no. resi / AWB</div>
+            <div class="bold" style="font-size: 10.5pt;" id="lbl-awb-top">-</div>
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2 text-xs border-b border-gray-200 pb-3">
-          <div><p class="text-gray-500">weight</p><p class="font-medium" id="lbl-weight">-</p></div>
-          <div><p class="text-gray-500">qty</p><p class="font-medium" id="lbl-qty">-</p></div>
-          <div><p class="text-gray-500">insurance</p><p class="font-medium" id="lbl-insurance">-</p></div>
+        <!-- AWB barcode -->
+        <div class="row">
+          <div class="cell grow center" style="padding-top: 1.6mm; padding-bottom: 1.2mm;">
+            <svg id="lbl-barcode"></svg>
+            <div class="bold" style="font-size: 9pt; margin-top: 0.8mm; letter-spacing: 0.04em;" id="lbl-awb">-</div>
+          </div>
         </div>
 
-        <div class="text-xs">
-          <p class="text-gray-500 font-medium mb-1">items</p>
-          <table class="w-full">
-            <thead>
-              <tr class="text-gray-400">
-                <th class="text-left font-normal">name</th>
-                <th class="text-right font-normal">qty</th>
-                <th class="text-right font-normal">price</th>
-              </tr>
-            </thead>
-            <tbody id="lbl-items"></tbody>
-          </table>
+        <!-- recipient · sender -->
+        <div class="row">
+          <div class="cell" style="width: 56%;">
+            <div class="cap">penerima</div>
+            <div class="bold" style="font-size: 9pt;" id="lbl-recipient-name">-</div>
+            <div class="bold" id="lbl-recipient-phone">-</div>
+            <div id="lbl-recipient-address">-</div>
+          </div>
+          <div class="cell grow">
+            <div class="cap">pengirim</div>
+            <div class="bold" style="font-size: 8.5pt;" id="lbl-sender-name">-</div>
+            <div class="bold" id="lbl-sender-phone">-</div>
+            <div style="font-size: 6.5pt;" id="lbl-sender-address">-</div>
+          </div>
         </div>
 
-        <div class="border-t-2 border-black pt-2 text-center">
-          <p class="text-[10px] uppercase tracking-wide text-gray-500">order ref</p>
-          <svg id="lbl-order-barcode" class="mx-auto"></svg>
-          <p class="font-mono font-bold" id="lbl-order-ref">-</p>
+        <!-- origin · destination -->
+        <div class="row">
+          <div class="cell center" style="width: 44%;">
+            <div class="cap">kota asal</div>
+            <div class="bold" style="font-size: 8.5pt; text-transform: uppercase;" id="lbl-origin">-</div>
+          </div>
+          <div class="cell center grow">
+            <div class="cap">kota tujuan</div>
+            <div class="bold" style="font-size: 8.5pt; text-transform: uppercase;" id="lbl-destination">-</div>
+          </div>
+        </div>
+
+        <!-- payment note -->
+        <div class="row">
+          <div class="cell grow center">
+            <span class="bold" id="lbl-payment-type">NON-COD</span>
+            <span style="font-style: italic;" id="lbl-payment-note">· Penerima tidak perlu membayar apa pun ke kurir</span>
+          </div>
+        </div>
+
+        <!-- weight · qty · insurance · date -->
+        <div class="row">
+          <div class="cell grow">
+            <div class="cap">berat</div>
+            <div class="bold" style="font-size: 9pt;" id="lbl-weight">-</div>
+            <div style="font-size: 5.8pt;" id="lbl-weight-detail"></div>
+          </div>
+          <div class="cell" style="width: 14mm;">
+            <div class="cap">qty</div>
+            <div class="bold" style="font-size: 9pt;" id="lbl-qty">-</div>
+          </div>
+          <div class="cell" style="width: 22mm;">
+            <div class="cap">asuransi</div>
+            <div class="bold" id="lbl-insurance">-</div>
+          </div>
+          <div class="cell" style="width: 20mm;">
+            <div class="cap">tgl. pesan</div>
+            <div class="bold" id="lbl-date">-</div>
+          </div>
+        </div>
+
+        <!-- order ref -->
+        <div class="row">
+          <div class="cell" style="width: 42%; display: flex; flex-direction: column; justify-content: center;">
+            <div class="cap">no. pesanan</div>
+            <div class="bold" style="font-size: 9pt;" id="lbl-order-ref">-</div>
+          </div>
+          <div class="cell grow center">
+            <svg id="lbl-order-barcode"></svg>
+          </div>
+        </div>
+
+        <!-- items -->
+        <div class="row" style="flex: 1;">
+          <div class="cell grow">
+            <table class="items">
+              <thead>
+                <tr><th style="width: 4mm;">#</th><th>nama produk</th><th class="num" style="width: 8mm;">qty</th><th class="num" style="width: 16mm;">harga</th></tr>
+              </thead>
+              <tbody id="lbl-items"></tbody>
+            </table>
+            <div style="margin-top: 1mm; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span class="bold">Catatan:</span> <span id="lbl-notes">-</span></div>
+          </div>
+        </div>
+
+        <!-- KiriminAja standard notes -->
+        <div class="row">
+          <div class="cell grow disclaimer">
+            * Pengirim wajib meminta bukti serah terima paket ke kurir.<br />
+            * Jika paket ini retur, pengirim tetap dikenakan biaya keberangkatan dan biaya retur sesuai ekspedisi.
+          </div>
         </div>
       </div>
     </div>
@@ -133,6 +220,15 @@ import Layout from '../../layouts/Layout.astro';
     const deniedEl = document.getElementById('label-denied');
     const mainEl = document.getElementById('label-main');
 
+    // KiriminAja courier codes → the name printed in the logistic box.
+    const COURIER_NAMES = {
+      jne: 'JNE', jnt: 'J&T', sicepat: 'SICEPAT', anteraja: 'ANTERAJA', tiki: 'TIKI', idx: 'ID EXPRESS',
+      ninja: 'NINJA', lion: 'LION PARCEL', sap: 'SAP', spx: 'SPX', posindonesia: 'POS', pos: 'POS',
+      jntcargo: 'J&T CARGO', ncs: 'NCS', rpx: 'RPX', wahana: 'WAHANA', paxel: 'PAXEL',
+    };
+    // More rows than this push the label past 150 mm; the rest are summarised in one line.
+    const MAX_ITEM_ROWS = 4;
+
     function set(id, value) {
       const el = document.getElementById(id);
       if (el) el.textContent = value == null || value === '' ? '-' : value;
@@ -142,13 +238,21 @@ import Layout from '../../layouts/Layout.astro';
       return 'Rp' + Math.round(Number(n) || 0).toLocaleString('id-ID');
     }
 
+    function fmtDate(value) {
+      if (!value) return '';
+      const d = new Date(value);
+      if (isNaN(d)) return '';
+      const pad = (n) => String(n).padStart(2, '0');
+      return pad(d.getDate()) + '-' + pad(d.getMonth() + 1) + '-' + d.getFullYear();
+    }
+
     function esc(value) {
       return String(value ?? '').replace(/[&<>"']/g, function(ch) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
       });
     }
 
-    function drawBarcode(selector, value) {
+    function drawBarcode(selector, value, heightMm) {
       if (!value || !window.JsBarcode) return;
       try {
         window.JsBarcode(selector, value, { format: 'CODE128A', displayValue: false, height: 48, margin: 0 });
@@ -157,12 +261,12 @@ import Layout from '../../layouts/Layout.astro';
           window.JsBarcode(selector, value, { format: 'CODE128', displayValue: false, height: 48, margin: 0 });
         } catch {}
       }
-      fitBarcode(document.querySelector(selector));
+      fitBarcode(document.querySelector(selector), heightMm);
     }
 
-    // JsBarcode draws a fixed 2px per bar, so a long AWB (e.g. sandbox MOCK-…) overflows the card.
-    // Scale it down to the card width, never up past its natural size.
-    function fitBarcode(svg) {
+    // JsBarcode draws a fixed 2px per bar, so a long AWB (e.g. sandbox MOCK-…) overflows the label.
+    // Scale it to the cell width, never past its natural size, at a fixed printed height.
+    function fitBarcode(svg, heightMm) {
       const width = parseFloat(svg?.getAttribute('width'));
       const height = parseFloat(svg?.getAttribute('height'));
       if (!width || !height) return;
@@ -174,7 +278,7 @@ import Layout from '../../layouts/Layout.astro';
       svg.style.margin = '0 auto';
       svg.style.width = '100%';
       svg.style.maxWidth = width + 'px';
-      svg.style.height = height + 'px';
+      svg.style.height = heightMm + 'mm';
     }
 
     async function checkAdmin() {
@@ -216,46 +320,63 @@ import Layout from '../../layouts/Layout.astro';
         document.getElementById('pdf-note').classList.remove('hidden');
       }
 
-      set('lbl-courier', label.courier);
-      set('lbl-service', label.service_name || label.service_type);
+      const courierCode = String(label.courier || '').toLowerCase();
+      set('lbl-courier', COURIER_NAMES[courierCode] || courierCode.toUpperCase());
       set('lbl-service-type', label.service_type);
-      set('lbl-sorting', label.sorting_code || 'pending');
-      set('lbl-awb', label.awb || '(awb pending)');
-      const shippingType = label.cashless ? 'CASHLESS ' + (label.shipping_type || 'NON-COD') : (label.shipping_type || 'NON-COD');
-      set('lbl-shipping-type', shippingType);
-      set('lbl-cities', (label.origin_city || '-') + ' → ' + (label.destination_city || '-'));
+      set('lbl-service', label.service_name);
+      set('lbl-sorting', label.sorting_code || 'PENDING');
+      set('lbl-awb-top', label.awb || '(belum terbit)');
+      set('lbl-awb', label.awb);
+
+      const baseType = label.shipping_type || 'NON-COD';
+      const isCod = baseType === 'COD';
+      const typeText = isCod && label.cod_amount ? 'COD: ' + fmtIdr(label.cod_amount) : baseType;
+      set('lbl-shipping-type', baseType);
+      set('lbl-payment-type', (label.cashless ? 'CASHLESS ' : '') + typeText);
+      set('lbl-payment-note', isCod
+        ? '· Kurir menagih nilai COD ke penerima'
+        : '· Penerima tidak perlu membayar apa pun ke kurir');
 
       const sender = label.sender || {};
       const recipient = label.recipient || {};
       set('lbl-sender-name', sender.name);
       set('lbl-sender-phone', sender.phone);
-      set('lbl-sender-address', sender.address);
-      set('lbl-sender-zip', sender.zipcode);
+      set('lbl-sender-address', [sender.address, sender.zipcode].filter(Boolean).join(' '));
       set('lbl-recipient-name', recipient.name);
       set('lbl-recipient-phone', recipient.phone);
-      set('lbl-recipient-address', recipient.address);
       // Checkout addresses already end with the postal code; don't print it twice.
-      const recipientZipInAddress = recipient.zipcode && String(recipient.address || '').includes(recipient.zipcode);
-      document.getElementById('lbl-recipient-zip').classList.toggle('hidden', !!recipientZipInAddress);
-      set('lbl-recipient-zip', recipient.zipcode);
+      const recipientAddress = String(recipient.address || '');
+      set('lbl-recipient-address', recipient.zipcode && !recipientAddress.includes(recipient.zipcode)
+        ? recipientAddress + ' ' + recipient.zipcode
+        : recipientAddress);
+
+      set('lbl-origin', label.origin_city);
+      set('lbl-destination', [label.destination_city, label.destination_district].filter(Boolean).join(' · '));
 
       const actual = label.actual_weight_grams;
       const volume = label.volumetric_weight_grams;
-      const weightText = (label.weight_grams ? label.weight_grams + ' g' : '-') +
-        (actual && volume ? ' (actual ' + actual + ' g, volume ' + volume + ' g)' : '');
-      set('lbl-weight', weightText);
-      set('lbl-qty', label.qty || '-');
-      set('lbl-insurance', label.insurance_amount > 0 ? fmtIdr(label.insurance_amount) : 'not used');
+      set('lbl-weight', label.weight_grams ? label.weight_grams + ' gr' : '');
+      document.getElementById('lbl-weight-detail').textContent =
+        actual && volume ? 'aktual ' + actual + ' gr · volume ' + volume + ' gr' : '';
+      set('lbl-qty', label.qty ? label.qty + ' pcs' : '');
+      set('lbl-insurance', label.insurance_amount > 0 ? fmtIdr(label.insurance_amount) : 'Tidak');
+      set('lbl-date', fmtDate(label.order_date));
       set('lbl-order-ref', label.order_ref);
+      set('lbl-notes', label.notes);
 
-      const tbody = document.getElementById('lbl-items');
-      tbody.innerHTML = (label.items || []).map(function(item) {
-        return '<tr><td>' + esc(item.name) + '</td><td class="text-right">' + esc(item.qty) +
-          '</td><td class="text-right">' + esc(fmtIdr(item.price)) + '</td></tr>';
-      }).join('') || '<tr><td colspan="3">-</td></tr>';
+      const items = label.items || [];
+      const shown = items.slice(0, MAX_ITEM_ROWS);
+      let rows = shown.map(function(item, i) {
+        return '<tr><td>' + (i + 1) + '</td><td>' + esc(item.name) + '</td><td class="num">' + esc(item.qty) +
+          '</td><td class="num">' + esc(fmtIdr(item.price)) + '</td></tr>';
+      }).join('');
+      if (items.length > shown.length) {
+        rows += '<tr><td></td><td colspan="3">+ ' + (items.length - shown.length) + ' produk lainnya</td></tr>';
+      }
+      document.getElementById('lbl-items').innerHTML = rows || '<tr><td colspan="4">-</td></tr>';
 
-      drawBarcode('#lbl-barcode', label.awb);
-      drawBarcode('#lbl-order-barcode', label.order_ref);
+      drawBarcode('#lbl-barcode', label.awb, 14);
+      drawBarcode('#lbl-order-barcode', label.order_ref, 8);
     });
 
     document.getElementById('print-btn')?.addEventListener('click', () => window.print());

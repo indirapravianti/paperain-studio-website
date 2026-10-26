@@ -32,6 +32,9 @@ function labelPayload(order, origin, sortingCode, pdfUrl, trackedOriginCity) {
       item_value: Number(order.shipping_item_value) || items.reduce((sum, item) => sum + item.price * item.qty, 0),
       origin_city: origin.city || trackedOriginCity || '',
       destination_city: order.shipping_city || '',
+      destination_district: order.shipping_district || '',
+      order_date: order.created_at || null,
+      notes: order.notes || '',
       sender: {
         name: origin.name || '',
         phone: origin.phone || '',
