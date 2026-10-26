@@ -50,7 +50,7 @@ Both were billed Rp19.000, SiCepat's 1 kg minimum, so these tests can't show whi
 | Commit / file | What it does |
 | --- | --- |
 | `lib/api/kiriminaja.js` | `setCallback`, `getPayment`, `getCreditBalance` (GET), `validatePin`; `request_pickup` sends `payment_method` + `pin` when `KIRIMINAJA_PAYMENT_METHOD=credit` |
-| `lib/api/kiriminaja-shipment-handler.js` | Skips `request_pickup` if the order already has a pickup number. Midtrans sends several "paid" notifications and KiriminAja rejected the second one (`1 paket tidak bisa diproses ulang`) |
+| `lib/api/kiriminaja-shipment-handler.js` | Skips `request_pickup` if the order already has a pickup number. Midtrans sends several "paid" notifications and KiriminAja rejected the second one (`1 paket tidak bisa diproses ulang`). Instead it reads the AWB from tracking, so a later notification or the admin **fetch AWB** button fills it in if the `processed_packages` webhook never arrives |
 | `scripts/kiriminaja-set-callback.mjs` | `check [order_id]`, `register`, `payment <pickup_number>`, `balance`, `pin` |
 | `scripts/kiriminaja-uat-local.mjs` | Runs UAT locally against the sandbox, no website or Supabase: `quote`, `pickup [actual-heavier\|volume-heavier]`, `check <awb>...` |
 | `.env.example`, `docs/UAT-KIRIMINAJA.md` | New env vars documented; KA Credit moved into UAT scope |

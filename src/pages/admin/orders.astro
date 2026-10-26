@@ -157,15 +157,19 @@ import Layout from '../../layouts/Layout.astro';
     }
 
     window.adminCreateShipment = async function(orderId, btn) {
+      const label = btn.textContent;
       btn.disabled = true;
-      btn.textContent = 'creating...';
+      btn.textContent = label === 'create shipment' ? 'creating...' : 'checking...';
       try {
-        await callKiriminajaApi('/api/kiriminaja-shipment', { method: 'POST', body: JSON.stringify({ order_id: orderId }) });
+        const result = await callKiriminajaApi('/api/kiriminaja-shipment', { method: 'POST', body: JSON.stringify({ order_id: orderId }) });
+        if (result.alreadyRequested) {
+          alert('pickup ' + result.pickupNumber + ' is requested but KiriminAja has not issued the AWB yet. try again in a minute.');
+        }
         loadOrders();
       } catch (err) {
         alert('shipment creation failed: ' + err.message);
         btn.disabled = false;
-        btn.textContent = 'create shipment';
+        btn.textContent = label;
       }
     };
 
@@ -275,7 +279,7 @@ import Layout from '../../layouts/Layout.astro';
                   ? `<span class="px-2 py-1 rounded bg-green-100 text-green-700">AWB ${order.kiriminaja_awb}</span>`
                   : `<span class="px-2 py-1 rounded bg-yellow-100 text-yellow-700">${order.kiriminaja_error ? 'shipment failed' : 'no AWB yet'}</span>`}
                 ${order.status === 'confirmed' || order.kiriminaja_error
-                  ? `<button onclick="adminCreateShipment('${order.id}', this)" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">${order.kiriminaja_awb ? 're-sync' : 'create shipment'}</button>`
+                  ? `<button onclick="adminCreateShipment('${order.id}', this)" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">${order.kiriminaja_awb ? 're-sync' : order.kiriminaja_pickup_number ? 'fetch AWB' : 'create shipment'}</button>`
                   : ''}
                 ${order.kiriminaja_awb ? `
                   <button onclick="adminTrackShipment('${order.id}')" class="px-2 py-1 rounded border border-gray-200 hover:bg-gray-50">track</button>
