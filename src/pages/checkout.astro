@@ -198,6 +198,10 @@ import Layout from '../layouts/Layout.astro';
     var FLAT_SHIPPING_FEE = typeof getShippingFee === 'function' ? getShippingFee() : 48000;
     var SHIPPING_FEE = FLAT_SHIPPING_FEE;
 
+    // KiriminAja UAT: ?uat_package=heavy|bulky asks the server for a fixed test package.
+    // The server ignores it unless KIRIMINAJA_UAT_PACKAGE_PROFILES is on.
+    var UAT_PACKAGE_PROFILE = new URLSearchParams(window.location.search).get('uat_package') || null;
+
     // Structured (KiriminAja) address + courier state
     var kiriminajaAvailable = true;
     var selectedRate = null;
@@ -372,6 +376,7 @@ import Layout from '../layouts/Layout.astro';
           body: JSON.stringify({
             items: cartFiltered.map(function(item) { return { id: item.id, qty: item.qty }; }),
             district_id: districtId,
+            package_profile: UAT_PACKAGE_PROFILE,
           }),
         });
         var rates = json.rates || [];
@@ -382,6 +387,9 @@ import Layout from '../layouts/Layout.astro';
         var weightNote = '';
         if (json.actual_weight_grams && json.volumetric_weight_grams) {
           weightNote = 'chargeable ' + json.weight_grams + ' g (actual ' + json.actual_weight_grams + ' g, volume ' + json.volumetric_weight_grams + ' g)';
+          if (json.package_profile) {
+            weightNote += ', package ' + json.width_cm + '×' + json.length_cm + '×' + json.height_cm + ' cm';
+          }
         }
         courierStatus.textContent = weightNote;
         courierList.innerHTML = rates.map(function(r, idx) {
@@ -615,6 +623,7 @@ import Layout from '../layouts/Layout.astro';
           shipping: shippingDetails,
           notes: document.getElementById('notes').value || null,
           currency: currency,
+          package_profile: UAT_PACKAGE_PROFILE,
         }));
       } catch (storageErr) {
         errorEl.textContent = 'could not save order data. please try again.';

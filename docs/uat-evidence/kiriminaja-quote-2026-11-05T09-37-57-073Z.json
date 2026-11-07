@@ -1,0 +1,93 @@
+{
+  "destination": {
+    "province": {
+      "id": 6,
+      "provinsi_name": "DKI Jakarta"
+    },
+    "city": {
+      "id": 153,
+      "provinsi_id": 6,
+      "kabupaten_name": "Jakarta Selatan",
+      "type": "Kota",
+      "postal_code": "12230"
+    },
+    "district": {
+      "id": 2111,
+      "kecamatan_name": "Setia Budi",
+      "kabupaten_id": 153,
+      "postal_code": "12980"
+    },
+    "subdistrict": {
+      "id": 17578,
+      "kelurahan_name": "Karet Semanggi",
+      "kecamatan_id": 2111,
+      "postal_code": "12930"
+    }
+  },
+  "quotes": [
+    {
+      "scenario": {
+        "key": "heavy-3kg",
+        "uatRow": 4,
+        "title": "UAT Keychain",
+        "category": "keychain",
+        "qty": 1,
+        "packageProfile": "heavy",
+        "byNameOnly": true
+      },
+      "pack": {
+        "qty": 1,
+        "width": 10,
+        "length": 10,
+        "height": 10,
+        "actualWeightGrams": 3000,
+        "volumetricWeightGrams": 167,
+        "chargeableWeightGrams": 3000,
+        "packageProfile": "heavy"
+      },
+      "rate": {
+        "courier": "sicepat",
+        "service_type": "REG",
+        "service_name": "Sicepat REGULER",
+        "cost": 57000,
+        "insurance_amount": 0,
+        "customer_cost": 57000,
+        "etd": "2-4",
+        "group": "regular"
+      },
+      "rateCount": 17
+    },
+    {
+      "scenario": {
+        "key": "bulky-30cm",
+        "uatRow": 6,
+        "title": "UAT Sticker Sheet",
+        "category": "sticker sheet",
+        "qty": 1,
+        "packageProfile": "bulky",
+        "byNameOnly": true
+      },
+      "pack": {
+        "qty": 1,
+        "width": 30,
+        "length": 30,
+        "height": 30,
+        "actualWeightGrams": 1000,
+        "volumetricWeightGrams": 4500,
+        "chargeableWeightGrams": 4500,
+        "packageProfile": "bulky"
+      },
+      "rate": {
+        "courier": "sicepat",
+        "service_type": "GOKIL",
+        "service_name": "Sicepat KARGO",
+        "cost": 60000,
+        "insurance_amount": 0,
+        "customer_cost": 60000,
+        "etd": "5-7",
+        "group": "cargo"
+      },
+      "rateCount": 18
+    }
+  ]
+}

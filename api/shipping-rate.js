@@ -16,6 +16,7 @@ export default async function handler(req, res) {
     const result = await getShippingQuotes({
       items: body.items,
       destinationDistrictId: body.district_id,
+      packageProfile: body.package_profile,
     });
 
     if (result.error) {
@@ -32,6 +33,7 @@ export default async function handler(req, res) {
         width_cm: result.width,
         length_cm: result.length,
         height_cm: result.height,
+        package_profile: result.packageProfile,
       },
       200,
     );

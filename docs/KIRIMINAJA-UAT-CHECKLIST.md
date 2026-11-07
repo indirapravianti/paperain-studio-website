@@ -171,6 +171,23 @@ Use the same test address for both: DKI Jakarta → Jakarta Selatan → Setia Bu
 
 ---
 
+## Part C2 — re-test of rows 4 and 6 (requested 2026-11)
+
+KiriminAja asked to re-create the row 4 order (`MOCK-PPRS-261026-599289`) with **at least 3 kg in at most 10×10×10 cm**, and the row 6 order (`MOCK-PPRS-261026-874314`) with **at most 1 kg in at least 30×30×30 cm**. Our real carts can't reach those numbers (every item is estimated at 10×10×1 cm and 10–30 g), so checkout has two test packages:
+
+| | Checkout URL | Package sent to KiriminAja |
+| --- | --- | --- |
+| **Row 4** | `www.paperainstudio.com/checkout?uat_package=heavy` | 3,000 g actual, 10×10×10 cm (volume 167 g) |
+| **Row 6** | `www.paperainstudio.com/checkout?uat_package=bulky` | 1,000 g actual, 30×30×30 cm (volume 4,500 g) |
+
+- [ ] In Vercel → project → Settings → Environment Variables, add `KIRIMINAJA_UAT_PACKAGE_PROFILES` = `true` (Production), then redeploy. Without it the `uat_package` parameter is ignored.
+- [ ] Add **any one item** to the cart (the item doesn't affect the package), then open the checkout URL above instead of clicking checkout.
+- [ ] Follow S2–S5. The weight line under the courier list now ends with the package size, e.g. `chargeable 3000 g (actual 3000 g, volume 167 g), package 10×10×10 cm`. 📸 Screenshot it.
+- [ ] Do row 4 and row 6 as two separate orders.
+- [ ] After the re-test, delete the Vercel variable and redeploy.
+
+---
+
 ## Part D — after the screenshots
 
 - [ ] Fill section 1 (PIC, date) and tick section 2.

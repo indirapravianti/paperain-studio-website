@@ -41,6 +41,9 @@ const DESTINATION = {
 const SCENARIOS = [
   { key: 'actual-heavier', uatRow: 4, title: 'UAT Keychain', category: 'keychain', qty: 4 },
   { key: 'volume-heavier', uatRow: 6, title: 'UAT Sticker Sheet', category: 'sticker sheet', qty: 1 },
+  // Re-test KiriminAja asked for. Run by name only, with KIRIMINAJA_UAT_PACKAGE_PROFILES=true.
+  { key: 'heavy-3kg', uatRow: 4, title: 'UAT Keychain', category: 'keychain', qty: 1, packageProfile: 'heavy', byNameOnly: true },
+  { key: 'bulky-30cm', uatRow: 6, title: 'UAT Sticker Sheet', category: 'sticker sheet', qty: 1, packageProfile: 'bulky', byNameOnly: true },
 ];
 
 const PREFERRED_SERVICES = ['sicepat', 'jne', 'jnt', 'anteraja', 'idx', 'sap', 'ninja', 'lion'];
@@ -95,11 +98,20 @@ function save(mode, data) {
 
 async function quoteAll(destination, keys = []) {
   const out = [];
-  for (const scenario of SCENARIOS.filter((s) => !keys.length || keys.includes(s.key))) {
+  const wanted = keys.length ? SCENARIOS.filter((s) => keys.includes(s.key)) : SCENARIOS.filter((s) => !s.byNameOnly);
+  for (const scenario of wanted) {
     const lines = [{ category: scenario.category, qty: scenario.qty }];
-    const pack = describeOrderPackage(lines);
+    const { packageProfile } = scenario;
+    const pack = describeOrderPackage(lines, { packageProfile });
+    if (packageProfile && !pack.packageProfile) {
+      throw new Error(`${scenario.key} needs KIRIMINAJA_UAT_PACKAGE_PROFILES=true`);
+    }
     await sleep(THROTTLE_MS);
-    const { rates } = await quoteKiriminajaRates({ lines, destinationDistrictId: destination.district.id });
+    const { rates } = await quoteKiriminajaRates({
+      lines,
+      destinationDistrictId: destination.district.id,
+      packageProfile,
+    });
     const rate = pickRate(rates);
     out.push({ scenario, pack, rate, rateCount: rates.length });
     console.log(

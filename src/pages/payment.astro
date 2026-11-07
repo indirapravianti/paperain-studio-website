@@ -313,6 +313,7 @@ import Layout from '../layouts/Layout.astro';
           shipping_service_type: data.shipping.service_type || null,
           notes: data.notes || null,
           customer_id: user ? user.id : null,
+          package_profile: data.package_profile || null,
         };
 
         var orderResult = await callApi('place-order', orderPayload);
