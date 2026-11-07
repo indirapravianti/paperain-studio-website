@@ -175,16 +175,27 @@ async function pickupAll(destination, quotes) {
             codAmount: 0,
             insuranceAmount: 0,
             itemName: scenario.title,
+            // Same rule as the live pickup: a UAT package goes as one item line that is the package.
             items: [
-              {
-                name: scenario.title,
-                price: unitPrice,
-                weightGrams: getItemWeightGrams(scenario.category),
-                widthCm: itemDims.width,
-                lengthCm: itemDims.length,
-                heightCm: itemDims.height,
-                qty: scenario.qty,
-              },
+              pack.packageProfile
+                ? {
+                    name: scenario.title,
+                    price: unitPrice * scenario.qty,
+                    weightGrams: pack.actualWeightGrams,
+                    widthCm: pack.width,
+                    lengthCm: pack.length,
+                    heightCm: pack.height,
+                    qty: 1,
+                  }
+                : {
+                    name: scenario.title,
+                    price: unitPrice,
+                    weightGrams: getItemWeightGrams(scenario.category),
+                    widthCm: itemDims.width,
+                    lengthCm: itemDims.length,
+                    heightCm: itemDims.height,
+                    qty: scenario.qty,
+                  },
             ],
           },
         ],
