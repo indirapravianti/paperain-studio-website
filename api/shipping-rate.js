@@ -20,7 +20,9 @@ export default async function handler(req, res) {
     });
 
     if (result.error) {
-      return sendJson(res, { error: result.error }, result.notConfigured ? 503 : 400);
+      // 502 for KiriminAja failures so checkout retries them; 400 for bad input.
+      const status = result.notConfigured ? 503 : result.upstream ? 502 : 400;
+      return sendJson(res, { error: result.error }, status);
     }
 
     return sendJson(
